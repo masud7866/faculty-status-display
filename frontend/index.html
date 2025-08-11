@@ -282,12 +282,14 @@
       font-size: 1em;
       z-index: 10000;
       overflow: hidden;
-      display: flex;
-      align-items: center;
       font-family: 'Orbitron', 'Inter', Arial, sans-serif;
     }
 
     #dateDisplay {
+      position: absolute;
+      left: 0;
+      top: 0;
+      bottom: 0;
       background: #2563eb;
       color: #fff;
       padding: 0.2em 0.6em;
@@ -303,16 +305,24 @@
       display: flex;
       flex-direction: column;
       justify-content: center;
+      z-index: 10002;
     }
 
     #marqueeText {
+      position: absolute;
+      left: 150px;
+      /* Start after date container */
+      top: 0;
+      bottom: 0;
+      right: 0;
       white-space: nowrap;
       will-change: transform;
-      flex: 1;
-      overflow: visible;
+      overflow: hidden;
       transform: translateZ(0);
       backface-visibility: hidden;
-      position: relative;
+      display: flex;
+      align-items: center;
+      padding-left: 1em;
     }
 
     #adProgress {
@@ -726,7 +736,7 @@
 
     function animateMarquee() {
       const marquee = document.getElementById("marqueeText");
-      const dateDisplay = document.getElementById("dateDisplay");
+      const marqueeContainer = marquee.parentElement;
       
       // Clear any existing animation
       if (marqueeAnimation) {
@@ -734,17 +744,15 @@
       }
       
       function loop() {
-        // Get current measurements
-        const dateWidth = dateDisplay.offsetWidth;
-        const windowWidth = window.innerWidth;
-        const availableWidth = windowWidth - dateWidth;
+        // Get current measurements of the marquee container only
+        const containerWidth = marqueeContainer.offsetWidth - 150; // Subtract date width
         
-        // Start from the right edge of the available space
+        // Start from the right edge of the marquee container
         marquee.style.transition = "none";
-        marquee.style.transform = `translateX(${availableWidth}px)`;
+        marquee.style.transform = `translateX(${containerWidth}px)`;
         
         setTimeout(() => {
-          const textWidth = marquee.offsetWidth;
+          const textWidth = marquee.scrollWidth;
           const duration = Math.max(15, textWidth / 80);
           marquee.style.transition = `transform ${duration}s linear`;
           // Move text completely off screen to the left
