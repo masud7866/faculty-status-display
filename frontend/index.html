@@ -60,13 +60,13 @@
     #clock {
       position: fixed;
       right: 2vw;
-      bottom: 12vh;
+      bottom: 10vh;
       z-index: 1000;
       background: #111827;
       color: #38bdf8;
       border-radius: 10px;
       padding: 0.3em 0.8em;
-      min-width: 11.5em;
+      width: 9.5em;
       text-align: center;
       letter-spacing: 0.18em;
       box-shadow: 0 0 16px #38bdf888, 0 0 4px #2563eb;
@@ -77,20 +77,21 @@
       border: 2px solid #38bdf8;
       font-family: 'Orbitron', 'Inter', 'Segoe UI', monospace, Arial, sans-serif;
       font-variant-numeric: tabular-nums;
+      white-space: nowrap;
     }
 
     .clock-group {
       display: inline-block;
-      min-width: 1.6em;
+      width: 2em;
       text-align: center;
     }
 
     #clock .ampm {
       display: inline-block;
-      min-width: 2em;
+      width: 2.5em;
       text-align: left;
       font-size: 0.5em;
-      margin-left: 0.3em;
+      margin-left: 0.2em;
       color: #60a5fa;
       letter-spacing: 0.2em;
       vertical-align: middle;
@@ -328,50 +329,6 @@
       width: 0;
       transition: width 0.2s;
     }
-
-    #resolutionFloat {
-      position: fixed;
-      left: 1vw;
-      bottom: 2.5em;
-      background: #1e293b;
-      color: #e0e7ff;
-      font-size: 1em;
-      padding: 0.3em 0.8em;
-      border-radius: 8px;
-      box-shadow: 0 2px 8px #2563eb44;
-      z-index: 10001;
-      opacity: 0.85;
-      pointer-events: none;
-      font-family: 'Orbitron', 'Inter', Arial, sans-serif;
-    }
-
-    #resolutionFloat.show {
-      opacity: 1;
-    }
-
-    #resolutionFloat.hide {
-      opacity: 0;
-    }
-
-    #resolutionFloat div {
-      background: rgba(255, 255, 255, 0.9);
-      color: #111;
-      padding: 0.5em 1em;
-      border-radius: 10px;
-      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
-      margin: 0.2em 0;
-      font-size: 1.2em;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-    }
-
-    #resolutionFloat svg {
-      margin-right: 0.5em;
-      fill: #2563eb;
-      width: 1.5em;
-      height: 1.5em;
-    }
   </style>
 </head>
 
@@ -401,9 +358,6 @@
   <footer id="marqueeFooter">
     <div id="marqueeText"></div>
   </footer>
-
-  <!-- Resolution Float -->
-  <div id="resolutionFloat"></div>
 
   <script>
     const STATUS_MAP = {
@@ -656,13 +610,6 @@
 
     window.addEventListener("resize", adjustLayout);
     window.addEventListener("DOMContentLoaded", adjustLayout);
-
-    function updateResolution() {
-      const res = `${window.innerWidth} x ${window.innerHeight}`;
-      document.getElementById("resolutionFloat").textContent = `Resolution: ${res}`;
-    }
-    window.addEventListener("resize", updateResolution);
-    window.addEventListener("DOMContentLoaded", updateResolution);
   </script>
 </body>
 
