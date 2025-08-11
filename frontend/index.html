@@ -61,13 +61,13 @@
     #clock {
       position: fixed;
       right: 2vw;
-      bottom: 10vh;
+      bottom: 13vh;
       z-index: 1000;
       background: #111827;
       color: #38bdf8;
       border-radius: 10px;
       padding: 0.3em 0.8em;
-      width: 10em;
+      width: 11.5em;
       text-align: center;
       letter-spacing: 0.18em;
       box-shadow: 0 0 16px #38bdf888, 0 0 4px #2563eb;
@@ -332,6 +332,66 @@
       width: 0;
       transition: width 0.2s;
     }
+
+    /* 7-segment digit SVG component */
+    .seven-segment {
+      width: 40px;
+      height: 70px;
+      display: inline-block;
+      vertical-align: middle;
+    }
+
+    .seg {
+      fill: #222;
+      stroke: #2563eb;
+      stroke-width: 2;
+      rx: 2;
+    }
+
+    .seg-a {
+      y: 2;
+    }
+
+    .seg-b {
+      x: 32;
+      y: 8;
+      width: 6;
+      height: 24;
+    }
+
+    .seg-c {
+      x: 32;
+      y: 38;
+      width: 6;
+      height: 24;
+    }
+
+    .seg-d {
+      y: 62;
+    }
+
+    .seg-e {
+      x: 2;
+      y: 38;
+      width: 6;
+      height: 24;
+    }
+
+    .seg-f {
+      x: 2;
+      y: 8;
+      width: 6;
+      height: 24;
+    }
+
+    .seg-g {
+      y: 34;
+    }
+
+    .seven-segment .seg.lit {
+      fill: #38bdf8;
+      filter: drop-shadow(0 0 6px #38bdf8);
+    }
   </style>
 </head>
 
@@ -375,8 +435,8 @@
 
     function loadFaculty() {
       fetch("https://faculty-status-backend.onrender.com/api/faculty", {
-          credentials: "include"
-        })
+        credentials: "include"
+      })
         .then(res => res.json())
         .then(data => {
           const grid = document.getElementById("grid");
@@ -414,24 +474,42 @@
         });
     }
 
+    function renderDigit(digit) {
+      const segs = SEGMENTS[digit] || [];
+      return `
+    <svg width="40" height="70" viewBox="0 0 40 70" class="seven-segment">
+      <rect class="seg seg-a${segs.includes('a') ? ' lit' : ''}" x="8" y="2" width="24" height="6" rx="2"/>
+      <rect class="seg seg-b${segs.includes('b') ? ' lit' : ''}" x="32" y="8" width="6" height="24" rx="2"/>
+      <rect class="seg seg-c${segs.includes('c') ? ' lit' : ''}" x="32" y="38" width="6" height="24" rx="2"/>
+      <rect class="seg seg-d${segs.includes('d') ? ' lit' : ''}" x="8" y="62" width="24" height="6" rx="2"/>
+      <rect class="seg seg-e${segs.includes('e') ? ' lit' : ''}" x="2" y="38" width="6" height="24" rx="2"/>
+      <rect class="seg seg-f${segs.includes('f') ? ' lit' : ''}" x="2" y="8" width="6" height="24" rx="2"/>
+      <rect class="seg seg-g${segs.includes('g') ? ' lit' : ''}" x="8" y="34" width="24" height="6" rx="2"/>
+    </svg>
+  `;
+    }
+
+    function renderClock(h, m, s) {
+      const digits = [
+        ...String(h).padStart(2, '0'),
+        ...String(m).padStart(2, '0'),
+        ...String(s).padStart(2, '0')
+      ];
+      const html = digits.map(renderDigit).join('') +
+        `<span style="font-size:1.2em;vertical-align:top;color:#60a5fa;margin-left:0.5em;">${h >= 12 ? 'PM' : 'AM'}</span>`;
+      document.getElementById("clock").innerHTML = html;
+    }
+
     function updateClock() {
       const now = new Date();
       let h = now.getHours();
-      const m = String(now.getMinutes()).padStart(2, '0');
-      const s = String(now.getSeconds()).padStart(2, '0');
-      const ampm = h >= 12 ? 'PM' : 'AM';
+      let m = now.getMinutes();
+      let s = now.getSeconds();
       h = h % 12;
       h = h ? h : 12;
-      const hStr = String(h).padStart(2, '0');
-      const timeStr = `
-    <span class="clock-group">${hStr}</span>:
-    <span class="clock-group">${m}</span>:
-    <span class="clock-group">${s}</span>
-    <span class="ampm">${ampm}</span>
-  `;
-      document.getElementById("clock").innerHTML = timeStr;
+      renderClock(h, m, s);
     }
-
+    setInterval(updateClock, 1000);
     // --- Ad Overlay Logic ---
     let ads = [];
     let nextAdTimeout = null;
@@ -594,7 +672,7 @@
         marquee.style.transform = "translateX(100vw)";
         setTimeout(() => {
           const textWidth = marquee.offsetWidth;
-          marquee.style.transition = `transform ${15 + textWidth/100}s linear`;
+          marquee.style.transition = `transform ${15 + textWidth / 100}s linear`;
           marquee.style.transform = `translateX(-${textWidth + window.innerWidth}px)`;
         }, 100);
         marquee.addEventListener('transitionend', loop, { once: true });
@@ -613,6 +691,19 @@
 
     window.addEventListener("resize", adjustLayout);
     window.addEventListener("DOMContentLoaded", adjustLayout);
+
+    const SEGMENTS = {
+      "0": ["a", "b", "c", "d", "e", "f"],
+      "1": ["b", "c"],
+      "2": ["a", "b", "g", "e", "d"],
+      "3": ["a", "b", "g", "c", "d"],
+      "4": ["f", "g", "b", "c"],
+      "5": ["a", "f", "g", "c", "d"],
+      "6": ["a", "f", "g", "e", "c", "d"],
+      "7": ["a", "b", "c"],
+      "8": ["a", "b", "c", "d", "e", "f", "g"],
+      "9": ["a", "b", "c", "d", "f", "g"]
+    };
   </script>
 </body>
 
