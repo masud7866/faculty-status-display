@@ -308,13 +308,11 @@
     #marqueeText {
       white-space: nowrap;
       will-change: transform;
-      padding-left: 0;           /* Remove padding */
       flex: 1;
       overflow: visible;
       transform: translateZ(0);
-      /* Force hardware acceleration */
       backface-visibility: hidden;
-      /* Improve performance */
+      position: relative;
     }
 
     #adProgress {
@@ -725,12 +723,14 @@
       const dateDisplay = document.getElementById("dateDisplay");
       
       function loop() {
+        // Get current measurements
         const dateWidth = dateDisplay.offsetWidth;
         const windowWidth = window.innerWidth;
+        const availableWidth = windowWidth - dateWidth;
         
-        // Start from right edge of available space (after date container)
+        // Start from the right edge of the available space (not full window width)
         marquee.style.transition = "none";
-        marquee.style.transform = `translateX(${windowWidth}px)`;
+        marquee.style.transform = `translateX(${availableWidth}px)`;
         
         setTimeout(() => {
           const textWidth = marquee.offsetWidth;
