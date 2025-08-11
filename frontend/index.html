@@ -8,8 +8,6 @@
   <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
   <style>
-    /* Theme-only update: colors, fonts, shadows, rounded corners */
-
     body {
       font-family: 'Segoe UI', 'Inter', Arial, sans-serif;
       background: linear-gradient(135deg, #eef2f7, #dbe5f5);
@@ -25,14 +23,10 @@
       background: radial-gradient(circle at 60% 40%, #2563eb 0%, #1e3a8a 100%);
       color: #fff;
       padding: 0.7em 2vw;
-      border-bottom: 3px solid #2563eb;
       display: flex;
       align-items: center;
       justify-content: space-between;
-      /* border-radius: 0 0 5px 5px; */
-      box-shadow: 0 4px 10px -6px rgb(2 10 27 / 91%);
     }
-
 
     .logo {
       height: 7.5vh;
@@ -63,8 +57,6 @@
       text-shadow: 1px 1px 2px #00000055;
     }
 
-
-    /* Techno Clock: smaller, still techno */
     #clock {
       position: fixed;
       right: 2vw;
@@ -253,6 +245,54 @@
         grid-template-rows: auto;
       }
     }
+
+    /* --- Ad Overlay Styles --- */
+    #adOverlay {
+      position: fixed;
+      left: 0;
+      /* top and height set dynamically by JS */
+      width: 100vw;
+      background: rgba(0, 0, 0, 0.85);
+      z-index: 9999;
+      justify-content: center;
+      align-items: center;
+      display: flex;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.7s;
+    }
+
+    #adOverlay.active {
+      opacity: 1;
+      pointer-events: auto;
+    }
+
+    #adOverlay img,
+    #adOverlay video {
+      display: none;
+      background: #000;
+      max-width: 100vw;
+      max-height: 100vh;
+      width: auto;
+      height: auto;
+      object-fit: contain;
+    }
+
+    #adOverlay.stretch-horizontal img,
+    #adOverlay.stretch-horizontal video {
+      width: 100%;
+      height: auto;
+      max-height: 100%;
+      object-fit: contain;
+    }
+
+    #adOverlay.stretch-vertical img,
+    #adOverlay.stretch-vertical video {
+      height: 100%;
+      width: auto;
+      max-width: 100%;
+      object-fit: contain;
+    }
   </style>
 </head>
 
@@ -269,10 +309,10 @@
 
   <div id="grid" class="grid"></div>
 
-  <!-- Update the adOverlay style -->
-  <div id="adOverlay" style="display:none; position:fixed; left:0; top:10vh; width:100vw; height:90vh; background:rgba(0,0,0,0.85); z-index:9999; justify-content:center; align-items:center;">
-    <img id="adImage" src="" style="max-width:80vw; max-height:80vh; display:none;" />
-    <video id="adVideo" style="max-width:80vw; max-height:80vh; display:none;" autoplay muted></video>
+  <!-- Ad Overlay -->
+  <div id="adOverlay">
+    <img id="adImage" src="" />
+    <video id="adVideo" autoplay muted></video>
   </div>
 
   <script>
@@ -287,7 +327,9 @@
     };
 
     function loadFaculty() {
-      fetch("https://faculty-status-backend.onrender.com/api/faculty", { credentials: "include" })
+      fetch("https://faculty-status-backend.onrender.com/api/faculty", {
+          credentials: "include"
+        })
         .then(res => res.json())
         .then(data => {
           const grid = document.getElementById("grid");
@@ -339,9 +381,58 @@
       clock.innerHTML = timeStr;
     }
 
+    // --- Ad Overlay Logic ---
     let ads = [];
     let nextAdTimeout = null;
 
+    // Helper: Adjust overlay position and size based on header
+    function adjustOverlayPosition() {
+      const header = document.querySelector("header");
+      const overlay = document.getElementById("adOverlay");
+      const headerHeight = header.offsetHeight;
+      overlay.style.top = headerHeight + "px";
+      overlay.style.height = `calc(100vh - ${headerHeight}px)`;
+    }
+    window.addEventListener("resize", adjustOverlayPosition);
+    window.addEventListener("DOMContentLoaded", adjustOverlayPosition);
+
+    // Helper: Show/hide overlay with fade
+    function showOverlay() {
+      const overlay = document.getElementById("adOverlay");
+      overlay.classList.add("active");
+    }
+    function hideOverlay() {
+      const overlay = document.getElementById("adOverlay");
+      overlay.classList.remove("active");
+      overlay.classList.remove("stretch-horizontal");
+      overlay.classList.remove("stretch-vertical");
+    }
+
+    // Helper: Stretch ad to fill horizontally or vertically, keeping aspect ratio
+    function setAdStretch(mediaEl) {
+      const overlay = document.getElementById("adOverlay");
+      // Remove previous stretch classes
+      overlay.classList.remove("stretch-horizontal", "stretch-vertical");
+      // Get overlay size
+      const overlayRect = overlay.getBoundingClientRect();
+      // Get media natural size
+      let mediaWidth, mediaHeight;
+      if (mediaEl.tagName === "IMG") {
+        mediaWidth = mediaEl.naturalWidth;
+        mediaHeight = mediaEl.naturalHeight;
+      } else if (mediaEl.tagName === "VIDEO") {
+        mediaWidth = mediaEl.videoWidth;
+        mediaHeight = mediaEl.videoHeight;
+      }
+      // Decide stretch direction
+      if ((mediaWidth / mediaHeight) > (overlayRect.width / overlayRect.height)) {
+        overlay.classList.add("stretch-horizontal");
+      } else {
+        overlay.classList.add("stretch-vertical");
+      }
+    }
+
+    // Fetch ads and start sequence
     fetch("https://faculty-status-backend.onrender.com/api/ads")
       .then(res => res.json())
       .then(data => {
@@ -357,13 +448,15 @@
       const adImage = document.getElementById("adImage");
       const adVideo = document.getElementById("adVideo");
 
-      overlay.style.display = "flex";
+      showOverlay();
 
       function showNextAd() {
         if (current >= ads.length) {
-          overlay.style.display = "none";
-          // Apply break based on total ad time
-          const breakMs = totalAdTime > 30000 ? 120000 : 60000;
+          hideOverlay();
+          // Break logic
+          let breakMs = 60000; // default 1 min
+          if (totalAdTime > 120000) breakMs = 240000; // >2min: 4min
+          else if (totalAdTime > 30000) breakMs = 120000; // >30s: 2min
           nextAdTimeout = setTimeout(runAdSequence, breakMs);
           return;
         }
@@ -374,21 +467,27 @@
 
         if (ad.type === "image") {
           adImage.src = "https://faculty-status-backend.onrender.com" + ad.src;
-          adImage.style.display = "block";
-          totalAdTime += 15000;
+          adImage.onload = () => {
+            adImage.style.display = "block";
+            setAdStretch(adImage);
+          };
+          totalAdTime += 20000;
           setTimeout(() => {
+            adImage.style.display = "none";
             current++;
             showNextAd();
-          }, 15000);
+          }, 20000);
         } else if (ad.type === "video") {
           adVideo.src = "https://faculty-status-backend.onrender.com" + ad.src;
-          adVideo.style.display = "block";
           adVideo.load();
           adVideo.onloadedmetadata = () => {
+            adVideo.style.display = "block";
+            setAdStretch(adVideo);
             adVideo.play();
             const duration = adVideo.duration * 1000;
             totalAdTime += duration;
             adVideo.onended = () => {
+              adVideo.style.display = "none";
               current++;
               showNextAd();
             };
@@ -396,6 +495,7 @@
             setTimeout(() => {
               if (!adVideo.paused) {
                 adVideo.pause();
+                adVideo.style.display = "none";
                 current++;
                 showNextAd();
               }
