@@ -456,7 +456,7 @@
         .then(data => {
           const grid = document.getElementById("grid");
           grid.innerHTML = ""; // Clear once
-          
+
           // Build all HTML at once instead of concatenating
           const cardsHTML = data.map(f => {
             let statusObj = f.manualOverride ?? f.status;
@@ -471,7 +471,7 @@
               room = statusObj.room ?? null;
               batch = statusObj.batch ?? null;
             }
-            
+
             let extraInfo = "";
             if (statusStr === "in_class" && room && batch) {
               extraInfo = `<small class="text-gray">with ${batch} at ${room}</small>`;
@@ -489,7 +489,7 @@
                 </div>
               </div>`;
           }).join('');
-          
+
           grid.innerHTML = cardsHTML; // Set all at once
         });
     }
@@ -561,25 +561,25 @@
       renderClock(h, m, s, ampm);
     }
 
-    document.addEventListener("DOMContentLoaded", function() {
-  // Initial setup
-  updateClock();
-  updateDate();
-  loadFaculty();
-  loadMarquee();
-  adjustLayout();
-  
-  // Start marquee animation ONCE
-  setTimeout(() => {
-    animateMarquee();
-  }, 1000); // Delay to ensure text is loaded
-  
-  // Set up intervals (only once)
-  setInterval(updateClock, 1000);
-  setInterval(loadFaculty, 3000);
-  setInterval(loadMarquee, 300000); // Only updates text, doesn't restart animation
-  setInterval(updateDate, 60000);
-});
+    document.addEventListener("DOMContentLoaded", function () {
+      // Initial setup
+      updateClock();
+      updateDate();
+      loadFaculty();
+      loadMarquee();
+      adjustLayout();
+
+      // Start marquee animation ONCE
+      setTimeout(() => {
+        animateMarquee();
+      }, 1000); // Delay to ensure text is loaded
+
+      // Set up intervals (only once)
+      setInterval(updateClock, 1000);
+      setInterval(loadFaculty, 3000);
+      setInterval(loadMarquee, 300000); // Only updates text, doesn't restart animation
+      setInterval(updateDate, 60000);
+    });
 
     window.addEventListener("resize", adjustLayout);
 
@@ -737,27 +737,27 @@
     function animateMarquee() {
       const marquee = document.getElementById("marqueeText");
       const marqueeContainer = marquee.parentElement;
-      
+
       // Clear any existing animation
       if (marqueeAnimation) {
         clearTimeout(marqueeAnimation);
       }
-      
+
       function loop() {
         // Get current measurements of the marquee container only
         const containerWidth = marqueeContainer.offsetWidth - 150; // Subtract date width
-        
+
         // Start from the right edge of the marquee container
         marquee.style.transition = "none";
         marquee.style.transform = `translateX(${containerWidth}px)`;
-        
+
         setTimeout(() => {
           const textWidth = marquee.scrollWidth;
           const duration = Math.max(15, textWidth / 80);
           marquee.style.transition = `transform ${duration}s linear`;
           // Move text completely off screen to the left
           marquee.style.transform = `translateX(-${textWidth}px)`;
-          
+
           // Schedule next loop
           marqueeAnimation = setTimeout(loop, duration * 1000 + 500);
         }, 100);
