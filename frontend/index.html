@@ -58,46 +58,30 @@
     }
 
     #clock {
-      position: fixed;
-      right: 2vw;
-      bottom: 8vh;
-      z-index: 1000;
-      background: linear-gradient(135deg, #1e3a8a 60%, #2563eb 100%);
-      border-radius: 14px;
-      padding: 0.7em 1.5em;
-      box-shadow: 0 0 24px #2563eb88, 0 0 8px #60a5fa;
-      font-size: 2em;
-      font-family: 'Orbitron', 'Inter', Arial, sans-serif;
-      color: #e0e7ff;
-      text-shadow: 0 0 18px #2563eb, 0 0 8px #60a5fa;
-      letter-spacing: 0.18em;
-      border: 2px solid #60a5fa;
-      animation: technoPulse 1.5s infinite alternate;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      user-select: none;
-      min-width: 8em;
+      font-family: 'Orbitron', 'Inter', 'Segoe UI', monospace, Arial, sans-serif;
+      font-variant-numeric: tabular-nums;
+      background: #111827;
+      color: #38bdf8;
+      border-radius: 10px;
+      padding: 0.5em 1.5em;
+      min-width: 11em;
       text-align: center;
-    }
-
-    @keyframes technoPulse {
-      0% {
-        box-shadow: 0 0 12px #2563eb, 0 0 4px #60a5fa;
-      }
-
-      100% {
-        box-shadow: 0 0 32px #60a5fa, 0 0 18px #2563eb;
-      }
+      letter-spacing: 0.18em;
+      box-shadow: 0 0 16px #38bdf888, 0 0 4px #2563eb;
+      font-size: 2.2em;
+      display: inline-block;
+      border: 2px solid #38bdf8;
     }
 
     #clock .ampm {
+      display: inline-block;
+      min-width: 2.5em;
+      text-align: left;
       font-size: 0.5em;
-      color: #60a5fa;
       margin-left: 0.4em;
-      text-shadow: 0 0 8px #60a5fa;
-      font-family: 'Orbitron', 'Inter', Arial, sans-serif;
+      color: #60a5fa;
       letter-spacing: 0.2em;
+      vertical-align: middle;
     }
 
     .grid {
@@ -421,10 +405,10 @@
       const s = String(now.getSeconds()).padStart(2, '0');
       const ampm = h >= 12 ? 'PM' : 'AM';
       h = h % 12;
-      h = h ? h : 12; // 0 should be 12
-      const timeStr = `${h}:${m}:${s} <span class="ampm">${ampm}</span>`;
-      const clock = document.getElementById("clock");
-      clock.innerHTML = timeStr;
+      h = h ? h : 12;
+      const hStr = String(h).padStart(2, '0');
+      const timeStr = `${hStr}:${m}:${s} <span class="ampm">${ampm}</span>`;
+      document.getElementById("clock").innerHTML = timeStr;
     }
 
     // --- Ad Overlay Logic ---
