@@ -319,13 +319,18 @@
     }
 
     .seven-segment .seg {
-      fill: #222;
-      transition: fill 0.2s;
+      fill: #2a2a2a;
+      /* Dark but visible */
+      transition: fill 0.3s, opacity 0.3s;
+      opacity: 0.12;
+      /* Very subtle */
     }
 
     .seven-segment .seg.lit {
-      fill: #38bdf8;
-      filter: drop-shadow(0 0 6px #38bdf8);
+      fill: #00d4ff;
+      /* Bright cyan */
+      filter: drop-shadow(0 0 10px #00d4ff) drop-shadow(0 0 5px #38bdf8);
+      opacity: 1;
     }
 
     .digit-bg {
@@ -517,7 +522,7 @@
       renderClock(h, m, s, ampm);
     }
 
-    document.addEventListener("DOMContentLoaded", function() {
+    document.addEventListener("DOMContentLoaded", function () {
       updateClock();
       setInterval(updateClock, 1000);
     });
