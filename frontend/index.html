@@ -310,6 +310,11 @@
       will-change: transform;
       padding-left: 1em;
       flex: 1;
+      overflow: visible;
+      transform: translateZ(0);
+      /* Force hardware acceleration */
+      backface-visibility: hidden;
+      /* Improve performance */
     }
 
     #adProgress {
@@ -441,8 +446,10 @@
         .then(res => res.json())
         .then(data => {
           const grid = document.getElementById("grid");
-          grid.innerHTML = "";
-          data.forEach(f => {
+          grid.innerHTML = ""; // Clear once
+          
+          // Build all HTML at once instead of concatenating
+          const cardsHTML = data.map(f => {
             let statusObj = f.manualOverride ?? f.status;
             let statusStr, room, batch;
 
@@ -455,23 +462,26 @@
               room = statusObj.room ?? null;
               batch = statusObj.batch ?? null;
             }
+            
             let extraInfo = "";
             if (statusStr === "in_class" && room && batch) {
               extraInfo = `<small class="text-gray">with ${batch} at ${room}</small>`;
             }
 
-            grid.innerHTML += `
-          <div class="card">
-            <img src="https://faculty-status-backend.onrender.com${f.image}" alt="${f.name}">
-            <h3>${f.name}</h3>
-            <div>${f.designation || ""}</div>
-            <div>${f.contact ? `<svg class="icon-phone" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/></svg> ${f.contact}` : ""}</div>
-            <div>${f.email ? `<svg class="icon-email" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg> ${f.email}` : ""}</div>
-            <div class="status ${statusStr}">
-              ${STATUS_MAP[statusStr] || statusStr} ${extraInfo}
-            </div>
-          </div>`;
-          });
+            return `
+              <div class="card">
+                <img src="https://faculty-status-backend.onrender.com${f.image}" alt="${f.name}">
+                <h3>${f.name}</h3>
+                <div>${f.designation || ""}</div>
+                <div>${f.contact ? `<svg class="icon-phone" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/></svg> ${f.contact}` : ""}</div>
+                <div>${f.email ? `<svg class="icon-email" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg> ${f.email}` : ""}</div>
+                <div class="status ${statusStr}">
+                  ${STATUS_MAP[statusStr] || statusStr} ${extraInfo}
+                </div>
+              </div>`;
+          }).join('');
+          
+          grid.innerHTML = cardsHTML; // Set all at once
         });
     }
 
@@ -542,10 +552,22 @@
       renderClock(h, m, s, ampm);
     }
 
-    document.addEventListener("DOMContentLoaded", function () {
+    document.addEventListener("DOMContentLoaded", function() {
+      // Initial setup
       updateClock();
+      updateDate();
+      loadFaculty();
+      loadMarquee();
+      adjustLayout();
+      
+      // Set up intervals (only once)
       setInterval(updateClock, 1000);
+      setInterval(loadFaculty, 3000);
+      setInterval(loadMarquee, 300000);
+      setInterval(updateDate, 60000);
     });
+
+    window.addEventListener("resize", adjustLayout);
 
     function adjustLayout() {
       const header = document.querySelector("header");
@@ -558,8 +580,9 @@
       overlay.style.top = headerHeight + "px";
       overlay.style.height = `calc(100vh - ${headerHeight}px - ${footerHeight}px)`;
     }
-    window.addEventListener("resize", adjustLayout);
-    window.addEventListener("DOMContentLoaded", adjustLayout);
+    // DELETE THESE TOO:
+    // window.addEventListener("resize", adjustLayout);
+    // window.addEventListener("DOMContentLoaded", adjustLayout);
 
     // Helper: Show/hide overlay with fade
     function showOverlay() {
@@ -700,25 +723,32 @@
     function animateMarquee() {
       const marquee = document.getElementById("marqueeText");
       const dateDisplay = document.getElementById("dateDisplay");
+      
+      // Cache measurements to avoid repeated DOM queries
       const dateWidth = dateDisplay.offsetWidth;
+      const windowWidth = window.innerWidth;
       
       function loop() {
-        marquee.style.transition = "none";
-        marquee.style.transform = "translateX(100vw)";
-        setTimeout(() => {
-          const textWidth = marquee.offsetWidth;
-          const availableWidth = window.innerWidth - dateWidth;
-          marquee.style.transition = `transform ${15 + textWidth/100}s linear`;
-          marquee.style.transform = `translateX(-${textWidth + availableWidth}px)`;
-        }, 100);
-        marquee.addEventListener('transitionend', loop, { once: true });
+        // Use requestAnimationFrame for smoother animations
+        requestAnimationFrame(() => {
+          marquee.style.transition = "none";
+          marquee.style.transform = `translateX(${windowWidth - dateWidth}px)`;
+          
+          // Delay before starting animation
+          setTimeout(() => {
+            const textWidth = marquee.offsetWidth;
+            marquee.style.transition = `transform ${Math.max(15, textWidth/100)}s linear`;
+            marquee.style.transform = `translateX(-${textWidth}px)`;
+          }, 50); // Reduced delay
+        });
+        
+        // Use setTimeout instead of transitionend for more reliable looping
+        const textWidth = marquee.offsetWidth;
+        const duration = Math.max(15, textWidth/100) * 1000;
+        setTimeout(loop, duration + 100);
       }
       loop();
     }
-
-    // Reload marquee every 5 minutes in case backend changes
-    loadMarquee();
-    setInterval(loadMarquee, 300000);
 
     function updateDate() {
       const now = new Date();
@@ -740,14 +770,6 @@
       updateDate();
       setInterval(updateDate, 60000);
     });
-
-    loadFaculty();
-    setInterval(loadFaculty, 3000);
-    updateClock();
-    setInterval(updateClock, 1000);
-
-    window.addEventListener("resize", adjustLayout);
-    window.addEventListener("DOMContentLoaded", adjustLayout);
   </script>
 </body>
 
