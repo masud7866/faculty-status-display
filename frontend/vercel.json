@@ -1,0 +1,16 @@
+{
+  "rewrites": [
+    {
+      "source": "/login",
+      "destination": "/login.html"
+    },
+    {
+      "source": "/control",
+      "destination": "/control.html"
+    },
+    {
+      "source": "/api/:path*",
+      "destination": "https://faculty-status-backend.onrender.com/api/:path*"
+    }
+  ]
+}

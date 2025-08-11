@@ -1,0 +1,966 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <title>Faculty Control Panel</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+  <style>
+    /* Responsive adjustments for mobile/tablet */
+    @media (max-width: 600px) {
+
+      .header,
+      .bulk-status,
+      .faculty-card,
+      .controls-container {
+        max-width: 100%;
+        padding: 1rem 0.5rem 1rem;
+        border-radius: 14px;
+      }
+
+      .header {
+        flex-direction: column;
+        gap: 0.7rem;
+        align-items: stretch;
+      }
+
+      h2 {
+        font-size: 1.3rem;
+      }
+
+      .logout-btn {
+        font-size: 1rem;
+        width: 100%;
+        margin-top: 0.5rem;
+      }
+
+      .bulk-status {
+        flex-direction: column;
+        gap: 0.7rem;
+      }
+
+      .faculty-card {
+        flex-direction: column;
+        gap: 0.7rem;
+        font-size: 1rem;
+      }
+
+      .faculty-card label,
+      .faculty-card select,
+      .faculty-card button {
+        width: 100%;
+        font-size: 1rem;
+      }
+
+      .faculty-card img {
+        width: 38px;
+        height: 38px;
+      }
+
+      .controls-container {
+        padding: 0.5rem 0.2rem 1rem;
+        gap: 1rem;
+      }
+    }
+
+    @media (max-width: 430px) {
+
+      .header,
+      .bulk-status,
+      .faculty-card {
+        padding: 0.7rem 0.2rem 0.7rem;
+        border-radius: 10px;
+      }
+
+      h2 {
+        font-size: 1.1rem;
+      }
+
+      .faculty-card img {
+        width: 32px;
+        height: 32px;
+      }
+    }
+
+    /* Accessibility: focus styles, ARIA, contrast */
+    .logout-btn:focus,
+    .faculty-card button:focus,
+    .bulk-status button:focus,
+    .faculty-card select:focus {
+      outline: 2px solid #2563eb;
+      outline-offset: 2px;
+      box-shadow: 0 0 0 3px rgba(37, 99, 235, .18);
+    }
+
+    .faculty-card button,
+    .bulk-status button,
+    .logout-btn {
+      min-height: 44px;
+      min-width: 44px;
+      touch-action: manipulation;
+    }
+
+    .faculty-card select,
+    .bulk-status select {
+      min-height: 44px;
+      min-width: 44px;
+      touch-action: manipulation;
+    }
+
+    body {
+      font-family: 'Segoe UI', 'Inter', Arial, sans-serif;
+      background: linear-gradient(135deg, #eef2f7, #dbe5f5);
+      margin: 0;
+      padding: 0;
+      min-height: 100vh;
+      overflow-x: hidden;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    .header {
+      background: #fff;
+      box-shadow: 0 8px 28px -6px rgba(16, 34, 74, .10), 0 4px 12px -4px rgba(16, 34, 74, .10);
+      border-radius: 18px;
+      margin: 2.2rem 0 1.2rem;
+      padding: 1.2rem 2rem 1.2rem;
+      width: 100%;
+      max-width: 900px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      position: relative;
+    }
+
+    h2 {
+      color: #1e3a8a;
+      margin: 0;
+      font-size: 2rem;
+      font-weight: 600;
+      letter-spacing: .5px;
+    }
+
+    .logout-btn {
+      padding: 0.7rem 1.3rem;
+      background: #ef4444;
+      color: #fff;
+      border: none;
+      border-radius: 10px;
+      cursor: pointer;
+      font-size: 1rem;
+      font-weight: 600;
+      letter-spacing: .5px;
+      box-shadow: 0 2px 8px rgba(16, 34, 74, .08);
+      transition: background-color 0.18s, transform 0.1s;
+    }
+
+    .logout-btn:hover {
+      background: #dc2626;
+      transform: translateY(-1px);
+    }
+
+    .bulk-status {
+      background: #fff;
+      padding: 1.2rem 2rem 1.2rem;
+      border-radius: 18px;
+      box-shadow: 0 8px 28px -6px rgba(16, 34, 74, .10), 0 4px 12px -4px rgba(16, 34, 74, .10);
+      margin: 0.75rem 0 1.2rem;
+      max-width: 900px;
+      width: 100%;
+      box-sizing: border-box;
+      display: flex;
+      flex-direction: column;
+      gap: 0.7rem;
+      position: relative;
+    }
+
+    .bulk-status label {
+      font-weight: 500;
+      color: #374151;
+      font-size: 0.9rem;
+    }
+
+    .bulk-status select {
+      padding: 0.5rem;
+      border-radius: 6px;
+      border: 1px solid #d1d5db;
+      font-size: 0.9rem;
+      background-color: #f3f4f6;
+      transition: border-color 0.2s;
+    }
+
+    .bulk-status select:focus {
+      border-color: #3b82f6;
+      outline: none;
+    }
+
+    .controls-container {
+      max-height: calc(100vh - 180px);
+      overflow-y: auto;
+      padding: 0 0.75rem 1.5rem;
+      margin-bottom: 0;
+      width: 100%;
+      max-width: 900px;
+      display: flex;
+      flex-direction: column;
+      gap: 1.2rem;
+      align-items: stretch;
+    }
+
+    .faculty-card {
+      background: #fff;
+      border-radius: 18px;
+      box-shadow: 0 8px 28px -6px rgba(16, 34, 74, .10), 0 4px 12px -4px rgba(16, 34, 74, .10);
+      padding: 1.2rem 2rem 1.2rem;
+      margin-bottom: 0;
+      display: flex;
+      flex-direction: column;
+      gap: 0.7rem;
+      position: relative;
+      font-size: 1rem;
+    }
+
+    .faculty-card:nth-child(even) {
+      background: #f8fafc;
+    }
+
+    .faculty-card label {
+      font-weight: 600;
+      color: #1e3a8a;
+      display: flex;
+      align-items: center;
+      gap: 0.7rem;
+      font-size: 1.05rem;
+      margin-bottom: 0.2rem;
+    }
+
+    .faculty-card img {
+      width: 44px;
+      height: 44px;
+      border-radius: 50%;
+      object-fit: cover;
+      box-shadow: 0 2px 8px rgba(16, 34, 74, .08);
+    }
+
+    .faculty-card select {
+      padding: 0.7rem 1rem;
+      border-radius: 10px;
+      border: 1.5px solid #cbd5e1;
+      font-size: 1rem;
+      background: #f8fafc;
+      transition: border-color 0.18s, box-shadow 0.18s;
+      font-weight: 500;
+    }
+
+    .faculty-card select:focus {
+      border-color: #2563eb;
+      outline: none;
+      box-shadow: 0 0 0 3px rgba(37, 99, 235, .18);
+      background: #fff;
+    }
+
+    .faculty-card button {
+      padding: 0.7rem 1.3rem;
+      border-radius: 10px;
+      font-weight: 600;
+      font-size: 1rem;
+      border: none;
+      background: #f8fafc;
+      color: #374151;
+      box-shadow: 0 2px 8px rgba(16, 34, 74, .08);
+      transition: background-color 0.18s, transform 0.1s;
+    }
+
+    .faculty-card button:not(:disabled) {
+      background: #fff7e6;
+      color: #b45309;
+      border: 1.5px solid #fd7e14;
+    }
+
+    .faculty-card button:not(:disabled):hover {
+      background: #ffe7c2;
+      transform: translateY(-1px);
+    }
+
+    .faculty-card button.expiring {
+      animation: pulse 1.5s infinite;
+    }
+
+    button:disabled {
+      opacity: 0.6;
+      cursor: not-allowed;
+    }
+
+    .toast {
+      position: fixed;
+      top: 1rem;
+      left: 50%;
+      transform: translateX(-50%);
+      background: #10b981;
+      color: white;
+      padding: 0.75rem 1.5rem;
+      border-radius: 8px;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+      z-index: 100;
+      font-size: 0.9rem;
+      max-width: 90%;
+      text-align: center;
+      animation: fadeIn 0.3s ease-in-out;
+      cursor: pointer;
+      margin-top: 0.5rem;
+    }
+
+    .toast.error {
+      background: #ef4444;
+    }
+
+    .toast.loading {
+      background: #6b7280;
+    }
+
+    .toast .progress {
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      height: 3px;
+      background: rgba(255, 255, 255, 0.5);
+      animation: progress 4s linear forwards;
+    }
+
+    @keyframes pulse {
+
+      0%,
+      100% {
+        border-color: #fd7e14;
+      }
+
+      50% {
+        border-color: #f97316;
+      }
+    }
+
+    @keyframes fadeIn {
+      from {
+        opacity: 0;
+        transform: translate(-50%, -20px);
+      }
+
+      to {
+        opacity: 1;
+        transform: translate(-50%, 0);
+      }
+    }
+
+    @keyframes fadeOut {
+      from {
+        opacity: 1;
+        transform: translate(-50%, 0);
+      }
+
+      to {
+        opacity: 0;
+        transform: translate(-50%, -20px);
+      }
+    }
+
+    @keyframes progress {
+      from {
+        width: 100%;
+      }
+
+      to {
+        width: 0;
+      }
+    }
+
+    @media (min-width: 600px) {
+      .faculty-card {
+        flex-direction: row;
+        align-items: center;
+        justify-content: space-between;
+        padding: 0.75rem;
+      }
+
+      .bulk-status {
+        max-width: 400px;
+        margin: 0.75rem auto;
+        flex-direction: row;
+        align-items: center;
+      }
+
+      .bulk-status label {
+        flex: 1;
+      }
+
+      .bulk-status select {
+        flex: 2;
+      }
+
+      .bulk-status button {
+        flex: 1;
+        max-width: 200px;
+      }
+
+      .faculty-card label {
+        flex: 1;
+      }
+
+      .faculty-card select {
+        flex: 2;
+      }
+
+      .faculty-card button {
+        flex: 1;
+        max-width: 200px;
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <div class="header" role="banner" aria-label="Faculty Control Panel">
+    <h2 id="panelTitle">Control Panel</h2>
+    <button class="logout-btn" onclick="logout()" aria-label="Logout">Logout</button>
+  </div>
+
+  <div class="bulk-status" role="region" aria-labelledby="bulkStatusLabel">
+    <label id="bulkStatusLabel" for="bulkStatus">Set Status for All Faculty:</label>
+    <select id="bulkStatus" onchange="setStatusForAll(this.value)" aria-label="Bulk status selector">
+      <option value="">-- Select Status --</option>
+    </select>
+  </div>
+
+  <div class="controls-container" id="controls" role="main" aria-label="Faculty Status Controls"></div>
+
+  <script>
+    let facultyData = [];
+    let timerIntervals = [];
+    let bulkTimerInterval = null;
+    let isUpdating = false;
+
+    const statusOptions = [
+      "in_class",
+      "at_dept",
+      "on_leave",
+      "off_duty",
+      "in_meeting",
+      "on_weekend",
+      "postponed"
+    ];
+
+    const labels = {
+      in_class: "In Class",
+      at_dept: "At Department",
+      on_leave: "On Leave",
+      off_duty: "Off Duty",
+      in_meeting: "In Meeting",
+      on_weekend: "On Weekend",
+      postponed: "Postpone Class"
+    };
+
+    const controls = document.getElementById('controls');
+
+    function debounce(fn, ms) {
+      let timeoutId;
+      return (...args) => {
+        clearTimeout(timeoutId);
+        timeoutId = setTimeout(() => fn(...args), ms);
+      };
+    }
+
+    function clearLoadingToasts() {
+      document.querySelectorAll('.toast.loading').forEach(toast => {
+        toast.style.animation = 'fadeOut 0.3s ease-in-out';
+        setTimeout(() => toast.remove(), 300);
+      });
+    }
+
+    function showMessage(text, isError = false, isLoading = false) {
+      if (!isLoading) {
+        clearLoadingToasts();
+      }
+      let toast = document.createElement('div');
+      toast.className = `toast ${isError ? 'error' : isLoading ? 'loading' : ''}`;
+      toast.textContent = text;
+      toast.style.top = `${1 + document.querySelectorAll('.toast').length * 3}rem`;
+      document.body.appendChild(toast);
+
+      if (!isLoading) {
+        const progress = document.createElement('div');
+        progress.className = 'progress';
+        toast.appendChild(progress);
+        setTimeout(() => {
+          toast.style.animation = 'fadeOut 0.3s ease-in-out';
+          setTimeout(() => toast.remove(), 300);
+        }, 4000);
+      }
+
+      toast.onclick = () => {
+        toast.style.animation = 'fadeOut 0.3s ease-in-out';
+        setTimeout(() => toast.remove(), 300);
+      };
+    }
+
+    function getRemainingTime(expiry) {
+      if (!expiry) return "";
+      const exp = new Date(expiry);
+      if (isNaN(exp.getTime())) return "";
+      const now = new Date();
+      const diffMs = exp - now;
+      if (diffMs <= 0) return "Expired";
+      const mins = Math.floor(diffMs / 60000) % 60;
+      const hrs = Math.floor(diffMs / 3600000);
+      const secs = Math.floor((diffMs % 60000) / 1000);
+      return `${hrs}:${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
+    }
+
+    function hasValidManualOverride(f) {
+      return f.manualOverride && f.overrideExpiry && new Date(f.overrideExpiry) > new Date();
+    }
+
+    function isExpiringSoon(expiry) {
+      if (!expiry) return false;
+      const exp = new Date(expiry);
+      const now = new Date();
+      const diffMs = exp - now;
+      return diffMs > 0 && diffMs <= 5 * 60 * 1000;
+    }
+
+    function getStatusString(f) {
+      if (hasValidManualOverride(f)) {
+        return f.manualOverride;
+      }
+      return typeof f.status === "object" && f.status !== null ? f.status.status : f.status || "";
+    }
+
+    function updateBulkTimer() {
+      const bulkTimerBtn = document.getElementById("bulk-timer-btn");
+      if (!bulkTimerBtn) return;
+      const allManual = facultyData.every(f => !!f.manualOverride);
+      if (allManual) {
+        const times = facultyData.map(f => getRemainingTime(f.overrideExpiry)).filter(t => t !== "Expired");
+        bulkTimerBtn.textContent = "Clear all overrides (" + (times.length ? times.sort()[0] : "Expired") + ")";
+        bulkTimerBtn.classList.toggle('expiring', times.length && facultyData.some(f => isExpiringSoon(f.overrideExpiry)));
+      }
+    }
+
+    async function fetchWithSessionCheck(url, options) {
+      const res = await fetch(url, options);
+      if (res.status === 403) {
+        alert("Session expired. Redirecting to login...");
+        window.location.href = "login";
+        throw new Error("Session expired");
+      }
+      if (!res.ok) {
+        throw new Error("Request failed with status " + res.status);
+      }
+      return res;
+    }
+
+    async function fetchFacultyData() {
+      try {
+        const res = await fetchWithSessionCheck("https://faculty-status-backend.onrender.com/api/faculty", {
+          credentials: "include"
+        });
+        const data = await res.json();
+        console.log("Fetched facultyData:", data);
+        return data;
+      } catch (err) {
+        if (err.message !== "Session expired") {
+          showMessage("Failed to fetch faculty data.", true);
+          console.error(err);
+        }
+        return null;
+      }
+    }
+
+    async function updateFaculty(updates) {
+      try {
+        await fetchWithSessionCheck("https://faculty-status-backend.onrender.com/api/update", {
+          method: "POST",
+          credentials: "include",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(updates)
+        });
+      } catch (err) {
+        if (err.message !== "Session expired") {
+          throw err;
+        }
+      }
+    }
+
+    const render = debounce((specificIndex = null) => {
+      if (isUpdating) {
+        console.log("Render skipped due to ongoing update");
+        return;
+      }
+      isUpdating = true;
+
+      const renderFaculty = (f, i) => {
+        let div = document.getElementById(`faculty-card-${f.name}`);
+        const isNew = !div;
+        if (isNew) {
+          div = document.createElement("div");
+          div.id = `faculty-card-${f.name}`;
+          div.className = "faculty-card";
+          controls.appendChild(div);
+        }
+
+        const currentStatus = getStatusString(f);
+        const select = document.getElementById(`status-${f.name}`);
+        if (select && select.value === currentStatus && !isNew) {
+          const timerBtn = document.getElementById(`timer-btn-${f.name}`);
+          if (timerBtn) {
+            if (hasValidManualOverride(f)) {
+              timerBtn.style.border = "1px solid #fd7e14";
+              timerBtn.style.background = "#fff7e6";
+              timerBtn.style.color = "#b45309";
+              timerBtn.disabled = false;
+              timerBtn.textContent = `Clear override (${getRemainingTime(f.overrideExpiry)})`;
+              timerBtn.classList.toggle('expiring', isExpiringSoon(f.overrideExpiry));
+            } else {
+              timerBtn.style.border = "1px solid #e5e7eb";
+              timerBtn.style.background = "#f3f4f6";
+              timerBtn.style.color = "#a1a1aa";
+              timerBtn.disabled = true;
+              timerBtn.textContent = "No manual override";
+              timerBtn.classList.remove('expiring');
+            }
+          }
+          return;
+        }
+
+        div.innerHTML = "";
+        const img = document.createElement("img");
+        img.src = "https://faculty-status-backend.onrender.com" + f.image;
+        img.alt = f.name;
+        img.style.width = "36px";
+        img.style.height = "36px";
+        img.style.borderRadius = "50%";
+        img.style.objectFit = "cover";
+
+        const label = document.createElement("label");
+        label.textContent = f.name;
+        label.style.display = "flex";
+        label.style.alignItems = "center";
+        label.style.gap = "0.5rem";
+        label.prepend(img);
+
+        const selectElement = document.createElement("select");
+        selectElement.id = `status-${f.name}`;
+        selectElement.className = "status-selector";
+        statusOptions.forEach(opt => {
+          const option = document.createElement("option");
+          option.value = opt;
+          option.textContent = labels[opt];
+          if (opt === currentStatus) {
+            option.selected = true;
+          }
+          selectElement.appendChild(option);
+        });
+
+        selectElement.addEventListener("change", async () => {
+          if (isUpdating) return;
+          isUpdating = true;
+          showMessage("Updating status...", false, true);
+          const newValue = selectElement.value;
+          facultyData[i].manualOverride = newValue;
+          const now = new Date();
+          let expiry = new Date(now);
+          if (["in_class", "at_dept", "in_meeting", "postponed"].includes(newValue)) {
+            expiry.setUTCHours(expiry.getUTCHours() + 1);
+          } else {
+            expiry.setUTCHours(17, 59, 59, 999);
+          }
+          facultyData[i].overrideExpiry = expiry.toISOString();
+
+          try {
+            await updateFaculty([{ name: f.name, manualOverride: newValue, overrideExpiry: expiry.toISOString() }]);
+            const freshData = await fetchFacultyData();
+            if (freshData) {
+              facultyData = freshData;
+              render(i);
+              showMessage("Status updated.");
+            }
+          } catch (err) {
+            showMessage("Failed to update status.", true);
+            console.error(err);
+          } finally {
+            isUpdating = false;
+          }
+        });
+
+        const timerBtn = document.createElement("button");
+        timerBtn.id = `timer-btn-${f.name}`;
+        timerBtn.style.marginLeft = "0";
+        timerBtn.style.padding = "0.3rem 0.8rem";
+        timerBtn.style.borderRadius = "6px";
+        timerBtn.style.fontWeight = "500";
+        timerBtn.style.fontSize = "0.85rem";
+        if (hasValidManualOverride(f)) {
+          timerBtn.style.border = "1px solid #fd7e14";
+          timerBtn.style.background = "#fff7e6";
+          timerBtn.style.color = "#b45309";
+          timerBtn.disabled = false;
+          timerBtn.textContent = `Clear override (${getRemainingTime(f.overrideExpiry)})`;
+          timerBtn.classList.toggle('expiring', isExpiringSoon(f.overrideExpiry));
+        } else {
+          timerBtn.style.border = "1px solid #e5e7eb";
+          timerBtn.style.background = "#f3f4f6";
+          timerBtn.style.color = "#a1a1aa";
+          timerBtn.disabled = true;
+          timerBtn.textContent = "No manual override";
+        }
+
+        timerBtn.onclick = async () => {
+          if (isUpdating) return;
+          isUpdating = true;
+          timerBtn.disabled = true;
+          showMessage("Clearing manual override...", false, true);
+          facultyData[i].manualOverride = null;
+          facultyData[i].overrideExpiry = null;
+          render(i);
+
+          try {
+            await updateFaculty([{ name: f.name, manualOverride: null, overrideExpiry: null }]);
+            const freshData = await fetchFacultyData();
+            if (freshData) {
+              facultyData = freshData;
+              render(i);
+              const selector = document.getElementById(`status-${f.name}`);
+              if (selector) {
+                const status = getStatusString(facultyData[i]);
+                selector.value = status;
+                console.log(`Set selector for ${f.name} to ${status}`);
+              }
+              showMessage("Manual override cleared.");
+            }
+          } catch (err) {
+            showMessage("Failed to clear override.", true);
+            console.error(err);
+          } finally {
+            timerBtn.disabled = false;
+            isUpdating = false;
+          }
+        };
+
+        div.appendChild(label);
+        div.appendChild(selectElement);
+        div.appendChild(timerBtn);
+
+        if (hasValidManualOverride(f)) {
+          const intervalId = setInterval(() => {
+            const btn = document.getElementById(`timer-btn-${f.name}`);
+            if (btn) {
+              btn.textContent = `Clear override (${getRemainingTime(f.overrideExpiry)})`;
+              btn.classList.toggle('expiring', isExpiringSoon(f.overrideExpiry));
+              if (!hasValidManualOverride(f)) {
+                clearInterval(intervalId);
+                timerIntervals = timerIntervals.filter(id => id !== intervalId);
+                render(i);
+              }
+            }
+          }, 1000);
+          timerIntervals.push(intervalId);
+        }
+      };
+
+      requestAnimationFrame(() => {
+        timerIntervals.forEach(clearInterval);
+        timerIntervals = [];
+        if (specificIndex !== null) {
+          renderFaculty(facultyData[specificIndex], specificIndex);
+        } else {
+          controls.innerHTML = "";
+          facultyData.forEach(renderFaculty);
+        }
+
+        let allManual = facultyData.every(f => !!f.manualOverride);
+        let bulkTimerBtn = document.getElementById("bulk-timer-btn");
+        if (!bulkTimerBtn) {
+          bulkTimerBtn = document.createElement("button");
+          bulkTimerBtn.id = "bulk-timer-btn";
+          bulkTimerBtn.style.marginLeft = "0";
+          bulkTimerBtn.style.padding = "0.3rem 0.8rem";
+          bulkTimerBtn.style.borderRadius = "6px";
+          bulkTimerBtn.style.border = "1px solid #d1d5db";
+          bulkTimerBtn.style.background = "#f3f4f6";
+          bulkTimerBtn.style.fontSize = "0.85rem";
+          document.querySelector(".bulk-status").appendChild(bulkTimerBtn);
+        }
+        bulkTimerBtn.disabled = !allManual;
+
+        if (allManual) {
+          const times = facultyData.map(f => getRemainingTime(f.overrideExpiry)).filter(t => t !== "Expired");
+          bulkTimerBtn.textContent = "Clear all overrides (" + (times.length ? times.sort()[0] : "Expired") + ")";
+          bulkTimerBtn.style.border = "1px solid #fd7e14";
+          bulkTimerBtn.style.background = "#fff7e6";
+          bulkTimerBtn.style.color = "#b45309";
+          bulkTimerBtn.disabled = false;
+          bulkTimerBtn.classList.toggle('expiring', times.length && facultyData.some(f => isExpiringSoon(f.overrideExpiry)));
+
+          if (bulkTimerInterval) clearInterval(bulkTimerInterval);
+          bulkTimerInterval = setInterval(() => {
+            updateBulkTimer();
+            if (!facultyData.every(f => hasValidManualOverride(f))) {
+              clearInterval(bulkTimerInterval);
+              bulkTimerInterval = null;
+              render();
+            }
+          }, 1000);
+
+          bulkTimerBtn.onclick = async () => {
+            if (isUpdating) return;
+            isUpdating = true;
+            bulkTimerBtn.disabled = true;
+            showMessage("Clearing all manual overrides...", false, true);
+            facultyData.forEach(f => {
+              f.manualOverride = null;
+              f.overrideExpiry = null;
+            });
+            document.getElementById("bulkStatus").value = "";
+            render();
+
+            try {
+              await updateFaculty(facultyData.map(f => ({
+                name: f.name,
+                manualOverride: null,
+                overrideExpiry: null
+              })));
+              const freshData = await fetchFacultyData();
+              if (freshData) {
+                facultyData = freshData;
+                render();
+                facultyData.forEach((f, i) => {
+                  const selector = document.getElementById(`status-${f.name}`);
+                  if (selector) {
+                    const status = getStatusString(f);
+                    selector.value = status;
+                    console.log(`Set bulk selector for ${f.name} to ${status}`);
+                  }
+                });
+                showMessage("All manual overrides cleared.");
+              }
+            } catch (err) {
+              showMessage("Failed to clear overrides.", true);
+              console.error(err);
+            } finally {
+              bulkTimerBtn.disabled = false;
+              isUpdating = false;
+            }
+          };
+        } else {
+          bulkTimerBtn.textContent = "Clear all overrides";
+          bulkTimerBtn.style.border = "1px solid #e5e7eb";
+          bulkTimerBtn.style.background = "#f3f4f6";
+          bulkTimerBtn.style.color = "#a1a1aa";
+          bulkTimerBtn.disabled = true;
+          bulkTimerBtn.onclick = null;
+          bulkTimerBtn.classList.remove('expiring');
+          if (bulkTimerInterval) {
+            clearInterval(bulkTimerInterval);
+            bulkTimerInterval = null;
+          }
+        }
+
+        isUpdating = false;
+      });
+    }, 50);
+
+    function setStatusForAll(status) {
+      if (!status || isUpdating) return;
+      isUpdating = true;
+      showMessage(`Setting all faculty to ${labels[status]}...`, false, true);
+      const now = new Date();
+      let expiry = new Date(now);
+      if (["in_class", "at_dept", "in_meeting", "postponed"].includes(status)) {
+        expiry.setUTCHours(expiry.getUTCHours() + 1);
+      } else {
+        expiry.setUTCHours(17, 59, 59, 999);
+      }
+      facultyData.forEach(f => {
+        f.status = status;
+        f.manualOverride = status;
+        f.overrideExpiry = expiry.toISOString();
+        const select = document.getElementById(`status-${f.name}`);
+        if (select) select.value = status;
+      });
+      render();
+
+      updateFaculty(facultyData.map(f => ({
+        name: f.name,
+        manualOverride: f.manualOverride,
+        overrideExpiry: f.overrideExpiry
+      })))
+        .then(async () => {
+          const freshData = await fetchFacultyData();
+          if (freshData) {
+            facultyData = freshData;
+            render();
+            showMessage(`All faculty set to ${labels[status]}.`);
+          }
+        })
+        .catch(err => {
+          if (err.message !== "Session expired") {
+            showMessage("Failed to update or load data.", true);
+            console.error(err);
+          }
+        })
+        .finally(() => {
+          isUpdating = false;
+        });
+    }
+
+    function logout() {
+      showMessage("Logging out...", false, true);
+      fetch("https://faculty-status-backend.onrender.com/api/logout", {
+        method: "POST",
+        credentials: "include"
+      })
+        .then(res => {
+          if (res.ok) {
+            setTimeout(() => {
+              window.location.href = "login";
+            }, 300);
+          } else {
+            showMessage("Logout failed.", true);
+          }
+        })
+        .catch(() => showMessage("Logout error.", true));
+    }
+
+    function startPolling() {
+      setInterval(async () => {
+        if (!isUpdating) {
+          const freshData = await fetchFacultyData();
+          if (freshData) {
+            facultyData = freshData;
+            render();
+            console.log("Polled facultyData:", facultyData);
+          }
+        }
+      }, 6000);
+    }
+
+    fetchFacultyData()
+      .then(data => {
+        if (data) {
+          facultyData = data;
+          render();
+          startPolling();
+
+          statusOptions.forEach(opt => {
+            const option = document.createElement("option");
+            option.value = opt;
+            option.textContent = labels[opt];
+            document.getElementById("bulkStatus").appendChild(option);
+          });
+        }
+      })
+      .catch(() => showMessage("Failed to load data.", true));
+  </script>
+</body>
+
+</html>

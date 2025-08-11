@@ -1,0 +1,408 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <title>Faculty Login</title>
+  <meta name="viewport" content="width=device-width,initial-scale=1.0" />
+  <style>
+    /* Responsive adjustments for mobile/tablet */
+    @media (max-width: 600px) {
+      .login-box {
+        padding: 1.2rem 0.7rem 1.2rem;
+        border-radius: 14px;
+        max-width: 98vw;
+      }
+
+      h2 {
+        font-size: 1.2rem;
+      }
+
+      .field input,
+      .password-wrapper input {
+        font-size: 1rem;
+        min-height: 44px;
+      }
+
+      button[type=submit],
+      .toggle-pass {
+        font-size: 1rem;
+        min-height: 44px;
+        min-width: 44px;
+      }
+
+      .options-row {
+        flex-direction: column;
+        gap: 0.5rem;
+        align-items: flex-start;
+      }
+    }
+
+    @media (max-width: 430px) {
+      .login-box {
+        padding: 0.7rem 0.2rem 0.7rem;
+        border-radius: 10px;
+      }
+
+      h2 {
+        font-size: 1rem;
+      }
+    }
+
+    /* Accessibility: focus styles, ARIA, contrast */
+    input:focus,
+    button:focus,
+    .toggle-pass:focus {
+      outline: 2px solid #2563eb;
+      outline-offset: 2px;
+      box-shadow: 0 0 0 3px rgba(37, 99, 235, .18);
+    }
+
+    button[type=submit],
+    .toggle-pass {
+      touch-action: manipulation;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      font-family: "Segoe UI", sans-serif;
+      background: linear-gradient(135deg, #eef2f7, #dbe5f5);
+      min-height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      padding: 1rem;
+    }
+
+    .login-box {
+      background: #fff;
+      padding: 2.2rem 2rem 2rem;
+      border-radius: 18px;
+      box-shadow: 0 8px 28px -6px rgba(16, 34, 74, .18), 0 4px 12px -4px rgba(16, 34, 74, .18);
+      width: 100%;
+      max-width: 420px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .login-box:before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background:
+        radial-gradient(circle at 85% 15%, rgba(59, 130, 246, .18), transparent 60%),
+        radial-gradient(circle at 10% 90%, rgba(16, 185, 129, .15), transparent 65%);
+      pointer-events: none;
+    }
+
+    h2 {
+      margin: 0 0 1.2rem;
+      text-align: center;
+      font-weight: 600;
+      color: #1e3a8a;
+      letter-spacing: .5px;
+    }
+
+    form {
+      margin: 0;
+    }
+
+    label {
+      display: block;
+      margin: 0 0 .45rem;
+      font-weight: 600;
+      font-size: .9rem;
+      color: #374151;
+    }
+
+    .field {
+      margin-bottom: 1.05rem;
+    }
+
+    input[type="text"],
+    input[type="password"] {
+      width: 100%;
+      padding: .75rem .9rem;
+      border: 1.5px solid #cbd5e1;
+      border-radius: 8px;
+      font-size: .95rem;
+      transition: .18s border-color, .18s box-shadow;
+      background: #f8fafc;
+    }
+
+    input:focus {
+      outline: none;
+      border-color: #2563eb;
+      box-shadow: 0 0 0 3px rgba(37, 99, 235, .25);
+      background: #fff;
+    }
+
+    .password-wrapper {
+      position: relative;
+    }
+
+    .toggle-pass {
+      position: absolute;
+      top: 50%;
+      right: .6rem;
+      transform: translateY(-50%);
+      background: none;
+      border: none;
+      cursor: pointer;
+      padding: .35rem;
+      color: #475569;
+      font-size: .8rem;
+      line-height: 1;
+      border-radius: 6px;
+    }
+
+    .toggle-pass:hover {
+      background: #f1f5f9;
+    }
+
+    .caps-hint {
+      display: none;
+      font-size: .7rem;
+      color: #dc2626;
+      margin-top: .25rem;
+      font-weight: 500;
+      letter-spacing: .5px;
+    }
+
+    .options-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin: -.25rem 0 1rem;
+      font-size: .8rem;
+    }
+
+    .checkbox-group {
+      display: flex;
+      align-items: center;
+      gap: .4rem;
+      user-select: none;
+    }
+
+    .checkbox-group input {
+      margin: 0;
+    }
+
+    button[type=submit] {
+      width: 100%;
+      padding: .85rem 1rem;
+      font-size: 1rem;
+      font-weight: 600;
+      letter-spacing: .5px;
+      background: #2563eb;
+      color: #fff;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: .55rem;
+      transition: background-color .18s, transform .18s;
+    }
+
+    button[type=submit]:hover {
+      background: #1d4ed8;
+    }
+
+    button[type=submit]:active {
+      transform: translateY(1px);
+    }
+
+    button[disabled] {
+      opacity: .65;
+      cursor: wait;
+    }
+
+    .spinner {
+      width: 18px;
+      height: 18px;
+      border: 3px solid #ffffff66;
+      border-top-color: #fff;
+      border-radius: 50%;
+      animation: spin .8s linear infinite;
+    }
+
+    @keyframes spin {
+      to {
+        transform: rotate(360deg);
+      }
+    }
+
+    .error,
+    .success {
+      margin-top: 1rem;
+      text-align: center;
+      font-size: .85rem;
+      font-weight: 500;
+      min-height: 1.1rem;
+    }
+
+    .error {
+      color: #dc2626;
+    }
+
+    .success {
+      color: #059669;
+    }
+
+    .footer-note {
+      margin-top: 1.5rem;
+      text-align: center;
+      font-size: .7rem;
+      color: #64748b;
+      letter-spacing: .4px;
+    }
+
+    @media (max-width: 430px) {
+      .login-box {
+        padding: 1.6rem 1.3rem 1.4rem;
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <div class="login-box" role="form" aria-labelledby="loginTitle">
+    <h2 id="loginTitle">Faculty Control Login</h2>
+    <form id="loginForm" novalidate aria-label="Login Form">
+      <div class="field">
+        <label for="username">Username</label>
+        <input autocomplete="username" autofocus id="username" type="text" required aria-required="true"
+          aria-label="Username" />
+      </div>
+      <div class="field">
+        <label for="password">Password</label>
+        <div class="password-wrapper">
+          <input autocomplete="current-password" id="password" type="password" required aria-required="true"
+            aria-label="Password" />
+          <button type="button" class="toggle-pass" id="togglePass" aria-label="Show password">Show</button>
+        </div>
+        <div id="capsHint" class="caps-hint">CAPS LOCK IS ON</div>
+      </div>
+      <div class="options-row">
+        <label class="checkbox-group">
+          <input type="checkbox" id="showPassChk" aria-label="Show Password" /> <span>Show Password</span>
+        </label>
+        <label class="checkbox-group">
+          <input type="checkbox" id="rememberChk" aria-label="Remember Username" /> <span>Remember</span>
+        </label>
+      </div>
+      <button id="loginBtn" type="submit" aria-label="Login">
+        <span id="btnText">Login</span>
+      </button>
+      <div class="error" id="errorMsg" aria-live="assertive"></div>
+      <div class="success" id="successMsg" aria-live="polite"></div>
+      <div class="footer-note">Session based secure access.</div>
+    </form>
+  </div>
+
+  <script>
+    const form = document.getElementById("loginForm");
+    const usernameEl = document.getElementById("username");
+    const passwordEl = document.getElementById("password");
+    const loginBtn = document.getElementById("loginBtn");
+    const btnText = document.getElementById("btnText");
+    const errorMsg = document.getElementById("errorMsg");
+    const successMsg = document.getElementById("successMsg");
+    const showPassChk = document.getElementById("showPassChk");
+    const togglePassBtn = document.getElementById("togglePass");
+    const capsHint = document.getElementById("capsHint");
+
+    // Redirect if already logged in
+    document.addEventListener("DOMContentLoaded", () => {
+      fetch("https://faculty-status-backend.onrender.com/api/check-login", {
+        credentials: "include"
+      })
+        .then(r => r.ok ? r.json() : Promise.reject())
+        .then(d => {
+          if (d.loggedIn) {
+            window.location.href = "control";
+          }
+        })
+        .catch(() => { });
+      if (localStorage.getItem("fsu_remember_user")) {
+        usernameEl.value = localStorage.getItem("fsu_remember_user");
+      }
+    });
+
+    function setLoading(state) {
+      if (state) {
+        loginBtn.disabled = true;
+        btnText.innerHTML = '<div class="spinner" aria-hidden="true"></div>Authenticating';
+      } else {
+        loginBtn.disabled = false;
+        btnText.textContent = 'Login';
+      }
+    }
+
+    function showError(msg) {
+      errorMsg.textContent = msg || "";
+    }
+
+    function showSuccess(msg) {
+      successMsg.textContent = msg || "";
+    }
+
+    function togglePasswordVisibility(explicit) {
+      const show = explicit !== undefined ? explicit : passwordEl.type === "password";
+      passwordEl.type = show ? "text" : "password";
+      togglePassBtn.textContent = show ? "Hide" : "Show";
+      togglePassBtn.setAttribute("aria-label", show ? "Hide password" : "Show password");
+      showPassChk.checked = show;
+    }
+
+    togglePassBtn.addEventListener("click", () => togglePasswordVisibility());
+    showPassChk.addEventListener("change", e => togglePasswordVisibility(e.target.checked));
+
+    passwordEl.addEventListener("keyup", e => {
+      const caps = e.getModifierState && e.getModifierState("CapsLock");
+      capsHint.style.display = caps ? "block" : "none";
+    });
+
+    form.addEventListener("submit", e => {
+      e.preventDefault();
+      showError("");
+      showSuccess("");
+      const username = usernameEl.value.trim();
+      const password = passwordEl.value.trim();
+      if (!username || !password) {
+        showError("Enter username and password.");
+        return;
+      }
+      if (document.getElementById("rememberChk").checked) {
+        localStorage.setItem("fsu_remember_user", username);
+      } else {
+        localStorage.removeItem("fsu_remember_user");
+      }
+      setLoading(true);
+      fetch("https://faculty-status-backend.onrender.com/api/login", {
+        method: "POST",
+        credentials: "include",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ username, password })
+      })
+        .then(res => {
+          if (res.ok) {
+            showSuccess("Login successful. Redirecting...");
+            setTimeout(() => window.location.href = "control", 400);
+          } else {
+            showError("Invalid credentials.");
+          }
+        })
+        .catch(() => showError("Network error. Try again."))
+        .finally(() => setLoading(false));
+    });
+  </script>
+</body>
+
+</html>
