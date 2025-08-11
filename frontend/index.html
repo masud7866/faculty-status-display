@@ -64,8 +64,8 @@
       z-index: 1000;
       background: #111827;
       border-radius: 10px;
-      padding: 0.2em 0.5em;
-      width: 270px;
+      padding: 0.3em 0.7em;
+      width: 350px;
       overflow: hidden;
       display: flex;
       align-items: center;
@@ -73,7 +73,7 @@
       border: 2px solid #38bdf8;
       box-shadow: 0 0 16px #38bdf888, 0 0 4px #2563eb;
       white-space: nowrap;
-      gap: 0.1em;
+      gap: 0.15em;
     }
 
     .grid {
@@ -311,8 +311,8 @@
 
     /* 7-segment digit SVG component */
     .seven-segment {
-      width: 24px !important;
-      height: 42px !important;
+      width: 32px !important;
+      height: 56px !important;
       display: inline-block;
       vertical-align: middle;
     }
@@ -375,7 +375,7 @@
     .digit-bg {
       background: #222;
       border-radius: 6px;
-      margin: 0 1px;
+      margin: 0 2px;
       display: inline-block;
       box-shadow: 0 0 8px #222;
     }
@@ -388,11 +388,12 @@
       display: inline-block;
       width: 2.5em;
       text-align: left;
-      font-size: 0.7em;
-      margin-left: 0.3em;
+      font-size: 0.9em;
+      margin-left: 0.4em;
       color: #60a5fa;
       letter-spacing: 0.2em;
       vertical-align: middle;
+      font-family: 'Orbitron', 'Inter', 'Segoe UI', monospace, Arial, sans-serif;
     }
   </style>
 </head>
@@ -493,7 +494,7 @@
       const segs = SEGMENTS[digit] || [];
       return `
     <span class="digit-bg">
-      <svg width="24" height="42" viewBox="0 0 28 48" class="seven-segment">
+      <svg width="32" height="56" viewBox="0 0 28 48" class="seven-segment">
         <rect class="seg seg-a${segs.includes('a') ? ' lit' : ''}" x="6" y="1" width="16" height="4" rx="1.5"/>
         <rect class="seg seg-b${segs.includes('b') ? ' lit' : ''}" x="22" y="5" width="4" height="16" rx="1.5"/>
         <rect class="seg seg-c${segs.includes('c') ? ' lit' : ''}" x="22" y="27" width="4" height="16" rx="1.5"/>
@@ -509,7 +510,7 @@
     function renderColon() {
       return `
     <span class="digit-bg colon">
-      <svg width="10" height="42" viewBox="0 0 10 48">
+      <svg width="12" height="56" viewBox="0 0 10 48">
         <circle cx="5" cy="14" r="2.5" fill="#38bdf8" filter="url(#glow)"/>
         <circle cx="5" cy="34" r="2.5" fill="#38bdf8" filter="url(#glow)"/>
         <defs>
