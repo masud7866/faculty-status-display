@@ -293,6 +293,27 @@
       max-width: 100%;
       object-fit: contain;
     }
+
+    /* --- Marquee Footer Styles --- */
+    #marqueeFooter {
+      position: fixed;
+      left: 0;
+      bottom: 0;
+      width: 100vw;
+      height: 2.5em;
+      background: #1e293b;
+      color: #fff;
+      font-size: 1.3em;
+      z-index: 10000;
+      overflow: hidden;
+      display: flex;
+      align-items: center;
+    }
+
+    #marqueeText {
+      white-space: nowrap;
+      will-change: transform;
+    }
   </style>
 </head>
 
@@ -314,6 +335,11 @@
     <img id="adImage" src="" />
     <video id="adVideo" autoplay muted></video>
   </div>
+
+  <!-- Marquee Footer -->
+  <footer id="marqueeFooter" style="position:fixed; left:0; bottom:0; width:100vw; height:2.5em; background:#1e293b; color:#fff; font-size:1.3em; z-index:10000; overflow:hidden; display:flex; align-items:center;">
+    <div id="marqueeText" style="white-space:nowrap; will-change:transform;"></div>
+  </footer>
 
   <script>
     const STATUS_MAP = {
@@ -506,6 +532,31 @@
 
       showNextAd();
     }
+
+    function loadMarquee() {
+      fetch("https://faculty-status-backend.onrender.com/api/marquee")
+        .then(res => res.text())
+        .then(text => {
+          const marquee = document.getElementById("marqueeText");
+          marquee.textContent = text;
+          animateMarquee();
+        });
+    }
+
+    function animateMarquee() {
+      const marquee = document.getElementById("marqueeText");
+      marquee.style.transform = "translateX(100vw)";
+      marquee.style.transition = "none";
+      setTimeout(() => {
+        const textWidth = marquee.offsetWidth;
+        marquee.style.transition = `transform ${15 + textWidth/100}s linear`;
+        marquee.style.transform = `translateX(-${textWidth + window.innerWidth}px)`;
+      }, 100); // allow DOM update
+    }
+
+    // Reload marquee every 5 minutes in case backend changes
+    loadMarquee();
+    setInterval(loadMarquee, 300000);
 
     loadFaculty();
     setInterval(loadFaculty, 3000);

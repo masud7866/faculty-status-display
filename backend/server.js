@@ -113,6 +113,13 @@ app.get("/api/ads", (req, res) => {
   });
 });
 
+app.get("/api/marquee", (req, res) => {
+  fs.readFile(path.join(__dirname, "public/marquee.txt"), "utf8", (err, data) => {
+    if (err) return res.status(404).send("");
+    res.send(data);
+  });
+});
+
 // Default route
 app.get("/", (req, res) => {
   res.send("Backend is running. Try /api/status");
