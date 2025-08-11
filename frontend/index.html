@@ -308,7 +308,7 @@
     #marqueeText {
       white-space: nowrap;
       will-change: transform;
-      padding-left: 1em;
+      padding-left: 0;           /* Remove padding */
       flex: 1;
       overflow: visible;
       transform: translateZ(0);
@@ -553,19 +553,19 @@
     }
 
     document.addEventListener("DOMContentLoaded", function() {
-      // Initial setup
-      updateClock();
-      updateDate();
-      loadFaculty();
-      loadMarquee();
-      adjustLayout();
-      
-      // Set up intervals (only once)
-      setInterval(updateClock, 1000);
-      setInterval(loadFaculty, 3000);
-      setInterval(loadMarquee, 300000);
-      setInterval(updateDate, 60000);
-    });
+  // Initial setup
+  updateClock();
+  updateDate();      // Make sure this is here
+  loadFaculty();
+  loadMarquee();
+  adjustLayout();
+  
+  // Set up intervals (only once)
+  setInterval(updateClock, 1000);
+  setInterval(loadFaculty, 3000);
+  setInterval(loadMarquee, 300000);
+  setInterval(updateDate, 60000);   // Make sure this is here too
+});
 
     window.addEventListener("resize", adjustLayout);
 
@@ -724,28 +724,24 @@
       const marquee = document.getElementById("marqueeText");
       const dateDisplay = document.getElementById("dateDisplay");
       
-      // Cache measurements to avoid repeated DOM queries
-      const dateWidth = dateDisplay.offsetWidth;
-      const windowWidth = window.innerWidth;
-      
       function loop() {
-        // Use requestAnimationFrame for smoother animations
-        requestAnimationFrame(() => {
-          marquee.style.transition = "none";
-          marquee.style.transform = `translateX(${windowWidth - dateWidth}px)`;
-          
-          // Delay before starting animation
-          setTimeout(() => {
-            const textWidth = marquee.offsetWidth;
-            marquee.style.transition = `transform ${Math.max(15, textWidth/100)}s linear`;
-            marquee.style.transform = `translateX(-${textWidth}px)`;
-          }, 50); // Reduced delay
-        });
+        const dateWidth = dateDisplay.offsetWidth;
+        const windowWidth = window.innerWidth;
         
-        // Use setTimeout instead of transitionend for more reliable looping
-        const textWidth = marquee.offsetWidth;
-        const duration = Math.max(15, textWidth/100) * 1000;
-        setTimeout(loop, duration + 100);
+        // Start from right edge of available space (after date container)
+        marquee.style.transition = "none";
+        marquee.style.transform = `translateX(${windowWidth}px)`;
+        
+        setTimeout(() => {
+          const textWidth = marquee.offsetWidth;
+          const duration = Math.max(15, textWidth / 80);
+          marquee.style.transition = `transform ${duration}s linear`;
+          // Move text completely off screen to the left
+          marquee.style.transform = `translateX(-${textWidth}px)`;
+          
+          // Loop after animation completes
+          setTimeout(loop, duration * 1000 + 500);
+        }, 100);
       }
       loop();
     }
@@ -764,12 +760,6 @@
       const dateStr = `<div>${dayName}, ${day} ${month}</div><div>${year}</div>`;
       document.getElementById("dateDisplay").innerHTML = dateStr;
     }
-
-    // Update date immediately and then every minute
-    document.addEventListener("DOMContentLoaded", function () {
-      updateDate();
-      setInterval(updateDate, 60000);
-    });
   </script>
 </body>
 
