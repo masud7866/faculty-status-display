@@ -28,6 +28,7 @@ app.use(session({
 
 // Serve images (optional)
 app.use("/images", express.static("public"));
+app.use("/ads", express.static(path.join(__dirname, "public/ads")));
 
 // === API ROUTES ===
 app.get("/api/faculty", (req, res) => {
@@ -96,6 +97,20 @@ app.get("/api/check-login", (req, res) => {
   } else {
     res.status(401).json({ loggedIn: false });
   }
+});
+
+app.get("/api/ads", (req, res) => {
+  const adsDir = path.join(__dirname, "public/ads");
+  fs.readdir(adsDir, (err, files) => {
+    if (err) return res.status(500).json({ error: "Failed to read ads directory" });
+    const ads = files
+      .filter(f => /\.(jpg|jpeg|png|gif|mp4|webm)$/i.test(f))
+      .map(f => ({
+        type: /\.(mp4|webm)$/i.test(f) ? "video" : "image",
+        src: `/ads/${f}`
+      }));
+    res.json(ads);
+  });
 });
 
 // Default route

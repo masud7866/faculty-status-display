@@ -269,6 +269,12 @@
 
   <div id="grid" class="grid"></div>
 
+  <!-- Update the adOverlay style -->
+  <div id="adOverlay" style="display:none; position:fixed; left:0; top:10vh; width:100vw; height:90vh; background:rgba(0,0,0,0.85); z-index:9999; justify-content:center; align-items:center;">
+    <img id="adImage" src="" style="max-width:80vw; max-height:80vh; display:none;" />
+    <video id="adVideo" style="max-width:80vw; max-height:80vh; display:none;" autoplay muted></video>
+  </div>
+
   <script>
     const STATUS_MAP = {
       in_class: "In Class",
@@ -331,6 +337,74 @@
       const timeStr = `${h}:${m}:${s} <span class="ampm">${ampm}</span>`;
       const clock = document.getElementById("clock");
       clock.innerHTML = timeStr;
+    }
+
+    let ads = [];
+    let nextAdTimeout = null;
+
+    fetch("https://faculty-status-backend.onrender.com/api/ads")
+      .then(res => res.json())
+      .then(data => {
+        ads = data;
+        if (ads.length) runAdSequence();
+      });
+
+    function runAdSequence() {
+      let totalAdTime = 0;
+      let current = 0;
+
+      const overlay = document.getElementById("adOverlay");
+      const adImage = document.getElementById("adImage");
+      const adVideo = document.getElementById("adVideo");
+
+      overlay.style.display = "flex";
+
+      function showNextAd() {
+        if (current >= ads.length) {
+          overlay.style.display = "none";
+          // Apply break based on total ad time
+          const breakMs = totalAdTime > 30000 ? 120000 : 60000;
+          nextAdTimeout = setTimeout(runAdSequence, breakMs);
+          return;
+        }
+
+        const ad = ads[current];
+        adImage.style.display = "none";
+        adVideo.style.display = "none";
+
+        if (ad.type === "image") {
+          adImage.src = "https://faculty-status-backend.onrender.com" + ad.src;
+          adImage.style.display = "block";
+          totalAdTime += 15000;
+          setTimeout(() => {
+            current++;
+            showNextAd();
+          }, 15000);
+        } else if (ad.type === "video") {
+          adVideo.src = "https://faculty-status-backend.onrender.com" + ad.src;
+          adVideo.style.display = "block";
+          adVideo.load();
+          adVideo.onloadedmetadata = () => {
+            adVideo.play();
+            const duration = adVideo.duration * 1000;
+            totalAdTime += duration;
+            adVideo.onended = () => {
+              current++;
+              showNextAd();
+            };
+            // Fallback in case video doesn't end
+            setTimeout(() => {
+              if (!adVideo.paused) {
+                adVideo.pause();
+                current++;
+                showNextAd();
+              }
+            }, duration);
+          };
+        }
+      }
+
+      showNextAd();
     }
 
     loadFaculty();
