@@ -79,6 +79,12 @@
       font-variant-numeric: tabular-nums;
     }
 
+    .clock-group {
+      display: inline-block;
+      min-width: 2.2em;
+      text-align: center;
+    }
+
     #clock .ampm {
       display: inline-block;
       min-width: 2.5em;
@@ -413,7 +419,12 @@
       h = h % 12;
       h = h ? h : 12;
       const hStr = String(h).padStart(2, '0');
-      const timeStr = `${hStr}:${m}:${s} <span class="ampm">${ampm}</span>`;
+      const timeStr = `
+    <span class="clock-group">${hStr}</span>:
+    <span class="clock-group">${m}</span>:
+    <span class="clock-group">${s}</span>
+    <span class="ampm">${ampm}</span>
+  `;
       document.getElementById("clock").innerHTML = timeStr;
     }
 
