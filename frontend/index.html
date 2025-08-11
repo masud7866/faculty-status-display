@@ -328,6 +328,50 @@
       width: 0;
       transition: width 0.2s;
     }
+
+    #resolutionFloat {
+      position: fixed;
+      left: 1vw;
+      bottom: 2.5em;
+      background: #1e293b;
+      color: #e0e7ff;
+      font-size: 1em;
+      padding: 0.3em 0.8em;
+      border-radius: 8px;
+      box-shadow: 0 2px 8px #2563eb44;
+      z-index: 10001;
+      opacity: 0.85;
+      pointer-events: none;
+      font-family: 'Orbitron', 'Inter', Arial, sans-serif;
+    }
+
+    #resolutionFloat.show {
+      opacity: 1;
+    }
+
+    #resolutionFloat.hide {
+      opacity: 0;
+    }
+
+    #resolutionFloat div {
+      background: rgba(255, 255, 255, 0.9);
+      color: #111;
+      padding: 0.5em 1em;
+      border-radius: 10px;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+      margin: 0.2em 0;
+      font-size: 1.2em;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    #resolutionFloat svg {
+      margin-right: 0.5em;
+      fill: #2563eb;
+      width: 1.5em;
+      height: 1.5em;
+    }
   </style>
 </head>
 
@@ -357,6 +401,9 @@
   <footer id="marqueeFooter">
     <div id="marqueeText"></div>
   </footer>
+
+  <!-- Resolution Float -->
+  <div id="resolutionFloat"></div>
 
   <script>
     const STATUS_MAP = {
@@ -609,6 +656,13 @@
 
     window.addEventListener("resize", adjustLayout);
     window.addEventListener("DOMContentLoaded", adjustLayout);
+
+    function updateResolution() {
+      const res = `${window.innerWidth} x ${window.innerHeight}`;
+      document.getElementById("resolutionFloat").textContent = `Resolution: ${res}`;
+    }
+    window.addEventListener("resize", updateResolution);
+    window.addEventListener("DOMContentLoaded", updateResolution);
   </script>
 </body>
 
