@@ -319,18 +319,18 @@
     }
 
     .seven-segment .seg {
-      fill: #2a2a2a;
-      /* Dark but visible */
-      transition: fill 0.3s, opacity 0.3s;
-      opacity: 0.12;
-      /* Very subtle */
+      fill: #333;
+      /* Changed from #222 to slightly lighter */
+      transition: fill 0.2s;
+      opacity: 0.25;
+      /* Make unlit segments barely visible */
     }
 
     .seven-segment .seg.lit {
-      fill: #00d4ff;
-      /* Bright cyan */
-      filter: drop-shadow(0 0 10px #00d4ff) drop-shadow(0 0 5px #38bdf8);
+      fill: #38bdf8;
+      filter: drop-shadow(0 0 6px #38bdf8);
       opacity: 1;
+      /* Full opacity for lit segments */
     }
 
     .digit-bg {
