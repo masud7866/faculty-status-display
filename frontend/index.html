@@ -495,7 +495,7 @@
       const segs = SEGMENTS[digit] || [];
       return `
     <span class="digit-bg">
-      <svg width="32" height="56" viewBox="0 0 28 48" class="seven-segment">
+      <svg width="32" height="56" viewBox="0 0 32 56" class="seven-segment">
         <rect class="seg seg-a${segs.includes('a') ? ' lit' : ''}" x="6" y="1" width="16" height="4" rx="1.5"/>
         <rect class="seg seg-b${segs.includes('b') ? ' lit' : ''}" x="22" y="5" width="4" height="16" rx="1.5"/>
         <rect class="seg seg-c${segs.includes('c') ? ' lit' : ''}" x="22" y="27" width="4" height="16" rx="1.5"/>
@@ -511,7 +511,7 @@
     function renderColon() {
       return `
     <span class="digit-bg colon">
-      <svg width="12" height="56" viewBox="0 0 10 48">
+      <svg width="12" height="56" viewBox="0 0 12 56">
         <circle cx="5" cy="14" r="2.5" fill="#38bdf8" filter="url(#glow)"/>
         <circle cx="5" cy="34" r="2.5" fill="#38bdf8" filter="url(#glow)"/>
         <defs>
