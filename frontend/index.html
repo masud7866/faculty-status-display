@@ -58,8 +58,10 @@
     }
 
     #clock {
-      font-family: 'Orbitron', 'Inter', 'Segoe UI', monospace, Arial, sans-serif;
-      font-variant-numeric: tabular-nums;
+      position: fixed;
+      right: 2vw;
+      bottom: 8vh;
+      z-index: 1000;
       background: #111827;
       color: #38bdf8;
       border-radius: 10px;
@@ -69,8 +71,12 @@
       letter-spacing: 0.18em;
       box-shadow: 0 0 16px #38bdf888, 0 0 4px #2563eb;
       font-size: 2.2em;
-      display: inline-block;
+      display: flex;
+      align-items: center;
+      justify-content: center;
       border: 2px solid #38bdf8;
+      font-family: 'Orbitron', 'Inter', 'Segoe UI', monospace, Arial, sans-serif;
+      font-variant-numeric: tabular-nums;
     }
 
     #clock .ampm {
