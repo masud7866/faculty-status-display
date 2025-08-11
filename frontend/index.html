@@ -436,6 +436,7 @@
     // Add these missing declarations:
     let ads = [];
     let nextAdTimeout = null;
+    let marqueeAnimation = null; // Track the animation
 
     function loadFaculty() {
       fetch("https://faculty-status-backend.onrender.com/api/faculty", {
@@ -553,16 +554,21 @@
     document.addEventListener("DOMContentLoaded", function() {
   // Initial setup
   updateClock();
-  updateDate();      // Make sure this is here
+  updateDate();
   loadFaculty();
   loadMarquee();
   adjustLayout();
   
+  // Start marquee animation ONCE
+  setTimeout(() => {
+    animateMarquee();
+  }, 1000); // Delay to ensure text is loaded
+  
   // Set up intervals (only once)
   setInterval(updateClock, 1000);
   setInterval(loadFaculty, 3000);
-  setInterval(loadMarquee, 300000);
-  setInterval(updateDate, 60000);   // Make sure this is here too
+  setInterval(loadMarquee, 300000); // Only updates text, doesn't restart animation
+  setInterval(updateDate, 60000);
 });
 
     window.addEventListener("resize", adjustLayout);
@@ -714,7 +720,7 @@
         .then(text => {
           const marquee = document.getElementById("marqueeText");
           marquee.textContent = text;
-          animateMarquee();
+          // Don't call animateMarquee() here - let the existing animation handle the new text
         });
     }
 
@@ -722,13 +728,18 @@
       const marquee = document.getElementById("marqueeText");
       const dateDisplay = document.getElementById("dateDisplay");
       
+      // Clear any existing animation
+      if (marqueeAnimation) {
+        clearTimeout(marqueeAnimation);
+      }
+      
       function loop() {
         // Get current measurements
         const dateWidth = dateDisplay.offsetWidth;
         const windowWidth = window.innerWidth;
         const availableWidth = windowWidth - dateWidth;
         
-        // Start from the right edge of the available space (not full window width)
+        // Start from the right edge of the available space
         marquee.style.transition = "none";
         marquee.style.transform = `translateX(${availableWidth}px)`;
         
@@ -739,8 +750,8 @@
           // Move text completely off screen to the left
           marquee.style.transform = `translateX(-${textWidth}px)`;
           
-          // Loop after animation completes
-          setTimeout(loop, duration * 1000 + 500);
+          // Schedule next loop
+          marqueeAnimation = setTimeout(loop, duration * 1000 + 500);
         }, 100);
       }
       loop();
