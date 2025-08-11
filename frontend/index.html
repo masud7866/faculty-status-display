@@ -284,13 +284,32 @@
       overflow: hidden;
       display: flex;
       align-items: center;
-      padding-left: 2vw;
       font-family: 'Orbitron', 'Inter', Arial, sans-serif;
+    }
+
+    #dateDisplay {
+      background: #2563eb;
+      color: #fff;
+      padding: 0.2em 0.6em;
+      font-weight: 600;
+      white-space: nowrap;
+      border-right: 2px solid #38bdf8;
+      min-width: 120px;
+      max-width: 150px;
+      text-align: center;
+      box-shadow: 0 0 8px #2563eb44;
+      font-size: 0.85em;
+      line-height: 1.1;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
     }
 
     #marqueeText {
       white-space: nowrap;
       will-change: transform;
+      padding-left: 1em;
+      flex: 1;
     }
 
     #adProgress {
@@ -383,6 +402,7 @@
 
   <!-- Marquee Footer -->
   <footer id="marqueeFooter">
+    <div id="dateDisplay"></div>
     <div id="marqueeText"></div>
   </footer>
 
@@ -679,13 +699,17 @@
 
     function animateMarquee() {
       const marquee = document.getElementById("marqueeText");
+      const dateDisplay = document.getElementById("dateDisplay");
+      const dateWidth = dateDisplay.offsetWidth;
+      
       function loop() {
         marquee.style.transition = "none";
         marquee.style.transform = "translateX(100vw)";
         setTimeout(() => {
           const textWidth = marquee.offsetWidth;
-          marquee.style.transition = `transform ${15 + textWidth / 100}s linear`;
-          marquee.style.transform = `translateX(-${textWidth + window.innerWidth}px)`;
+          const availableWidth = window.innerWidth - dateWidth;
+          marquee.style.transition = `transform ${15 + textWidth/100}s linear`;
+          marquee.style.transform = `translateX(-${textWidth + availableWidth}px)`;
         }, 100);
         marquee.addEventListener('transitionend', loop, { once: true });
       }
@@ -695,6 +719,27 @@
     // Reload marquee every 5 minutes in case backend changes
     loadMarquee();
     setInterval(loadMarquee, 300000);
+
+    function updateDate() {
+      const now = new Date();
+      const days = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+      const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+
+      const dayName = days[now.getDay()];
+      const day = now.getDate();
+      const month = months[now.getMonth()];
+      const year = now.getFullYear();
+
+      // Compact format with line break
+      const dateStr = `<div>${dayName}, ${day} ${month}</div><div>${year}</div>`;
+      document.getElementById("dateDisplay").innerHTML = dateStr;
+    }
+
+    // Update date immediately and then every minute
+    document.addEventListener("DOMContentLoaded", function () {
+      updateDate();
+      setInterval(updateDate, 60000);
+    });
 
     loadFaculty();
     setInterval(loadFaculty, 3000);
