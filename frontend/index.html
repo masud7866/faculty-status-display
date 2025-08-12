@@ -246,11 +246,11 @@
     #adOverlay img,
     #adOverlay video {
       display: none;
-      background:#000;
-      width:100%;
-      height:100%;
-      max-width:100%;
-      max-height:100%;
+      background: #000;
+      width: 100%;
+      height: 100%;
+      max-width: 100%;
+      max-height: 100%;
       object-fit: contain;
       opacity: 1;
     }
@@ -407,13 +407,7 @@
   <!-- Ad Overlay -->
   <div id="adOverlay">
     <img id="adImage" src="" />
-    <video id="adVideo"
-       autoplay
-       muted
-       playsinline
-       webkit-playsinline
-       preload="auto"
-       crossorigin="anonymous"></video>
+    <video id="adVideo" autoplay muted playsinline webkit-playsinline preload="auto" crossorigin="anonymous"></video>
     <div id="adProgress">
       <div id="adProgressBar"></div>
     </div>
@@ -710,7 +704,7 @@
         } else if (ad.type === "video") {
           const src = "https://faculty-status-backend.onrender.com" + ad.src;
           console.log("Loading video:", src);
-          
+
           adVideo.pause();
           adVideo.removeAttribute("src");
           adVideo.load();
@@ -740,18 +734,18 @@
           function startVideo() {
             if (videoStarted) return; // Prevent multiple starts
             videoStarted = true;
-            
+
             console.log("Starting video playback");
             adVideo.style.display = "block";
             setAdStretch(adVideo);
-            
+
             // Get duration or use default
             const durMs = isFinite(adVideo.duration) && adVideo.duration > 0
               ? adVideo.duration * 1000
               : DEFAULT_DURATION;
-            
+
             console.log("Using duration:", durMs, "ms");
-            
+
             adVideo.play().catch(err => {
               console.warn("Play() rejected:", err);
               clearAll(true);
@@ -759,12 +753,12 @@
             });
 
             updateAdProgress(durMs, 0);
-            
+
             // Track progress with elapsed time
             let startTime = Date.now();
             progressInterval = setInterval(() => {
               const elapsed = Date.now() - startTime;
-              
+
               if (adVideo.ended) {
                 console.log("Video ended naturally");
                 updateAdProgress(durMs, durMs);
@@ -772,7 +766,7 @@
                 clearAll(true);
                 return;
               }
-              
+
               if (elapsed >= durMs) {
                 console.log("Reached duration limit, ending video");
                 updateAdProgress(durMs, durMs);
@@ -780,7 +774,7 @@
                 clearAll(true);
                 return;
               }
-              
+
               updateAdProgress(durMs, elapsed);
             }, 250);
 
@@ -863,7 +857,7 @@
 
     function animateMarquee() {
       const marquee = document.getElementById("marqueeText");
-      
+
       // Clear any existing animation
       if (marqueeAnimation) {
         clearTimeout(marqueeAnimation);
@@ -872,11 +866,11 @@
       function loop() {
         // Get the available width (marquee container width)
         const containerWidth = marquee.offsetWidth;
-        
+
         // Start from the right edge of the container
         marquee.style.transition = "none";
         marquee.style.transform = `translateX(${containerWidth}px)`;
-        
+
         setTimeout(() => {
           // Get the actual text width
           const textWidth = marquee.scrollWidth;
@@ -884,7 +878,7 @@
           marquee.style.transition = `transform ${duration}s linear`;
           // Move text completely off screen to the left
           marquee.style.transform = `translateX(-${textWidth}px)`;
-          
+
           // Schedule next loop
           marqueeAnimation = setTimeout(loop, duration * 1000 + 500);
         }, 100);
@@ -906,16 +900,6 @@
       const dateStr = `<div>${dayName}, ${day} ${month}</div><div>${year}</div>`;
       document.getElementById("dateDisplay").innerHTML = dateStr;
     }
-
-    // Test video support on TV
-function testVideoSupport() {
-  const video = document.createElement('video');
-  console.log("Video format support:");
-  console.log("MP4/H.264:", video.canPlayType('video/mp4; codecs="avc1.42E01E"'));
-  console.log("MP4/H.264 AAC:", video.canPlayType('video/mp4; codecs="avc1.42E01E, mp4a.40.2"'));
-  console.log("WebM:", video.canPlayType('video/webm'));
-}
-testVideoSupport();
   </script>
 </body>
 
