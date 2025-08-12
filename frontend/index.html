@@ -718,7 +718,7 @@
 
           function clearAll(next = true) {
             clearTimeout(metaTimeout);
-            clearTimeout(safetyTimeout);
+            // Removed: clearTimeout(safetyTimeout);
             if (progressInterval) clearInterval(progressInterval);
             adVideo.onloadedmetadata = null;
             adVideo.onerror = null;
@@ -740,9 +740,9 @@
             setTimeout(() => {
               const durMs = isFinite(adVideo.duration) && adVideo.duration > 0
                 ? adVideo.duration * 1000
-                : 30000; // Increased fallback
-            
-              console.log("Final duration check:", adVideo.duration, "->", durMs);
+                : 30000; // fallback
+          
+              console.log("Video duration:", adVideo.duration, "seconds");
               
               adVideo.play().catch(err => {
                 console.warn("Play() rejected:", err);
@@ -758,18 +758,13 @@
               }, 250);
 
               adVideo.onended = () => {
-                console.log("Video ended naturally");
+                console.log("Video ended naturally at:", adVideo.currentTime, "seconds");
                 updateAdProgress(durMs, durMs);
                 totalAdTime += durMs;
                 clearAll(true);
               };
 
-              // Safety timeout with actual duration
-              safetyTimeout = setTimeout(() => {
-                console.warn("Safety timeout reached after", durMs + 3000, "ms");
-                totalAdTime += durMs;
-                clearAll(true);
-              }, durMs + 3000);
+              // NO SAFETY TIMEOUT - let video play naturally until it ends
               
             }, 500); // Wait 500ms for duration to be ready
           };
