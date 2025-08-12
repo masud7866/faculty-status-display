@@ -766,7 +766,7 @@
               console.warn("Video safety timeout reached, forcing next");
               totalAdTime += durMs;
               clearAll(true);
-            }, durMs + 3000); // Add 3 seconds buffer to actual duration
+            }, durMs + 15000); // Add 3 seconds buffer to actual duration
           };
 
           adVideo.onerror = (e) => {
