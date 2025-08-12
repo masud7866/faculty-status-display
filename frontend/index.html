@@ -86,6 +86,8 @@
       box-sizing: border-box;
       /* Height set dynamically by JS */
       overflow: visible;
+      contain: layout style;
+      will-change: contents;
     }
 
     .card {
@@ -104,6 +106,7 @@
       box-sizing: border-box;
       padding: 1vh 0.5vw;
       /* Increased vertical padding */
+      contain: layout style;
     }
 
     .card img {
@@ -236,6 +239,7 @@
       opacity: 0;
       pointer-events: none;
       transition: opacity 0.7s;
+      contain: layout style paint;
     }
 
     #adOverlay.active {
@@ -447,38 +451,41 @@
     let ads = [];
     let nextAdTimeout = null;
     let marqueeAnimation = null; // Track the animation
+    let clockContainer = null;
+    let dateDisplay = null;
 
     function loadFaculty() {
-      fetch("https://faculty-status-backend.onrender.com/api/faculty", {
-        credentials: "include"
-      })
-        .then(res => res.json())
-        .then(data => {
-          const grid = document.getElementById("grid");
-          grid.innerHTML = ""; // Clear once
+      try {
+        fetch("https://faculty-status-backend.onrender.com/api/faculty", {
+          credentials: "include"
+        })
+          .then(res => res.json())
+          .then(data => {
+            const grid = document.getElementById("grid");
+            const fragment = document.createDocumentFragment();
+            
+            data.forEach(f => {
+              let statusObj = f.manualOverride ?? f.status;
+              let statusStr, room, batch;
 
-          // Build all HTML at once instead of concatenating
-          const cardsHTML = data.map(f => {
-            let statusObj = f.manualOverride ?? f.status;
-            let statusStr, room, batch;
+              if (typeof statusObj === "string") {
+                statusStr = statusObj;
+                room = null;
+                batch = null;
+              } else if (typeof statusObj === "object" && statusObj !== null) {
+                statusStr = statusObj.status;
+                room = statusObj.room ?? null;
+                batch = statusObj.batch ?? null;
+              }
 
-            if (typeof statusObj === "string") {
-              statusStr = statusObj;
-              room = null;
-              batch = null;
-            } else if (typeof statusObj === "object" && statusObj !== null) {
-              statusStr = statusObj.status;
-              room = statusObj.room ?? null;
-              batch = statusObj.batch ?? null;
-            }
+              let extraInfo = "";
+              if (statusStr === "in_class" && room && batch) {
+                extraInfo = `<small class="text-gray">with ${batch} at ${room}</small>`;
+              }
 
-            let extraInfo = "";
-            if (statusStr === "in_class" && room && batch) {
-              extraInfo = `<small class="text-gray">with ${batch} at ${room}</small>`;
-            }
-
-            return `
-              <div class="card">
+              const cardDiv = document.createElement('div');
+              cardDiv.className = 'card';
+              cardDiv.innerHTML = `
                 <img src="https://faculty-status-backend.onrender.com${f.image}" alt="${f.name}">
                 <h3>${f.name}</h3>
                 <div>${f.designation || ""}</div>
@@ -487,11 +494,21 @@
                 <div class="status ${statusStr}">
                   ${STATUS_MAP[statusStr] || statusStr} ${extraInfo}
                 </div>
-              </div>`;
-          }).join('');
-
-          grid.innerHTML = cardsHTML; // Set all at once
-        });
+              `;
+              fragment.appendChild(cardDiv);
+            });
+            
+            grid.innerHTML = '';
+            grid.appendChild(fragment);
+          })
+          .catch(err => {
+            console.error("Failed to load faculty:", err);
+            // Retry after 10 seconds
+            setTimeout(loadFaculty, 10000);
+          });
+      } catch (error) {
+        console.error("Faculty loading error:", error);
+      }
     }
 
     function renderDigit(digit) {
@@ -532,22 +549,29 @@
     }
 
     function renderClock(h, m, s, ampm) {
+      if (!clockContainer) {
+        clockContainer = document.getElementById("clock");
+      }
+      
       const digits = [
         ...String(h).padStart(2, '0'),
         ...String(m).padStart(2, '0'),
         ...String(s).padStart(2, '0')
       ];
-      const html =
-        renderDigit(digits[0]) +
-        renderDigit(digits[1]) +
-        renderColon() +
-        renderDigit(digits[2]) +
-        renderDigit(digits[3]) +
-        renderColon() +
-        renderDigit(digits[4]) +
-        renderDigit(digits[5]) +
-        `<span class="ampm">${ampm}</span>`;
-      document.getElementById("clock").innerHTML = html;
+      
+      const html = `
+        ${renderDigit(digits[0])}
+        ${renderDigit(digits[1])}
+        ${renderColon()}
+        ${renderDigit(digits[2])}
+        ${renderDigit(digits[3])}
+        ${renderColon()}
+        ${renderDigit(digits[4])}
+        ${renderDigit(digits[5])}
+        <span class="ampm">${ampm}</span>
+      `;
+      
+      clockContainer.innerHTML = html;
     }
 
     function updateClock() {
@@ -579,7 +603,7 @@
       setInterval(updateClock, 1000);
       setInterval(loadFaculty, 3000);
       setInterval(loadMarquee, 300000);
-      setInterval(loadAds, 300000); // Refresh ads every 10 minutes
+      setInterval(loadAds, 300000); // Refresh ads every 5 minutes
       setInterval(updateDate, 60000);
     });
 
@@ -638,17 +662,19 @@
         .then(res => res.json())
         .then(data => {
           ads = data;
-          console.log(`Loaded ${ads.length} ads`); // Optional: for debugging
+          console.log(`Loaded ${ads.length} ads`);
+          
+          // Start ad sequence if not already running
+          if (ads.length > 0 && !document.getElementById("adOverlay").classList.contains("active")) {
+            setTimeout(runAdSequence, 2000);
+          }
         })
         .catch(err => {
           console.error("Failed to load ads:", err);
+          // Retry after 30 seconds on error
+          setTimeout(loadAds, 30000);
         });
     }
-
-    loadAds();
-    setTimeout(() => {
-      if (ads.length) runAdSequence();
-    }, 1000); // Small delay to ensure ads are loaded
 
     function updateAdProgress(duration, elapsed = 0) {
       const bar = document.getElementById("adProgressBar");
@@ -887,6 +913,10 @@
     }
 
     function updateDate() {
+      if (!dateDisplay) {
+        dateDisplay = document.getElementById("dateDisplay");
+      }
+      
       const now = new Date();
       const days = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
       const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
@@ -896,9 +926,7 @@
       const month = months[now.getMonth()];
       const year = now.getFullYear();
 
-      // Compact format with line break
-      const dateStr = `<div>${dayName}, ${day} ${month}</div><div>${year}</div>`;
-      document.getElementById("dateDisplay").innerHTML = dateStr;
+      dateDisplay.innerHTML = `<div>${dayName}, ${day} ${month}</div><div>${year}</div>`;
     }
   </script>
 </body>
