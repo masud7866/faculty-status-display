@@ -246,11 +246,11 @@
     #adOverlay img,
     #adOverlay video {
       display: none;
-      background: #000;
-      max-width: 100vw;
-      max-height: 100vh;
-      width: auto;
-      height: auto;
+      background:#000;
+      width:100%;
+      height:100%;
+      max-width:100%;
+      max-height:100%;
       object-fit: contain;
     }
 
@@ -406,7 +406,13 @@
   <!-- Ad Overlay -->
   <div id="adOverlay">
     <img id="adImage" src="" />
-    <video id="adVideo" autoplay muted></video>
+    <video id="adVideo"
+       autoplay
+       muted
+       playsinline
+       webkit-playsinline
+       preload="auto"
+       crossorigin="anonymous"></video>
     <div id="adProgress">
       <div id="adProgressBar"></div>
     </div>
@@ -566,17 +572,19 @@
       updateDate();
       loadFaculty();
       loadMarquee();
+      loadAds(); // Load ads initially
       adjustLayout();
 
       // Start marquee animation ONCE
       setTimeout(() => {
         animateMarquee();
-      }, 1000); // Delay to ensure text is loaded
+      }, 1000);
 
       // Set up intervals (only once)
       setInterval(updateClock, 1000);
       setInterval(loadFaculty, 3000);
-      setInterval(loadMarquee, 300000); // Only updates text, doesn't restart animation
+      setInterval(loadMarquee, 300000);
+      setInterval(loadAds, 300000); // Refresh ads every 10 minutes
       setInterval(updateDate, 60000);
     });
 
@@ -630,12 +638,22 @@
     }
 
     // Fetch ads and start sequence
-    fetch("https://faculty-status-backend.onrender.com/api/ads")
-      .then(res => res.json())
-      .then(data => {
-        ads = data;
-        if (ads.length) runAdSequence();
-      });
+    function loadAds() {
+      fetch("https://faculty-status-backend.onrender.com/api/ads")
+        .then(res => res.json())
+        .then(data => {
+          ads = data;
+          console.log(`Loaded ${ads.length} ads`); // Optional: for debugging
+        })
+        .catch(err => {
+          console.error("Failed to load ads:", err);
+        });
+    }
+
+    loadAds();
+    setTimeout(() => {
+      if (ads.length) runAdSequence();
+    }, 1000); // Small delay to ensure ads are loaded
 
     function updateAdProgress(duration, elapsed = 0) {
       const bar = document.getElementById("adProgressBar");
@@ -689,34 +707,100 @@
           }, duration);
           totalAdTime += duration;
         } else if (ad.type === "video") {
-          adVideo.src = "https://faculty-status-backend.onrender.com" + ad.src;
+          const src = "https://faculty-status-backend.onrender.com" + ad.src;
+          adVideo.pause();
+          adVideo.removeAttribute("src");
           adVideo.load();
+          adVideo.style.display = "none";
+
+          let metaTimeout, startTimeout, safetyTimeout, progressInterval;
+          const startTs = Date.now();
+
+          function clearAll(next=true) {
+            clearTimeout(metaTimeout);
+            clearTimeout(startTimeout);
+            clearTimeout(safetyTimeout);
+            if (progressInterval) clearInterval(progressInterval);
+            adVideo.onloadedmetadata = null;
+            adVideo.onerror = null;
+            adVideo.onstalled = null;
+            adVideo.onabort = null;
+            adVideo.onended = null;
+            if (next) {
+              adVideo.style.display = "none";
+              current++;
+              showNextAd();
+            }
+          }
+
           adVideo.onloadedmetadata = () => {
             adVideo.style.display = "block";
             setAdStretch(adVideo);
-            adVideo.play();
-            const duration = adVideo.duration * 1000;
-            updateAdProgress(duration, 0);
-            const progressInterval = setInterval(() => {
-              updateAdProgress(duration, adVideo.currentTime * 1000);
-              if (adVideo.paused || adVideo.ended) clearInterval(progressInterval);
-            }, 200);
-            adVideo.onended = () => {
-              adVideo.style.display = "none";
-              updateAdProgress(duration, duration);
-              current++;
-              showNextAd();
-            };
-            setTimeout(() => {
-              if (!adVideo.paused) {
-                adVideo.pause();
-                adVideo.style.display = "none";
-                current++;
-                showNextAd();
+            const durMs = isFinite(adVideo.duration) && adVideo.duration > 0
+              ? adVideo.duration * 1000
+              : 15000; // fallback duration
+            adVideo.play().catch(err => {
+              console.warn("Play() rejected, skipping video:", err);
+              clearAll(true);
+              return;
+            });
+
+            updateAdProgress(durMs, 0);
+            progressInterval = setInterval(() => {
+              updateAdProgress(durMs, adVideo.currentTime * 1000);
+              if (adVideo.paused || adVideo.ended) {
+                clearInterval(progressInterval);
               }
-            }, duration);
-            totalAdTime += duration;
+            }, 250);
+
+            adVideo.onended = () => {
+              updateAdProgress(durMs, durMs);
+              totalAdTime += durMs;
+              clearAll(true);
+            };
+
+            // Safety: force advance if ended not received
+            safetyTimeout = setTimeout(() => {
+              console.warn("Video safety timeout, forcing next.");
+              totalAdTime += durMs;
+              clearAll(true);
+            }, durMs + 2000);
           };
+
+          adVideo.onerror = (e) => {
+            console.error("Video error:", e, src);
+            clearAll(true);
+          };
+
+          adVideo.onstalled = () => {
+            console.warn("Video stalled, skipping:", src);
+            clearAll(true);
+          };
+
+          adVideo.onabort = () => {
+            console.warn("Video aborted:", src);
+            clearAll(true);
+          };
+
+          // If metadata not received in 5s skip
+          metaTimeout = setTimeout(() => {
+            console.warn("Metadata timeout (5s), skipping video:", src);
+            clearAll(true);
+          }, 5000);
+
+          // If it started but first frame not visible in 2s after metadata (older TVs) try manual play again
+          startTimeout = setTimeout(() => {
+            if (adVideo.style.display === "none") {
+              console.warn("Retry making video visible");
+              adVideo.style.display = "block";
+            }
+            if (adVideo.paused) {
+              adVideo.play().catch(()=>{});
+            }
+          }, 3000);
+
+          adVideo.src = src;
+          adVideo.load();
         }
       }
 
