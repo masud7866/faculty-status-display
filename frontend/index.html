@@ -755,7 +755,7 @@
             }, 250);
 
             adVideo.onended = () => {
-              console.log("Video ended naturally");
+              console.log("Video ended naturally at:", adVideo.currentTime, "of", adVideo.duration);
               updateAdProgress(durMs, durMs);
               totalAdTime += durMs;
               clearAll(true);
@@ -763,10 +763,20 @@
 
             // Safety: force advance if ended not received (with proper duration)
             safetyTimeout = setTimeout(() => {
-              console.warn("Video safety timeout reached, forcing next");
-              totalAdTime += durMs;
-              clearAll(true);
-            }, durMs + 15000); // Add 3 seconds buffer to actual duration
+              // Only force close if video is actually near the end or stalled
+              if (adVideo.currentTime >= (adVideo.duration - 2) || adVideo.currentTime === 0) {
+                console.warn("Video safety timeout reached, forcing next. Current time:", adVideo.currentTime, "Duration:", adVideo.duration);
+                totalAdTime += durMs;
+                clearAll(true);
+              } else {
+                console.log("Video still playing normally, extending timeout");
+                // Extend timeout if video is still playing normally
+                safetyTimeout = setTimeout(() => {
+                  totalAdTime += durMs;
+                  clearAll(true);
+                }, 10000); // Additional 10 seconds
+              }
+            }, durMs + 5000); // 5 second buffer
           };
 
           adVideo.onerror = (e) => {
