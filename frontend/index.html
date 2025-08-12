@@ -709,18 +709,21 @@
           totalAdTime += duration;
         } else if (ad.type === "video") {
           const src = "https://faculty-status-backend.onrender.com" + ad.src;
+          console.log("Loading video (no metadata expected):", src);
+          
           adVideo.pause();
           adVideo.removeAttribute("src");
           adVideo.load();
           adVideo.style.display = "none";
 
-          let metaTimeout, safetyTimeout, progressInterval;
+          let canPlayTimeout, progressInterval;
+          const DEFAULT_DURATION = 30000; // 30 seconds default
 
           function clearAll(next = true) {
-            clearTimeout(metaTimeout);
-            // Removed: clearTimeout(safetyTimeout);
+            clearTimeout(canPlayTimeout);
             if (progressInterval) clearInterval(progressInterval);
-            adVideo.onloadedmetadata = null;
+            adVideo.oncanplay = null;
+            adVideo.onloadeddata = null;
             adVideo.onerror = null;
             adVideo.onstalled = null;
             adVideo.onabort = null;
@@ -732,41 +735,62 @@
             }
           }
 
-          adVideo.onloadedmetadata = () => {
+          // Use canplay instead of loadedmetadata (works without metadata)
+          adVideo.oncanplay = () => {
+            console.log("Video can play, starting playback");
             adVideo.style.display = "block";
             setAdStretch(adVideo);
             
-            // Wait a bit more for duration to be available
-            setTimeout(() => {
-              const durMs = isFinite(adVideo.duration) && adVideo.duration > 0
-                ? adVideo.duration * 1000
-                : 30000; // fallback
-          
-              console.log("Video duration:", adVideo.duration, "seconds");
+            // Get duration or use default
+            const durMs = isFinite(adVideo.duration) && adVideo.duration > 0
+              ? adVideo.duration * 1000
+              : DEFAULT_DURATION;
+            
+            console.log("Using duration:", durMs, "ms (from duration:", adVideo.duration, ")");
+            
+            adVideo.play().catch(err => {
+              console.warn("Play() rejected:", err);
+              clearAll(true);
+              return;
+            });
+
+            updateAdProgress(durMs, 0);
+            
+            // Track progress - check if video actually ends or reaches duration
+            let startTime = Date.now();
+            progressInterval = setInterval(() => {
+              const elapsed = Date.now() - startTime;
               
-              adVideo.play().catch(err => {
-                console.warn("Play() rejected:", err);
+              if (adVideo.ended) {
+                // Video ended naturally
+                console.log("Video ended naturally");
+                updateAdProgress(durMs, durMs);
+                totalAdTime += elapsed;
                 clearAll(true);
                 return;
-              });
-
-              updateAdProgress(durMs, 0);
-              progressInterval = setInterval(() => {
-                if (!adVideo.paused && !adVideo.ended) {
-                  updateAdProgress(durMs, adVideo.currentTime * 1000);
-                }
-              }, 250);
-
-              adVideo.onended = () => {
-                console.log("Video ended naturally at:", adVideo.currentTime, "seconds");
+              }
+              
+              if (elapsed >= durMs) {
+                // Reached default duration
+                console.log("Reached default duration, ending video");
                 updateAdProgress(durMs, durMs);
                 totalAdTime += durMs;
                 clearAll(true);
-              };
-
-              // NO SAFETY TIMEOUT - let video play naturally until it ends
+                return;
+              }
               
-            }, 500); // Wait 500ms for duration to be ready
+              // Update progress based on elapsed time (since we may not have currentTime)
+              updateAdProgress(durMs, elapsed);
+            }, 250);
+
+            // Backup: listen for ended event
+            adVideo.onended = () => {
+              console.log("Video ended event fired");
+              const elapsed = Date.now() - startTime;
+              updateAdProgress(durMs, durMs);
+              totalAdTime += elapsed;
+              clearAll(true);
+            };
           };
 
           adVideo.onerror = (e) => {
@@ -784,11 +808,11 @@
             clearAll(true);
           };
 
-          // If metadata not received in 10s skip (increased from 5s for slow loading)
-          metaTimeout = setTimeout(() => {
-            console.warn("Metadata timeout (10s), skipping video:", src);
+          // Wait for canplay (more reliable than loadedmetadata)
+          canPlayTimeout = setTimeout(() => {
+            console.warn("Video canplay timeout (15s), skipping:", src);
             clearAll(true);
-          }, 10000);
+          }, 15000);
 
           adVideo.src = src;
           adVideo.load();
