@@ -761,22 +761,29 @@
               clearAll(true);
             };
 
-            // Safety: force advance if ended not received (with proper duration)
+            // Safety: only force close if video is actually stuck or at the end
             safetyTimeout = setTimeout(() => {
-              // Only force close if video is actually near the end or stalled
-              if (adVideo.currentTime >= (adVideo.duration - 2) || adVideo.currentTime === 0) {
-                console.warn("Video safety timeout reached, forcing next. Current time:", adVideo.currentTime, "Duration:", adVideo.duration);
+              const currentTime = adVideo.currentTime;
+              const duration = adVideo.duration;
+              
+              console.log("Safety timeout triggered. Current time:", currentTime, "Duration:", duration, "Video ended:", adVideo.ended);
+              
+              // Only force close if video is actually done or stuck (not progressing)
+              if (adVideo.ended || currentTime >= (duration - 1) || currentTime === 0) {
+                console.warn("Video appears finished or stuck, forcing next");
                 totalAdTime += durMs;
                 clearAll(true);
               } else {
-                console.log("Video still playing normally, extending timeout");
-                // Extend timeout if video is still playing normally
+                console.log("Video still playing, extending timeout for", duration - currentTime, "more seconds");
+                // Give it the remaining time plus a small buffer
+                const remainingTime = (duration - currentTime) * 1000 + 3000;
                 safetyTimeout = setTimeout(() => {
+                  console.warn("Extended timeout reached, forcing next");
                   totalAdTime += durMs;
                   clearAll(true);
-                }, 10000); // Additional 10 seconds
+                }, remainingTime);
               }
-            }, durMs + 15000); // 15 second buffer
+            }, durMs + 3000); // Only 3 second buffer, not 15
           };
 
           adVideo.onerror = (e) => {
