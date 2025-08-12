@@ -252,6 +252,7 @@
       max-width:100%;
       max-height:100%;
       object-fit: contain;
+      opacity: 1;
     }
 
     #adOverlay.stretch-horizontal img,
@@ -713,12 +714,10 @@
           adVideo.load();
           adVideo.style.display = "none";
 
-          let metaTimeout, startTimeout, safetyTimeout, progressInterval;
-          const startTs = Date.now();
+          let metaTimeout, safetyTimeout, progressInterval;
 
-          function clearAll(next=true) {
+          function clearAll(next = true) {
             clearTimeout(metaTimeout);
-            clearTimeout(startTimeout);
             clearTimeout(safetyTimeout);
             if (progressInterval) clearInterval(progressInterval);
             adVideo.onloadedmetadata = null;
@@ -734,11 +733,14 @@
           }
 
           adVideo.onloadedmetadata = () => {
+            console.log("Video metadata loaded, duration:", adVideo.duration);
             adVideo.style.display = "block";
             setAdStretch(adVideo);
+            
             const durMs = isFinite(adVideo.duration) && adVideo.duration > 0
               ? adVideo.duration * 1000
               : 15000; // fallback duration
+            
             adVideo.play().catch(err => {
               console.warn("Play() rejected, skipping video:", err);
               clearAll(true);
@@ -747,24 +749,24 @@
 
             updateAdProgress(durMs, 0);
             progressInterval = setInterval(() => {
-              updateAdProgress(durMs, adVideo.currentTime * 1000);
-              if (adVideo.paused || adVideo.ended) {
-                clearInterval(progressInterval);
+              if (!adVideo.paused && !adVideo.ended) {
+                updateAdProgress(durMs, adVideo.currentTime * 1000);
               }
             }, 250);
 
             adVideo.onended = () => {
+              console.log("Video ended naturally");
               updateAdProgress(durMs, durMs);
               totalAdTime += durMs;
               clearAll(true);
             };
 
-            // Safety: force advance if ended not received
+            // Safety: force advance if ended not received (with proper duration)
             safetyTimeout = setTimeout(() => {
-              console.warn("Video safety timeout, forcing next.");
+              console.warn("Video safety timeout reached, forcing next");
               totalAdTime += durMs;
               clearAll(true);
-            }, durMs + 2000);
+            }, durMs + 3000); // Add 3 seconds buffer to actual duration
           };
 
           adVideo.onerror = (e) => {
@@ -782,22 +784,11 @@
             clearAll(true);
           };
 
-          // If metadata not received in 5s skip
+          // If metadata not received in 10s skip (increased from 5s for slow loading)
           metaTimeout = setTimeout(() => {
-            console.warn("Metadata timeout (5s), skipping video:", src);
+            console.warn("Metadata timeout (10s), skipping video:", src);
             clearAll(true);
-          }, 5000);
-
-          // If it started but first frame not visible in 2s after metadata (older TVs) try manual play again
-          startTimeout = setTimeout(() => {
-            if (adVideo.style.display === "none") {
-              console.warn("Retry making video visible");
-              adVideo.style.display = "block";
-            }
-            if (adVideo.paused) {
-              adVideo.play().catch(()=>{});
-            }
-          }, 3000);
+          }, 10000);
 
           adVideo.src = src;
           adVideo.load();
