@@ -735,34 +735,43 @@
           adVideo.onloadedmetadata = () => {
             adVideo.style.display = "block";
             setAdStretch(adVideo);
+            
+            // Wait a bit more for duration to be available
+            setTimeout(() => {
+              const durMs = isFinite(adVideo.duration) && adVideo.duration > 0
+                ? adVideo.duration * 1000
+                : 30000; // Increased fallback
+            
+              console.log("Final duration check:", adVideo.duration, "->", durMs);
+              
+              adVideo.play().catch(err => {
+                console.warn("Play() rejected:", err);
+                clearAll(true);
+                return;
+              });
 
-            // Use actual duration if available, fallback otherwise
-            let durMs = (isFinite(adVideo.duration) && adVideo.duration > 0)
-              ? adVideo.duration * 1000
-              : 30000; // fallback to 30 seconds if duration is not available
+              updateAdProgress(durMs, 0);
+              progressInterval = setInterval(() => {
+                if (!adVideo.paused && !adVideo.ended) {
+                  updateAdProgress(durMs, adVideo.currentTime * 1000);
+                }
+              }, 250);
 
-            adVideo.play().catch(err => {
-              clearAll(true);
-              return;
-            });
+              adVideo.onended = () => {
+                console.log("Video ended naturally");
+                updateAdProgress(durMs, durMs);
+                totalAdTime += durMs;
+                clearAll(true);
+              };
 
-            updateAdProgress(durMs, 0);
-            progressInterval = setInterval(() => {
-              if (!adVideo.paused && !adVideo.ended) {
-                updateAdProgress(durMs, adVideo.currentTime * 1000);
-              }
-            }, 250);
-
-            adVideo.onended = () => {
-              updateAdProgress(durMs, durMs);
-              totalAdTime += durMs;
-              clearAll(true);
-            };
-
-            // Safety: force advance if ended not received
-            safetyTimeout = setTimeout(() => {
-              clearAll(true);
-            }, durMs + 3000); // 3s buffer
+              // Safety timeout with actual duration
+              safetyTimeout = setTimeout(() => {
+                console.warn("Safety timeout reached after", durMs + 3000, "ms");
+                totalAdTime += durMs;
+                clearAll(true);
+              }, durMs + 3000);
+              
+            }, 500); // Wait 500ms for duration to be ready
           };
 
           adVideo.onerror = (e) => {
