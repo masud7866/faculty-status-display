@@ -709,21 +709,23 @@
           totalAdTime += duration;
         } else if (ad.type === "video") {
           const src = "https://faculty-status-backend.onrender.com" + ad.src;
-          console.log("Loading video (no metadata expected):", src);
+          console.log("Loading video:", src);
           
           adVideo.pause();
           adVideo.removeAttribute("src");
           adVideo.load();
           adVideo.style.display = "none";
 
-          let canPlayTimeout, progressInterval;
+          let playTimeout, progressInterval;
           const DEFAULT_DURATION = 30000; // 30 seconds default
+          let videoStarted = false;
 
           function clearAll(next = true) {
-            clearTimeout(canPlayTimeout);
+            clearTimeout(playTimeout);
             if (progressInterval) clearInterval(progressInterval);
             adVideo.oncanplay = null;
             adVideo.onloadeddata = null;
+            adVideo.onloadstart = null;
             adVideo.onerror = null;
             adVideo.onstalled = null;
             adVideo.onabort = null;
@@ -735,9 +737,11 @@
             }
           }
 
-          // Use canplay instead of loadedmetadata (works without metadata)
-          adVideo.oncanplay = () => {
-            console.log("Video can play, starting playback");
+          function startVideo() {
+            if (videoStarted) return; // Prevent multiple starts
+            videoStarted = true;
+            
+            console.log("Starting video playback");
             adVideo.style.display = "block";
             setAdStretch(adVideo);
             
@@ -746,7 +750,7 @@
               ? adVideo.duration * 1000
               : DEFAULT_DURATION;
             
-            console.log("Using duration:", durMs, "ms (from duration:", adVideo.duration, ")");
+            console.log("Using duration:", durMs, "ms");
             
             adVideo.play().catch(err => {
               console.warn("Play() rejected:", err);
@@ -756,13 +760,12 @@
 
             updateAdProgress(durMs, 0);
             
-            // Track progress - check if video actually ends or reaches duration
+            // Track progress with elapsed time
             let startTime = Date.now();
             progressInterval = setInterval(() => {
               const elapsed = Date.now() - startTime;
               
               if (adVideo.ended) {
-                // Video ended naturally
                 console.log("Video ended naturally");
                 updateAdProgress(durMs, durMs);
                 totalAdTime += elapsed;
@@ -771,19 +774,17 @@
               }
               
               if (elapsed >= durMs) {
-                // Reached default duration
-                console.log("Reached default duration, ending video");
+                console.log("Reached duration limit, ending video");
                 updateAdProgress(durMs, durMs);
                 totalAdTime += durMs;
                 clearAll(true);
                 return;
               }
               
-              // Update progress based on elapsed time (since we may not have currentTime)
               updateAdProgress(durMs, elapsed);
             }, 250);
 
-            // Backup: listen for ended event
+            // Listen for natural end
             adVideo.onended = () => {
               console.log("Video ended event fired");
               const elapsed = Date.now() - startTime;
@@ -791,15 +792,40 @@
               totalAdTime += elapsed;
               clearAll(true);
             };
+          }
+
+          // Try multiple events - some may work when others don't
+          adVideo.oncanplay = () => {
+            console.log("Video oncanplay fired");
+            startVideo();
+          };
+
+          adVideo.onloadeddata = () => {
+            console.log("Video onloadeddata fired");
+            startVideo();
+          };
+
+          adVideo.onloadstart = () => {
+            console.log("Video onloadstart fired");
+            // Try immediate playback for videos without proper metadata
+            setTimeout(() => {
+              if (!videoStarted) {
+                console.log("Forcing video start after loadstart");
+                startVideo();
+              }
+            }, 2000);
           };
 
           adVideo.onerror = (e) => {
             console.error("Video error:", e, src);
+            if (e.target.error) {
+              console.error("Error code:", e.target.error.code, "Message:", e.target.error.message);
+            }
             clearAll(true);
           };
 
           adVideo.onstalled = () => {
-            console.warn("Video stalled, skipping:", src);
+            console.warn("Video stalled:", src);
             clearAll(true);
           };
 
@@ -808,12 +834,15 @@
             clearAll(true);
           };
 
-          // Wait for canplay (more reliable than loadedmetadata)
-          canPlayTimeout = setTimeout(() => {
-            console.warn("Video canplay timeout (15s), skipping:", src);
-            clearAll(true);
-          }, 15000);
+          // Fallback: force start after 3 seconds regardless of events
+          playTimeout = setTimeout(() => {
+            if (!videoStarted) {
+              console.warn("No video events fired, forcing start");
+              startVideo();
+            }
+          }, 3000);
 
+          // Set source and load
           adVideo.src = src;
           adVideo.load();
         }
@@ -877,6 +906,16 @@
       const dateStr = `<div>${dayName}, ${day} ${month}</div><div>${year}</div>`;
       document.getElementById("dateDisplay").innerHTML = dateStr;
     }
+
+    // Test video support on TV
+function testVideoSupport() {
+  const video = document.createElement('video');
+  console.log("Video format support:");
+  console.log("MP4/H.264:", video.canPlayType('video/mp4; codecs="avc1.42E01E"'));
+  console.log("MP4/H.264 AAC:", video.canPlayType('video/mp4; codecs="avc1.42E01E, mp4a.40.2"'));
+  console.log("WebM:", video.canPlayType('video/webm'));
+}
+testVideoSupport();
   </script>
 </body>
 
