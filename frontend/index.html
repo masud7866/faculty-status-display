@@ -689,15 +689,27 @@
       const adImage = document.getElementById("adImage");
       const adVideo = document.getElementById("adVideo");
 
+      console.log("Starting ad sequence");
       showOverlay();
 
       function showNextAd() {
         if (current >= ads.length) {
+          console.log("Ad sequence finished. Total ad time:", totalAdTime, "ms");
           hideOverlay();
-          // Break logic
+          
+          // Break logic based on total ad time
           let breakMs = 60000; // default 1 min
-          if (totalAdTime > 120000) breakMs = 240000; // >2min: 4min
-          else if (totalAdTime > 30000) breakMs = 120000; // >30s: 2min
+          if (totalAdTime > 120000) {
+            breakMs = 240000; // >2min total: 4min break
+            console.log("Long ad sequence (>2min), taking 4min break");
+          } else if (totalAdTime > 30000) {
+            breakMs = 120000; // >30s total: 2min break
+            console.log("Medium ad sequence (>30s), taking 2min break");
+          } else {
+            console.log("Short ad sequence (≤30s), taking 1min break");
+          }
+          
+          console.log("Next ad sequence will start in", breakMs / 1000, "seconds");
           nextAdTimeout = setTimeout(runAdSequence, breakMs);
           return;
         }
@@ -712,21 +724,26 @@
             adImage.style.display = "block";
             setAdStretch(adImage);
           };
+          
           let elapsed = 0;
-          const duration = 20000;
+          const duration = 20000; // 20 seconds for images
           updateAdProgress(duration, 0);
+          
           const progressInterval = setInterval(() => {
             elapsed += 200;
             updateAdProgress(duration, elapsed);
             if (elapsed >= duration) clearInterval(progressInterval);
           }, 200);
+          
           setTimeout(() => {
             adImage.style.display = "none";
             updateAdProgress(duration, duration);
+            totalAdTime += duration; // Always add the full duration
+            console.log("Image ad finished, added", duration, "ms. Total:", totalAdTime, "ms");
             current++;
             showNextAd();
           }, duration);
-          totalAdTime += duration;
+          
         } else if (ad.type === "video") {
           const src = "https://faculty-status-backend.onrender.com" + ad.src;
           console.log("Loading video:", src);
@@ -739,6 +756,7 @@
           let playTimeout, progressInterval;
           const DEFAULT_DURATION = 30000; // 30 seconds default
           let videoStarted = false;
+          let videoDuration = DEFAULT_DURATION; // Track the duration we're using
 
           function clearAll(next = true) {
             clearTimeout(playTimeout);
@@ -752,13 +770,15 @@
             adVideo.onended = null;
             if (next) {
               adVideo.style.display = "none";
+              totalAdTime += videoDuration; // Add the full duration we planned to use
+              console.log("Video ad finished, added", videoDuration, "ms. Total:", totalAdTime, "ms");
               current++;
               showNextAd();
             }
           }
 
           function startVideo() {
-            if (videoStarted) return; // Prevent multiple starts
+            if (videoStarted) return;
             videoStarted = true;
 
             console.log("Starting video playback");
@@ -766,11 +786,11 @@
             setAdStretch(adVideo);
 
             // Get duration or use default
-            const durMs = isFinite(adVideo.duration) && adVideo.duration > 0
+            videoDuration = isFinite(adVideo.duration) && adVideo.duration > 0
               ? adVideo.duration * 1000
               : DEFAULT_DURATION;
 
-            console.log("Using duration:", durMs, "ms");
+            console.log("Using video duration:", videoDuration, "ms");
 
             adVideo.play().catch(err => {
               console.warn("Play() rejected:", err);
@@ -778,7 +798,7 @@
               return;
             });
 
-            updateAdProgress(durMs, 0);
+            updateAdProgress(videoDuration, 0);
 
             // Track progress with elapsed time
             let startTime = Date.now();
@@ -787,34 +807,29 @@
 
               if (adVideo.ended) {
                 console.log("Video ended naturally");
-                updateAdProgress(durMs, durMs);
-                totalAdTime += elapsed;
+                updateAdProgress(videoDuration, videoDuration);
                 clearAll(true);
                 return;
               }
 
-              if (elapsed >= durMs) {
+              if (elapsed >= videoDuration) {
                 console.log("Reached duration limit, ending video");
-                updateAdProgress(durMs, durMs);
-                totalAdTime += durMs;
+                updateAdProgress(videoDuration, videoDuration);
                 clearAll(true);
                 return;
               }
 
-              updateAdProgress(durMs, elapsed);
+              updateAdProgress(videoDuration, elapsed);
             }, 250);
 
-            // Listen for natural end
             adVideo.onended = () => {
               console.log("Video ended event fired");
-              const elapsed = Date.now() - startTime;
-              updateAdProgress(durMs, durMs);
-              totalAdTime += elapsed;
+              updateAdProgress(videoDuration, videoDuration);
               clearAll(true);
             };
           }
 
-          // Try multiple events - some may work when others don't
+          // Event handlers remain the same...
           adVideo.oncanplay = () => {
             console.log("Video oncanplay fired");
             startVideo();
@@ -827,7 +842,6 @@
 
           adVideo.onloadstart = () => {
             console.log("Video onloadstart fired");
-            // Try immediate playback for videos without proper metadata
             setTimeout(() => {
               if (!videoStarted) {
                 console.log("Forcing video start after loadstart");
@@ -838,9 +852,6 @@
 
           adVideo.onerror = (e) => {
             console.error("Video error:", e, src);
-            if (e.target.error) {
-              console.error("Error code:", e.target.error.code, "Message:", e.target.error.message);
-            }
             clearAll(true);
           };
 
@@ -854,7 +865,6 @@
             clearAll(true);
           };
 
-          // Fallback: force start after 3 seconds regardless of events
           playTimeout = setTimeout(() => {
             if (!videoStarted) {
               console.warn("No video events fired, forcing start");
@@ -862,7 +872,6 @@
             }
           }, 3000);
 
-          // Set source and load
           adVideo.src = src;
           adVideo.load();
         }
