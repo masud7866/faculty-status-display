@@ -84,7 +84,6 @@
       gap: 1vh;
       padding: 1vh 2vw;
       box-sizing: border-box;
-      /* Height set dynamically by JS */
       overflow: visible;
       contain: layout style;
       will-change: contents;
@@ -105,7 +104,6 @@
       word-break: break-word;
       box-sizing: border-box;
       padding: 1vh 0.5vw;
-      /* Increased vertical padding */
       contain: layout style;
     }
 
@@ -229,7 +227,6 @@
     #adOverlay {
       position: fixed;
       left: 0;
-      /* top and height set dynamically by JS */
       width: 100vw;
       background: rgba(0, 0, 0, 0.85);
       z-index: 9999;
@@ -356,17 +353,14 @@
 
     .seven-segment .seg {
       fill: #333;
-      /* Changed from #222 to slightly lighter */
       transition: fill 0.2s;
       opacity: 0.25;
-      /* Make unlit segments barely visible */
     }
 
     .seven-segment .seg.lit {
       fill: #38bdf8;
       filter: drop-shadow(0 0 6px #38bdf8);
       opacity: 1;
-      /* Full opacity for lit segments */
     }
 
     .digit-bg {
@@ -447,12 +441,20 @@
       "9": ["a", "b", "c", "d", "f", "g"]
     };
 
-    // Add these missing declarations:
+    // Global variables with proper state management
     let ads = [];
     let nextAdTimeout = null;
-    let marqueeAnimation = null; // Track the animation
+    let adCycleRunning = false;
+    let adBreakUntil = 0;
+    let marqueeAnimation = null;
     let clockContainer = null;
     let dateDisplay = null;
+    
+    // Ad configuration constants
+    const IMAGE_AD_DURATION = 30000; // 30 seconds for images
+    const MAX_VIDEO_CAP_MS = 5 * 60 * 1000; // 5 minute safety cap for videos
+    const VIDEO_DURATION_READY_DELAY = 1200; // ms after play() to re-check metadata
+    const MIN_BREAK_MS = 60000; // Minimum break between ad cycles
 
     function loadFaculty() {
       try {
@@ -503,7 +505,6 @@
           })
           .catch(err => {
             console.error("Failed to load faculty:", err);
-            // Retry after 10 seconds
             setTimeout(loadFaculty, 10000);
           });
       } catch (error) {
@@ -514,38 +515,38 @@
     function renderDigit(digit) {
       const segs = SEGMENTS[digit] || [];
       return `
-    <span class="digit-bg">
-      <svg width="32" height="56" viewBox="0 0 32 56" class="seven-segment">
-        <rect class="seg seg-a${segs.includes('a') ? ' lit' : ''}" x="4" y="2" width="24" height="4" rx="2"/>
-        <rect class="seg seg-b${segs.includes('b') ? ' lit' : ''}" x="26" y="6" width="4" height="20" rx="2"/>
-        <rect class="seg seg-c${segs.includes('c') ? ' lit' : ''}" x="26" y="30" width="4" height="20" rx="2"/>
-        <rect class="seg seg-d${segs.includes('d') ? ' lit' : ''}" x="4" y="50" width="24" height="4" rx="2"/>
-        <rect class="seg seg-e${segs.includes('e') ? ' lit' : ''}" x="2" y="30" width="4" height="20" rx="2"/>
-        <rect class="seg seg-f${segs.includes('f') ? ' lit' : ''}" x="2" y="6" width="4" height="20" rx="2"/>
-        <rect class="seg seg-g${segs.includes('g') ? ' lit' : ''}" x="4" y="26" width="24" height="4" rx="2"/>
-      </svg>
-    </span>
-  `;
+        <span class="digit-bg">
+          <svg width="32" height="56" viewBox="0 0 32 56" class="seven-segment">
+            <rect class="seg seg-a${segs.includes('a') ? ' lit' : ''}" x="4" y="2" width="24" height="4" rx="2"/>
+            <rect class="seg seg-b${segs.includes('b') ? ' lit' : ''}" x="26" y="6" width="4" height="20" rx="2"/>
+            <rect class="seg seg-c${segs.includes('c') ? ' lit' : ''}" x="26" y="30" width="4" height="20" rx="2"/>
+            <rect class="seg seg-d${segs.includes('d') ? ' lit' : ''}" x="4" y="50" width="24" height="4" rx="2"/>
+            <rect class="seg seg-e${segs.includes('e') ? ' lit' : ''}" x="2" y="30" width="4" height="20" rx="2"/>
+            <rect class="seg seg-f${segs.includes('f') ? ' lit' : ''}" x="2" y="6" width="4" height="20" rx="2"/>
+            <rect class="seg seg-g${segs.includes('g') ? ' lit' : ''}" x="4" y="26" width="24" height="4" rx="2"/>
+          </svg>
+        </span>
+      `;
     }
 
     function renderColon() {
       return `
-    <span class="digit-bg colon">
-      <svg width="12" height="56" viewBox="0 0 12 56">
-        <circle cx="6" cy="16" r="3" fill="#38bdf8" filter="url(#glow)"/>
-        <circle cx="6" cy="40" r="3" fill="#38bdf8" filter="url(#glow)"/>
-        <defs>
-          <filter id="glow" x="-5" y="-5" width="22" height="22">
-            <feGaussianBlur stdDeviation="2" result="coloredBlur"/>
-            <feMerge>
-              <feMergeNode in="coloredBlur"/>
-              <feMergeNode in="SourceGraphic"/>
-            </feMerge>
-          </filter>
-        </defs>
-      </svg>
-    </span>
-  `;
+        <span class="digit-bg colon">
+          <svg width="12" height="56" viewBox="0 0 12 56">
+            <circle cx="6" cy="16" r="3" fill="#38bdf8" filter="url(#glow)"/>
+            <circle cx="6" cy="40" r="3" fill="#38bdf8" filter="url(#glow)"/>
+            <defs>
+              <filter id="glow" x="-5" y="-5" width="22" height="22">
+                <feGaussianBlur stdDeviation="2" result="coloredBlur"/>
+                <feMerge>
+                  <feMergeNode in="coloredBlur"/>
+                  <feMergeNode in="SourceGraphic"/>
+                </feMerge>
+              </filter>
+            </defs>
+          </svg>
+        </span>
+      `;
     }
 
     function renderClock(h, m, s, ampm) {
@@ -585,30 +586,6 @@
       renderClock(h, m, s, ampm);
     }
 
-    document.addEventListener("DOMContentLoaded", function () {
-      // Initial setup
-      updateClock();
-      updateDate();
-      loadFaculty();
-      loadMarquee();
-      loadAds(); // Load ads initially
-      adjustLayout();
-
-      // Start marquee animation ONCE
-      setTimeout(() => {
-        animateMarquee();
-      }, 1000);
-
-      // Set up intervals (only once)
-      setInterval(updateClock, 1000);
-      setInterval(loadFaculty, 3000);
-      setInterval(loadMarquee, 300000);
-      setInterval(loadAds, 300000); // Refresh ads every 5 minutes
-      setInterval(updateDate, 60000);
-    });
-
-    window.addEventListener("resize", adjustLayout);
-
     function adjustLayout() {
       const header = document.querySelector("header");
       const footer = document.getElementById("marqueeFooter");
@@ -620,28 +597,23 @@
       overlay.style.top = headerHeight + "px";
       overlay.style.height = `calc(100vh - ${headerHeight}px - ${footerHeight}px)`;
     }
-    // DELETE THESE TOO:
-    // window.addEventListener("resize", adjustLayout);
-    // window.addEventListener("DOMContentLoaded", adjustLayout);
 
-    // Helper: Show/hide overlay with fade
     function showOverlay() {
       const overlay = document.getElementById("adOverlay");
       overlay.classList.add("active");
     }
+
     function hideOverlay() {
       const overlay = document.getElementById("adOverlay");
-      overlay.classList.remove("active");
-      overlay.classList.remove("stretch-horizontal");
-      overlay.classList.remove("stretch-vertical");
+      overlay.classList.remove("active", "stretch-horizontal", "stretch-vertical");
     }
 
-    // Helper: Stretch ad to fill horizontally or vertically, keeping aspect ratio
     function setAdStretch(mediaEl) {
       const overlay = document.getElementById("adOverlay");
       overlay.classList.remove("stretch-horizontal", "stretch-vertical");
       const overlayRect = overlay.getBoundingClientRect();
       let mediaWidth, mediaHeight;
+      
       if (mediaEl.tagName === "IMG") {
         mediaWidth = mediaEl.naturalWidth;
         mediaHeight = mediaEl.naturalHeight;
@@ -649,68 +621,104 @@
         mediaWidth = mediaEl.videoWidth;
         mediaHeight = mediaEl.videoHeight;
       }
-      if ((mediaWidth / mediaHeight) > (overlayRect.width / overlayRect.height)) {
-        overlay.classList.add("stretch-horizontal");
-      } else {
-        overlay.classList.add("stretch-vertical");
+      
+      if (mediaWidth && mediaHeight) {
+        if ((mediaWidth / mediaHeight) > (overlayRect.width / overlayRect.height)) {
+          overlay.classList.add("stretch-horizontal");
+        } else {
+          overlay.classList.add("stretch-vertical");
+        }
       }
     }
 
-    // Fetch ads and start sequence
+    function updateAdProgress(total, elapsed = 0) {
+      const bar = document.getElementById("adProgressBar");
+      bar.style.width = Math.min(100, (elapsed / total) * 100) + "%";
+    }
+
     function loadAds() {
       fetch("https://faculty-status-backend.onrender.com/api/ads")
-        .then(res => res.json())
+        .then(r => r.json())
         .then(data => {
           ads = data;
-          console.log(`Loaded ${ads.length} ads`);
-          
-          // Start ad sequence if not already running
-          if (ads.length > 0 && !document.getElementById("adOverlay").classList.contains("active")) {
-            setTimeout(runAdSequence, 2000);
-          }
+          console.log("Ads loaded:", ads.length);
+          maybeStartAdCycle();
         })
-        .catch(err => {
-          console.error("Failed to load ads:", err);
-          // Retry after 30 seconds on error
+        .catch(e => {
+          console.error("Failed to load ads:", e);
           setTimeout(loadAds, 30000);
         });
     }
 
-    function updateAdProgress(duration, elapsed = 0) {
-      const bar = document.getElementById("adProgressBar");
-      bar.style.width = ((elapsed / duration) * 100) + "%";
+    function maybeStartAdCycle() {
+      if (!ads.length) return;
+      if (adCycleRunning) return;
+      if (Date.now() < adBreakUntil) return;
+      if (nextAdTimeout) {
+        clearTimeout(nextAdTimeout);
+        nextAdTimeout = null;
+      }
+      runAdSequence();
+    }
+
+    function scheduleNextCycle(totalAdTime) {
+      let breakMs = 60000; // default 1 min
+      if (totalAdTime > 120000) {
+        breakMs = 240000; // >2min total: 4min break
+      } else if (totalAdTime > 30000) {
+        breakMs = 120000; // >30s total: 2min break
+      }
+      
+      breakMs = Math.max(breakMs, MIN_BREAK_MS);
+      adBreakUntil = Date.now() + breakMs;
+      
+      console.log("Ad cycle done. totalAdTime(ms):", totalAdTime,
+                  "Break(ms):", breakMs,
+                  "Next at:", new Date(adBreakUntil).toLocaleTimeString());
+      
+      nextAdTimeout = setTimeout(() => {
+        nextAdTimeout = null;
+        maybeStartAdCycle();
+      }, breakMs);
     }
 
     function runAdSequence() {
-      let totalAdTime = 0;
-      let current = 0;
+      if (!ads.length) {
+        console.log("No ads to run.");
+        return;
+      }
+      if (adCycleRunning) {
+        console.log("Ad cycle already running.");
+        return;
+      }
+      if (Date.now() < adBreakUntil) {
+        console.log("Still in break; not starting.");
+        return;
+      }
 
-      const overlay = document.getElementById("adOverlay");
+      adCycleRunning = true;
+      showOverlay();
+      console.log("Starting ad sequence");
+
       const adImage = document.getElementById("adImage");
       const adVideo = document.getElementById("adVideo");
+      let current = 0;
+      let totalAdTime = 0;
 
-      console.log("Starting ad sequence");
-      showOverlay();
+      function finishCycle() {
+        hideOverlay();
+        adCycleRunning = false;
+        scheduleNextCycle(totalAdTime);
+      }
 
-      function showNextAd() {
+      function next() {
+        current++;
+        playNext();
+      }
+
+      function playNext() {
         if (current >= ads.length) {
-          console.log("Ad sequence finished. Total ad time:", totalAdTime, "ms");
-          hideOverlay();
-          
-          // Break logic based on total ad time
-          let breakMs = 60000; // default 1 min
-          if (totalAdTime > 120000) {
-            breakMs = 240000; // >2min total: 4min break
-            console.log("Long ad sequence (>2min), taking 4min break");
-          } else if (totalAdTime > 30000) {
-            breakMs = 120000; // >30s total: 2min break
-            console.log("Medium ad sequence (>30s), taking 2min break");
-          } else {
-            console.log("Short ad sequence (≤30s), taking 1min break");
-          }
-          
-          console.log("Next ad sequence will start in", breakMs / 1000, "seconds");
-          nextAdTimeout = setTimeout(runAdSequence, breakMs);
+          finishCycle();
           return;
         }
 
@@ -719,165 +727,176 @@
         adVideo.style.display = "none";
 
         if (ad.type === "image") {
+          // Fixed 30s duration for images
+          const dur = IMAGE_AD_DURATION;
+          console.log("Image ad:", ad.src, "duration:", dur);
+          updateAdProgress(dur, 0);
           adImage.src = "https://faculty-status-backend.onrender.com" + ad.src;
           adImage.onload = () => {
             adImage.style.display = "block";
             setAdStretch(adImage);
           };
-          
+
           let elapsed = 0;
-          const duration = 20000; // 20 seconds for images
-          updateAdProgress(duration, 0);
-          
-          const progressInterval = setInterval(() => {
-            elapsed += 200;
-            updateAdProgress(duration, elapsed);
-            if (elapsed >= duration) clearInterval(progressInterval);
-          }, 200);
-          
+          const interval = setInterval(() => {
+            elapsed += 250;
+            updateAdProgress(dur, elapsed);
+            if (elapsed >= dur) clearInterval(interval);
+          }, 250);
+
           setTimeout(() => {
-            adImage.style.display = "none";
-            updateAdProgress(duration, duration);
-            totalAdTime += duration; // Always add the full duration
-            console.log("Image ad finished, added", duration, "ms. Total:", totalAdTime, "ms");
-            current++;
-            showNextAd();
-          }, duration);
-          
+            totalAdTime += dur;
+            console.log("Image done; totalAdTime now:", totalAdTime);
+            next();
+          }, dur);
+
         } else if (ad.type === "video") {
           const src = "https://faculty-status-backend.onrender.com" + ad.src;
-          console.log("Loading video:", src);
-
+          console.log("Video ad loading:", src);
           adVideo.pause();
           adVideo.removeAttribute("src");
           adVideo.load();
-          adVideo.style.display = "none";
+          
+          let started = false;
+          let declaredDuration = null;
+          let startTs = 0;
+          let progressInterval = null;
+          let resolved = false;
 
-          let playTimeout, progressInterval;
-          const DEFAULT_DURATION = 30000; // 30 seconds default
-          let videoStarted = false;
-          let videoDuration = DEFAULT_DURATION; // Track the duration we're using
-
-          function clearAll(next = true) {
-            clearTimeout(playTimeout);
-            if (progressInterval) clearInterval(progressInterval);
-            adVideo.oncanplay = null;
-            adVideo.onloadeddata = null;
-            adVideo.onloadstart = null;
-            adVideo.onerror = null;
-            adVideo.onstalled = null;
-            adVideo.onabort = null;
-            adVideo.onended = null;
-            if (next) {
-              adVideo.style.display = "none";
-              totalAdTime += videoDuration; // Add the full duration we planned to use
-              console.log("Video ad finished, added", videoDuration, "ms. Total:", totalAdTime, "ms");
-              current++;
-              showNextAd();
+          function resolveDuration() {
+            if (resolved) return;
+            // Try metadata
+            if (isFinite(adVideo.duration) && adVideo.duration > 0) {
+              declaredDuration = Math.min(adVideo.duration * 1000, MAX_VIDEO_CAP_MS);
+              console.log("Resolved video metadata duration(ms):", declaredDuration);
+            }
+            resolved = true;
+            if (declaredDuration == null) {
+              // We'll rely on elapsed until ended (capped)
+              declaredDuration = MAX_VIDEO_CAP_MS;
+              console.log("Metadata unavailable; using elapsed approach with cap", MAX_VIDEO_CAP_MS);
             }
           }
 
-          function startVideo() {
-            if (videoStarted) return;
-            videoStarted = true;
-
-            console.log("Starting video playback");
+          function startPlayback() {
+            if (started) return;
+            started = true;
             adVideo.style.display = "block";
             setAdStretch(adVideo);
-
-            // Get duration or use default
-            videoDuration = isFinite(adVideo.duration) && adVideo.duration > 0
-              ? adVideo.duration * 1000
-              : DEFAULT_DURATION;
-
-            console.log("Using video duration:", videoDuration, "ms");
+            startTs = Date.now();
 
             adVideo.play().catch(err => {
-              console.warn("Play() rejected:", err);
-              clearAll(true);
+              console.warn("play() failed, skipping video", err);
+              totalAdTime += 0;
+              next();
               return;
             });
 
-            updateAdProgress(videoDuration, 0);
+            // Re-try resolving duration after short delay if not ready
+            setTimeout(resolveDuration, VIDEO_DURATION_READY_DELAY);
 
-            // Track progress with elapsed time
-            let startTime = Date.now();
             progressInterval = setInterval(() => {
-              const elapsed = Date.now() - startTime;
-
-              if (adVideo.ended) {
-                console.log("Video ended naturally");
-                updateAdProgress(videoDuration, videoDuration);
-                clearAll(true);
-                return;
+              const elapsed = Date.now() - startTs;
+              // If we still haven't got metadata & elapsed passes cap, end it
+              if (elapsed >= MAX_VIDEO_CAP_MS) {
+                console.warn("Reached video cap; ending");
+                cleanupVideo(elapsed);
+              } else {
+                // For progress bar we use declaredDuration if set, else cap
+                const total = declaredDuration || MAX_VIDEO_CAP_MS;
+                updateAdProgress(total, Math.min(elapsed, total));
               }
-
-              if (elapsed >= videoDuration) {
-                console.log("Reached duration limit, ending video");
-                updateAdProgress(videoDuration, videoDuration);
-                clearAll(true);
-                return;
-              }
-
-              updateAdProgress(videoDuration, elapsed);
-            }, 250);
-
-            adVideo.onended = () => {
-              console.log("Video ended event fired");
-              updateAdProgress(videoDuration, videoDuration);
-              clearAll(true);
-            };
+            }, 500);
           }
 
-          // Event handlers remain the same...
-          adVideo.oncanplay = () => {
-            console.log("Video oncanplay fired");
-            startVideo();
-          };
+          function cleanupVideo(elapsedMs) {
+            if (progressInterval) {
+              clearInterval(progressInterval);
+              progressInterval = null;
+            }
+            adVideo.onended = null;
+            adVideo.onstalled = null;
+            adVideo.onerror = null;
+            adVideo.oncanplay = null;
+            adVideo.onloadeddata = null;
+            adVideo.onloadstart = null;
+            adVideo.onabort = null;
+            adVideo.style.display = "none";
 
-          adVideo.onloadeddata = () => {
-            console.log("Video onloadeddata fired");
-            startVideo();
-          };
-
-          adVideo.onloadstart = () => {
-            console.log("Video onloadstart fired");
-            setTimeout(() => {
-              if (!videoStarted) {
-                console.log("Forcing video start after loadstart");
-                startVideo();
+            // Actual accounted duration:
+            let accounted = elapsedMs;
+            // If metadata valid & shorter than elapsed (rare), prefer metadata
+            if (isFinite(adVideo.duration) && adVideo.duration > 0) {
+              const metaMs = adVideo.duration * 1000;
+              if (metaMs > 0 && metaMs < accounted + 1500) {
+                // Accept small drift; adopt metadata if close
+                accounted = metaMs;
               }
-            }, 2000);
-          };
+            }
+            accounted = Math.min(accounted, MAX_VIDEO_CAP_MS);
+            totalAdTime += accounted;
+            console.log("Video done. Accounted(ms):", accounted, "TotalAdTime:", totalAdTime);
+            next();
+          }
 
-          adVideo.onerror = (e) => {
-            console.error("Video error:", e, src);
-            clearAll(true);
+          adVideo.onended = () => {
+            const elapsed = Date.now() - startTs;
+            resolveDuration();
+            updateAdProgress(declaredDuration || MAX_VIDEO_CAP_MS, declaredDuration || elapsed);
+            cleanupVideo(elapsed);
           };
 
           adVideo.onstalled = () => {
-            console.warn("Video stalled:", src);
-            clearAll(true);
+            console.warn("Video stalled early; attempting continue or skip");
+            if (!started) {
+              cleanupVideo(0);
+            }
+          };
+
+          adVideo.onerror = (e) => {
+            console.error("Video error", e);
+            cleanupVideo(0);
           };
 
           adVideo.onabort = () => {
-            console.warn("Video aborted:", src);
-            clearAll(true);
+            console.warn("Video aborted");
+            cleanupVideo(0);
           };
 
-          playTimeout = setTimeout(() => {
-            if (!videoStarted) {
-              console.warn("No video events fired, forcing start");
-              startVideo();
+          adVideo.oncanplay = () => {
+            resolveDuration();
+            startPlayback();
+          };
+
+          adVideo.onloadeddata = () => {
+            resolveDuration();
+            startPlayback();
+          };
+
+          adVideo.onloadstart = () => {
+            // Force fallback start if no canplay after delay
+            setTimeout(() => {
+              if (!started) startPlayback();
+            }, 1500);
+          };
+
+          // Safety fallback: force start if no events at all
+          setTimeout(() => {
+            if (!started) {
+              console.log("Force starting video (no ready events)");
+              startPlayback();
             }
-          }, 3000);
+          }, 2500);
 
           adVideo.src = src;
           adVideo.load();
+        } else {
+          console.warn("Unknown ad type:", ad.type);
+          next();
         }
       }
 
-      showNextAd();
+      playNext();
     }
 
     function loadMarquee() {
@@ -886,35 +905,27 @@
         .then(text => {
           const marquee = document.getElementById("marqueeText");
           marquee.textContent = text;
-          // Don't call animateMarquee() here - let the existing animation handle the new text
         });
     }
 
     function animateMarquee() {
       const marquee = document.getElementById("marqueeText");
 
-      // Clear any existing animation
       if (marqueeAnimation) {
         clearTimeout(marqueeAnimation);
       }
 
       function loop() {
-        // Get the available width (marquee container width)
         const containerWidth = marquee.offsetWidth;
-
-        // Start from the right edge of the container
         marquee.style.transition = "none";
         marquee.style.transform = `translateX(${containerWidth}px)`;
 
         setTimeout(() => {
-          // Get the actual text width
           const textWidth = marquee.scrollWidth;
           const duration = Math.max(15, textWidth / 80);
           marquee.style.transition = `transform ${duration}s linear`;
-          // Move text completely off screen to the left
           marquee.style.transform = `translateX(-${textWidth}px)`;
 
-          // Schedule next loop
           marqueeAnimation = setTimeout(loop, duration * 1000 + 500);
         }, 100);
       }
@@ -937,6 +948,28 @@
 
       dateDisplay.innerHTML = `<div>${dayName}, ${day} ${month}</div><div>${year}</div>`;
     }
+
+    // Main initialization
+    document.addEventListener("DOMContentLoaded", function () {
+      updateClock();
+      updateDate();
+      loadFaculty();
+      loadMarquee();
+      loadAds();
+      adjustLayout();
+
+      setTimeout(() => {
+        animateMarquee();
+      }, 1000);
+
+      setInterval(updateClock, 1000);
+      setInterval(loadFaculty, 3000);
+      setInterval(loadMarquee, 300000);
+      setInterval(loadAds, 300000);
+      setInterval(updateDate, 60000);
+    });
+
+    window.addEventListener("resize", adjustLayout);
   </script>
 </body>
 
