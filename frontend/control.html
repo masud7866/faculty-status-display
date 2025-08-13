@@ -648,6 +648,33 @@
         label.style.gap = "0.5rem";
         label.prepend(img);
 
+        // --- Add this block to extract and show room/batch info ---
+        let room = null,
+          batch = null;
+        let statusObj = hasValidManualOverride(f) ? f.manualOverride : f.status;
+        if (typeof statusObj === "object" && statusObj !== null) {
+          room = statusObj.room || null;
+          batch = statusObj.batch || null;
+        }
+
+        // Only show if room or batch exists
+        if (room || batch) {
+          const infoDiv = document.createElement("div");
+          infoDiv.style.fontSize = "0.75em";
+          infoDiv.style.color = "#6b7280";
+          infoDiv.style.marginLeft = "2.5em";
+          infoDiv.style.marginTop = "0.2em";
+
+          let infoText = "";
+          if (room) infoText += `Room: ${room}`;
+          if (room && batch) infoText += " | ";
+          if (batch) infoText += `Batch: ${batch}`;
+
+          infoDiv.textContent = infoText;
+          label.appendChild(infoDiv);
+        }
+        // --- End block ---
+
         const selectElement = document.createElement("select");
         selectElement.id = `status-${f.name}`;
         selectElement.className = "status-selector";
