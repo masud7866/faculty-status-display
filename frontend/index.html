@@ -324,6 +324,7 @@
       display: flex;
       align-items: center;
       padding-left: 1em;
+      /* Remove transition property for smooth requestAnimationFrame control */
     }
 
     #adProgress {
@@ -338,9 +339,10 @@
 
     #adProgressBar {
       height: 100%;
-      background: #2563eb;
+      background: linear-gradient(90deg, #2563eb, #3b82f6);
       width: 0;
-      transition: width 0.2s;
+      transition: width 0.1s ease-out;
+      will-change: width;
     }
 
     /* 7-segment digit SVG component */
@@ -633,7 +635,8 @@
 
     function updateAdProgress(total, elapsed = 0) {
       const bar = document.getElementById("adProgressBar");
-      bar.style.width = Math.min(100, (elapsed / total) * 100) + "%";
+      const percentage = Math.min(100, (elapsed / total) * 100);
+      bar.style.width = percentage + "%";
     }
 
     function loadAds() {
@@ -779,11 +782,14 @@
           };
 
           let elapsed = 0;
-          const interval = setInterval(() => {
-            elapsed += 250;
+          function updateImageProgress() {
+            elapsed += 50; // Update every 50ms
             updateAdProgress(duration, elapsed);
-            if (elapsed >= duration) clearInterval(interval);
-          }, 250);
+            if (elapsed < duration) {
+              setTimeout(updateImageProgress, 50);
+            }
+          }
+          updateImageProgress();
 
           setTimeout(() => {
             totalAdTime += duration; // Add the full 30 seconds
@@ -803,15 +809,15 @@
           let finished = false;
           let videoDuration = null;
           let startTime = 0;
-          let progressInterval = null;
+          let progressAnimationId = null;
 
           function cleanupVideo(actualDuration) {
             if (finished) return;
             finished = true;
             
-            if (progressInterval) {
-              clearInterval(progressInterval);
-              progressInterval = null;
+            if (progressAnimationId) {
+              cancelAnimationFrame(progressAnimationId);
+              progressAnimationId = null;
             }
             
             // Clear all event listeners
@@ -855,7 +861,8 @@
 
             updateAdProgress(videoDuration, 0);
             
-            progressInterval = setInterval(() => {
+            // Smooth progress animation
+            function updateProgress() {
               if (finished) return;
               
               const elapsed = Date.now() - startTime;
@@ -864,8 +871,11 @@
                 cleanupVideo(elapsed);
               } else {
                 updateAdProgress(videoDuration, elapsed);
+                progressAnimationId = requestAnimationFrame(updateProgress);
               }
-            }, 500);
+            }
+            
+            progressAnimationId = requestAnimationFrame(updateProgress);
           }
 
           // Event handlers
@@ -927,26 +937,42 @@
 
     function animateMarquee() {
       const marquee = document.getElementById("marqueeText");
-
+      
       if (marqueeAnimation) {
-        clearTimeout(marqueeAnimation);
+        cancelAnimationFrame(marqueeAnimation);
       }
 
-      function loop() {
-        const containerWidth = marquee.offsetWidth;
-        marquee.style.transition = "none";
-        marquee.style.transform = `translateX(${containerWidth}px)`;
+      const containerWidth = marquee.parentElement.offsetWidth - 150; // Account for date display
+      const textWidth = marquee.scrollWidth;
+      const totalDistance = containerWidth + textWidth;
+      const speed = 60; // pixels per second - adjust for speed
+      const duration = totalDistance / speed * 1000; // convert to milliseconds
+      
+      let startTime = null;
+      let startPosition = containerWidth;
 
-        setTimeout(() => {
-          const textWidth = marquee.scrollWidth;
-          const duration = Math.max(15, textWidth / 80);
-          marquee.style.transition = `transform ${duration}s linear`;
-          marquee.style.transform = `translateX(-${textWidth}px)`;
-
-          marqueeAnimation = setTimeout(loop, duration * 1000 + 500);
-        }, 100);
+      function animate(currentTime) {
+        if (!startTime) startTime = currentTime;
+        
+        const elapsed = currentTime - startTime;
+        const progress = elapsed / duration;
+        
+        if (progress >= 1) {
+          // Reset and start over
+          startTime = null;
+          startPosition = containerWidth;
+          marqueeAnimation = requestAnimationFrame(animate);
+        } else {
+          // Smooth linear movement
+          const currentPosition = startPosition - (totalDistance * progress);
+          marquee.style.transform = `translateX(${currentPosition}px)`;
+          marquee.style.transition = "none";
+          marqueeAnimation = requestAnimationFrame(animate);
+        }
       }
-      loop();
+
+      // Start the animation
+      marqueeAnimation = requestAnimationFrame(animate);
     }
 
     function updateDate() {
