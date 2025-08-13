@@ -942,36 +942,70 @@
         cancelAnimationFrame(marqueeAnimation);
       }
 
-      const containerWidth = marquee.parentElement.offsetWidth - 150; // Account for date display
+      const containerWidth = marquee.parentElement.offsetWidth - 150;
       const textWidth = marquee.scrollWidth;
       const totalDistance = containerWidth + textWidth;
-      const speed = 60; // pixels per second - adjust for speed
-      const duration = totalDistance / speed * 1000; // convert to milliseconds
+      const baseSpeed = 80; // Base pixels per second
+      
+      // Dynamic speed based on text length (longer text = slightly faster)
+      const speed = Math.min(120, baseSpeed + (textWidth / 50));
+      const duration = totalDistance / speed * 1000;
       
       let startTime = null;
-      let startPosition = containerWidth;
+      let pauseStart = null;
+      const pauseDuration = 2000; // 2 second pause when text fully visible
 
       function animate(currentTime) {
         if (!startTime) startTime = currentTime;
         
         const elapsed = currentTime - startTime;
+        
+        // Check if we should pause when text is fully visible
         const progress = elapsed / duration;
+        const currentPosition = containerWidth - (totalDistance * progress);
+        
+        // Pause when text end is visible (before it exits)
+        if (currentPosition <= -textWidth && !pauseStart) {
+          pauseStart = currentTime;
+        }
+        
+        if (pauseStart && (currentTime - pauseStart) < pauseDuration) {
+          // During pause, keep text at end position
+          marquee.style.transform = `translateX(-${textWidth}px)`;
+          marqueeAnimation = requestAnimationFrame(animate);
+          return;
+        }
+        
+        if (pauseStart && (currentTime - pauseStart) >= pauseDuration) {
+          // Resume animation after pause
+          startTime = currentTime;
+          pauseStart = null;
+          marquee.style.transform = `translateX(${containerWidth}px)`;
+          marqueeAnimation = requestAnimationFrame(animate);
+          return;
+        }
         
         if (progress >= 1) {
-          // Reset and start over
+          // Reset for next cycle
           startTime = null;
-          startPosition = containerWidth;
+          pauseStart = null;
           marqueeAnimation = requestAnimationFrame(animate);
         } else {
-          // Smooth linear movement
-          const currentPosition = startPosition - (totalDistance * progress);
-          marquee.style.transform = `translateX(${currentPosition}px)`;
+          // Smooth movement with slight easing
+          const easedProgress = progress < 0.1 ? 
+            progress * 10 * progress : // Ease in
+            progress > 0.9 ? 
+            1 - (1 - progress) * 10 * (1 - progress) : // Ease out
+            progress; // Linear middle
+            
+          const position = containerWidth - (totalDistance * easedProgress);
+          marquee.style.transform = `translateX(${position}px)`;
           marquee.style.transition = "none";
           marqueeAnimation = requestAnimationFrame(animate);
         }
       }
 
-      // Start the animation
+      // Start animation
       marqueeAnimation = requestAnimationFrame(animate);
     }
 
