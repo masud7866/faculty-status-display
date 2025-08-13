@@ -664,12 +664,14 @@
           infoDiv.style.color = "#6b7280";
           infoDiv.style.marginLeft = "2.5em";
           infoDiv.style.marginTop = "0.2em";
+          infoDiv.style.lineHeight = "1.3"; // Add line height for better spacing
 
           let infoText = "";
           if (room) infoText += `Room: ${room}`;
-          if (room && batch) infoText += "\n";
+          if (room && batch) infoText += "\n"; // Line break instead of " | "
           if (batch) infoText += `Batch: ${batch}`;
 
+          infoDiv.style.whiteSpace = "pre-line"; // This allows line breaks to render
           infoDiv.textContent = infoText;
           label.appendChild(infoDiv);
         }
