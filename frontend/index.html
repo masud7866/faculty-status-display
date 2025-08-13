@@ -445,7 +445,8 @@
     let ads = [];
     let nextAdTimeout = null;
     let adCycleRunning = false;
-    let adBreakUntil = 0;
+    let inBreakPeriod = false;
+    let breakEndsAt = 0;
     let marqueeAnimation = null;
     let clockContainer = null;
     let dateDisplay = null;
@@ -454,13 +455,6 @@
     const IMAGE_AD_DURATION = 30000; // 30 seconds for images
     const MAX_VIDEO_CAP_MS = 5 * 60 * 1000; // 5 minute safety cap for videos
     const VIDEO_DURATION_READY_DELAY = 1200; // ms after play() to re-check metadata
-    
-    // FIXED BREAK TIMES (independent of ad duration)
-    const FIXED_BREAK_TIMES = {
-      default: 2 * 60 * 1000,    // 2 minutes default break
-      short: 1 * 60 * 1000,     // 1 minute for very short cycles  
-      long: 4 * 60 * 1000       // 4 minutes for long cycles
-    };
 
     function loadFaculty() {
       try {
@@ -648,7 +642,11 @@
         .then(data => {
           ads = data;
           console.log("Ads loaded:", ads.length);
-          maybeStartAdCycle();
+          
+          // Only try to start if we're not in break period and not already running
+          if (!inBreakPeriod && !adCycleRunning && ads.length > 0) {
+            checkAndStartAds();
+          }
         })
         .catch(e => {
           console.error("Failed to load ads:", e);
@@ -656,84 +654,111 @@
         });
     }
 
-    function maybeStartAdCycle() {
-      if (!ads.length) return;
-      if (adCycleRunning) return;
-      if (Date.now() < adBreakUntil) {
-        const remainingBreak = Math.ceil((adBreakUntil - Date.now()) / 1000);
-        console.log("Still in break. Remaining:", remainingBreak, "seconds");
+    function checkAndStartAds() {
+      const now = Date.now();
+      
+      // If we're in a break period
+      if (inBreakPeriod) {
+        if (now >= breakEndsAt) {
+          // Break is over, reset state
+          inBreakPeriod = false;
+          console.log("✅ Break period ended. Ads can now start.");
+          
+          // Clear any pending timeout
+          if (nextAdTimeout) {
+            clearTimeout(nextAdTimeout);
+            nextAdTimeout = null;
+          }
+          
+          // Start ads immediately after break
+          if (ads.length > 0 && !adCycleRunning) {
+            runAdSequence();
+          }
+        } else {
+          const remainingBreak = Math.ceil((breakEndsAt - now) / 1000);
+          console.log("⏸️ Still in break period. Remaining:", remainingBreak, "seconds");
+        }
         return;
       }
-      if (nextAdTimeout) {
-        clearTimeout(nextAdTimeout);
-        nextAdTimeout = null;
+      
+      // Not in break and not running, start ads
+      if (!adCycleRunning && ads.length > 0) {
+        runAdSequence();
       }
-      runAdSequence();
     }
 
-    function scheduleNextCycle(totalAdTime) {
-      // FIXED break logic - independent of ad duration
-      let breakMs = FIXED_BREAK_TIMES.default; // 2 minutes default
+    function startBreakPeriod(totalAdDuration) {
+      // Calculate break duration based on cumulative ad duration
+      let breakDurationMs = 60000; // Default 1 minute
       
-      // Optional: adjust break based on total ads shown (not duration)
-      if (ads.length >= 5) {
-        breakMs = FIXED_BREAK_TIMES.long; // 4 minutes for many ads
-      } else if (ads.length <= 1) {
-        breakMs = FIXED_BREAK_TIMES.short; // 1 minute for single ad
+      if (totalAdDuration > 120000) {       // > 2 minutes of ads
+        breakDurationMs = 240000;           // 4 minutes break
+      } else if (totalAdDuration > 30000) { // > 30 seconds of ads  
+        breakDurationMs = 120000;           // 2 minutes break
       }
       
-      adBreakUntil = Date.now() + breakMs;
+      // Set break period flags
+      inBreakPeriod = true;
+      breakEndsAt = Date.now() + breakDurationMs;
       
-      console.log("Ad cycle complete!");
-      console.log("- Total ads shown:", ads.length);
-      console.log("- Total ad duration:", Math.round(totalAdTime / 1000), "seconds");
-      console.log("- Break duration:", Math.round(breakMs / 1000), "seconds");
-      console.log("- Next ad cycle starts at:", new Date(adBreakUntil).toLocaleTimeString());
+      console.log("🛑 STARTING BREAK PERIOD");
+      console.log("📊 Total ad duration was:", Math.round(totalAdDuration / 1000), "seconds");
+      console.log("⏰ Break duration:", Math.round(breakDurationMs / 1000), "seconds");
+      console.log("🔄 Next ads will start at:", new Date(breakEndsAt).toLocaleTimeString());
       
+      // Schedule end of break
       nextAdTimeout = setTimeout(() => {
+        inBreakPeriod = false;
         nextAdTimeout = null;
-        console.log("Break over! Ready for next ad cycle.");
-        maybeStartAdCycle();
-      }, breakMs);
+        console.log("✅ Break period completed! Ready for next ad cycle.");
+        
+        // Try to start ads immediately after break ends
+        if (ads.length > 0 && !adCycleRunning) {
+          runAdSequence();
+        }
+      }, breakDurationMs);
     }
 
     function runAdSequence() {
-      if (!ads.length) {
-        console.log("No ads to run.");
-        return;
-      }
-      if (adCycleRunning) {
-        console.log("Ad cycle already running.");
-        return;
-      }
-      if (Date.now() < adBreakUntil) {
-        console.log("Still in break; not starting.");
+      // Don't start if we're in break period or already running
+      if (inBreakPeriod || adCycleRunning || !ads.length) {
+        console.log("⚠️ Cannot start ads:", {
+          inBreak: inBreakPeriod,
+          running: adCycleRunning,
+          hasAds: ads.length > 0
+        });
         return;
       }
 
       adCycleRunning = true;
       showOverlay();
-      console.log("=== Starting ad sequence ===");
+      console.log("🎬 STARTING AD SEQUENCE - " + ads.length + " ads");
 
       const adImage = document.getElementById("adImage");
       const adVideo = document.getElementById("adVideo");
       let current = 0;
-      let totalAdTime = 0;
+      let totalAdTime = 0; // This accumulates the actual ad durations
 
-      function finishCycle() {
+      function finishAdSequence() {
         hideOverlay();
         adCycleRunning = false;
-        scheduleNextCycle(totalAdTime);
+        
+        console.log("🏁 AD SEQUENCE COMPLETE");
+        console.log("📺 Total ads shown:", ads.length);
+        console.log("⏱️ Total ad time:", Math.round(totalAdTime / 1000), "seconds");
+        
+        // Start break period (no ads during break)
+        startBreakPeriod(totalAdTime);
       }
 
-      function next() {
+      function nextAd() {
         current++;
-        playNext();
+        playNextAd();
       }
 
-      function playNext() {
+      function playNextAd() {
         if (current >= ads.length) {
-          finishCycle();
+          finishAdSequence();
           return;
         }
 
@@ -742,10 +767,11 @@
         adVideo.style.display = "none";
 
         if (ad.type === "image") {
-          // Fixed 30s duration for images
-          const dur = IMAGE_AD_DURATION;
-          console.log(`Image ad ${current + 1}/${ads.length}:`, ad.src, "- 30s");
-          updateAdProgress(dur, 0);
+          // Images: fixed 30-second duration
+          const duration = IMAGE_AD_DURATION;
+          console.log(`📷 Image ${current + 1}/${ads.length}: ${ad.src} (30s)`);
+          
+          updateAdProgress(duration, 0);
           adImage.src = "https://faculty-status-backend.onrender.com" + ad.src;
           adImage.onload = () => {
             adImage.style.display = "block";
@@ -755,19 +781,19 @@
           let elapsed = 0;
           const interval = setInterval(() => {
             elapsed += 250;
-            updateAdProgress(dur, elapsed);
-            if (elapsed >= dur) clearInterval(interval);
+            updateAdProgress(duration, elapsed);
+            if (elapsed >= duration) clearInterval(interval);
           }, 250);
 
           setTimeout(() => {
-            totalAdTime += dur;
-            console.log(`Image ad ${current + 1} complete. Running total:`, Math.round(totalAdTime / 1000), "s");
-            next();
-          }, dur);
+            totalAdTime += duration; // Add the full 30 seconds
+            console.log(`✅ Image ${current + 1} complete. Total so far: ${Math.round(totalAdTime / 1000)}s`);
+            nextAd();
+          }, duration);
 
         } else if (ad.type === "video") {
           const src = "https://faculty-status-backend.onrender.com" + ad.src;
-          console.log(`Video ad ${current + 1}/${ads.length}:`, src);
+          console.log(`🎥 Video ${current + 1}/${ads.length}: ${src}`);
           
           adVideo.pause();
           adVideo.removeAttribute("src");
@@ -775,12 +801,12 @@
           
           let started = false;
           let finished = false;
-          let declaredDuration = null;
-          let startTs = 0;
+          let videoDuration = null;
+          let startTime = 0;
           let progressInterval = null;
 
-          function cleanupVideo(elapsedMs) {
-            if (finished) return; // Prevent multiple cleanups
+          function cleanupVideo(actualDuration) {
+            if (finished) return;
             finished = true;
             
             if (progressInterval) {
@@ -788,7 +814,7 @@
               progressInterval = null;
             }
             
-            // Remove all event listeners
+            // Clear all event listeners
             adVideo.onended = null;
             adVideo.onstalled = null;
             adVideo.onerror = null;
@@ -798,82 +824,75 @@
             adVideo.onabort = null;
             adVideo.style.display = "none";
 
-            // Calculate actual duration
-            let accounted = elapsedMs;
-            if (isFinite(adVideo.duration) && adVideo.duration > 0) {
-              const metaMs = adVideo.duration * 1000;
-              if (metaMs > 0 && metaMs < accounted + 1500) {
-                accounted = metaMs;
-              }
-            }
-            accounted = Math.min(accounted, MAX_VIDEO_CAP_MS);
-            totalAdTime += accounted;
-            console.log(`Video ad ${current + 1} complete:`, Math.round(accounted / 1000), "s. Running total:", Math.round(totalAdTime / 1000), "s");
-            next();
+            // Add the actual video duration to total
+            totalAdTime += actualDuration;
+            console.log(`✅ Video ${current + 1} complete: ${Math.round(actualDuration / 1000)}s. Total so far: ${Math.round(totalAdTime / 1000)}s`);
+            nextAd();
           }
 
-          function startPlayback() {
+          function startVideo() {
             if (started || finished) return;
             started = true;
+            startTime = Date.now();
             
             adVideo.style.display = "block";
             setAdStretch(adVideo);
-            startTs = Date.now();
 
-            // Try to get duration
+            // Get duration (prefer metadata, fallback to cap)
             if (isFinite(adVideo.duration) && adVideo.duration > 0) {
-              declaredDuration = Math.min(adVideo.duration * 1000, MAX_VIDEO_CAP_MS);
-              console.log("Video duration:", Math.round(declaredDuration / 1000), "seconds");
+              videoDuration = Math.min(adVideo.duration * 1000, MAX_VIDEO_CAP_MS);
+              console.log(`📏 Video duration: ${Math.round(videoDuration / 1000)}s (from metadata)`);
             } else {
-              declaredDuration = MAX_VIDEO_CAP_MS;
-              console.log("No metadata; using elapsed time tracking");
+              videoDuration = MAX_VIDEO_CAP_MS;
+              console.log(`📏 No metadata, using elapsed time tracking (max ${MAX_VIDEO_CAP_MS / 1000}s)`);
             }
 
             adVideo.play().catch(err => {
-              console.warn("play() failed, skipping video", err);
+              console.warn("❌ Video play failed:", err);
               cleanupVideo(0);
               return;
             });
 
-            updateAdProgress(declaredDuration, 0);
+            updateAdProgress(videoDuration, 0);
+            
             progressInterval = setInterval(() => {
               if (finished) return;
               
-              const elapsed = Date.now() - startTs;
-              if (elapsed >= declaredDuration) {
-                console.log("Video reached declared duration");
+              const elapsed = Date.now() - startTime;
+              if (elapsed >= videoDuration) {
+                console.log("⏰ Video reached duration limit");
                 cleanupVideo(elapsed);
               } else {
-                updateAdProgress(declaredDuration, elapsed);
+                updateAdProgress(videoDuration, elapsed);
               }
             }, 500);
           }
 
-          // Single event handlers
+          // Event handlers
           adVideo.onended = () => {
             if (!finished) {
-              const elapsed = Date.now() - startTs;
-              console.log("Video ended naturally");
+              const elapsed = Date.now() - startTime;
+              console.log("🔚 Video ended naturally");
               cleanupVideo(elapsed);
             }
           };
 
           adVideo.oncanplay = () => {
-            if (!started && !finished) startPlayback();
+            if (!started && !finished) startVideo();
           };
 
           adVideo.onloadeddata = () => {
-            if (!started && !finished) startPlayback();
+            if (!started && !finished) startVideo();
           };
 
           adVideo.onerror = (e) => {
-            console.error("Video error", e);
+            console.error("❌ Video error:", e);
             if (!finished) cleanupVideo(0);
           };
 
           adVideo.onstalled = () => {
             if (!started && !finished) {
-              console.warn("Video stalled before start, skipping");
+              console.warn("⚠️ Video stalled before start, skipping");
               cleanupVideo(0);
             }
           };
@@ -881,20 +900,20 @@
           // Safety fallback
           setTimeout(() => {
             if (!started && !finished) {
-              console.log("Force starting video (timeout)");
-              startPlayback();
+              console.log("🔧 Force starting video (timeout fallback)");
+              startVideo();
             }
           }, 3000);
 
           adVideo.src = src;
           adVideo.load();
         } else {
-          console.warn("Unknown ad type:", ad.type);
-          next();
+          console.warn("❓ Unknown ad type:", ad.type);
+          nextAd();
         }
       }
 
-      playNext();
+      playNextAd();
     }
 
     function loadMarquee() {
@@ -965,6 +984,9 @@
       setInterval(loadMarquee, 300000);
       setInterval(loadAds, 300000);
       setInterval(updateDate, 60000);
+      
+      // Check for ad start every 10 seconds during break periods
+      setInterval(checkAndStartAds, 10000);
     });
 
     window.addEventListener("resize", adjustLayout);
