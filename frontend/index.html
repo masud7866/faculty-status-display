@@ -699,8 +699,10 @@
       
       if (totalAdDuration > 120000) {       // > 2 minutes of ads
         breakDurationMs = 240000;           // 4 minutes break
-      } else if (totalAdDuration > 30000) { // > 30 seconds of ads  
+      } else if (totalAdDuration > 30000 && totalAdDuration < 60000) { // 30 seconds to 1 minute of ads
         breakDurationMs = 120000;           // 2 minutes break
+      } else if (totalAdDuration > 60000) { // > 1 minute of ads
+        breakDurationMs = 180000;            // 3 minutes break
       }
       
       // Set break period flags
