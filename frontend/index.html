@@ -777,7 +777,7 @@
         if (ad.type === "image") {
           // Images: fixed 20-second duration
           const duration = IMAGE_AD_DURATION;
-          console.log(`📷 Image ${current + 1}/${ads.length}: ${ad.src} (30s)`);
+          console.log(`📷 Image ${current + 1}/${ads.length}: ${ad.src} (${duration}s)`);
           
           updateAdProgress(duration, 0);
           adImage.src = "https://faculty-status-backend.onrender.com" + ad.src;
