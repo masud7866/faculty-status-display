@@ -457,7 +457,7 @@
     let dateDisplay = null;
     
     // Ad configuration constants
-    const IMAGE_AD_DURATION = 30000; // 30 seconds for images
+    const IMAGE_AD_DURATION = 20000; // 20 seconds for images
     const MAX_VIDEO_CAP_MS = 5 * 60 * 1000; // 5 minute safety cap for videos
     const VIDEO_DURATION_READY_DELAY = 1200; // ms after play() to re-check metadata
 
@@ -775,7 +775,7 @@
         adVideo.style.display = "none";
 
         if (ad.type === "image") {
-          // Images: fixed 30-second duration
+          // Images: fixed 20-second duration
           const duration = IMAGE_AD_DURATION;
           console.log(`📷 Image ${current + 1}/${ads.length}: ${ad.src} (30s)`);
           
