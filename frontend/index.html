@@ -324,7 +324,10 @@
       display: flex;
       align-items: center;
       padding-left: 1em;
-      /* Remove transition property for smooth requestAnimationFrame control */
+      /* Performance optimizations */
+      transform-style: preserve-3d;
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
     }
 
     #adProgress {
@@ -942,70 +945,41 @@
         cancelAnimationFrame(marqueeAnimation);
       }
 
-      const containerWidth = marquee.parentElement.offsetWidth - 150;
+      const container = marquee.parentElement;
+      const containerWidth = container.offsetWidth - 150; // Account for date display
       const textWidth = marquee.scrollWidth;
-      const totalDistance = containerWidth + textWidth;
-      const baseSpeed = 80; // Base pixels per second
       
-      // Dynamic speed based on text length (longer text = slightly faster)
-      const speed = Math.min(120, baseSpeed + (textWidth / 50));
-      const duration = totalDistance / speed * 1000;
-      
-      let startTime = null;
-      let pauseStart = null;
-      const pauseDuration = 2000; // 2 second pause when text fully visible
-
-      function animate(currentTime) {
-        if (!startTime) startTime = currentTime;
-        
-        const elapsed = currentTime - startTime;
-        
-        // Check if we should pause when text is fully visible
-        const progress = elapsed / duration;
-        const currentPosition = containerWidth - (totalDistance * progress);
-        
-        // Pause when text end is visible (before it exits)
-        if (currentPosition <= -textWidth && !pauseStart) {
-          pauseStart = currentTime;
-        }
-        
-        if (pauseStart && (currentTime - pauseStart) < pauseDuration) {
-          // During pause, keep text at end position
-          marquee.style.transform = `translateX(-${textWidth}px)`;
-          marqueeAnimation = requestAnimationFrame(animate);
-          return;
-        }
-        
-        if (pauseStart && (currentTime - pauseStart) >= pauseDuration) {
-          // Resume animation after pause
-          startTime = currentTime;
-          pauseStart = null;
-          marquee.style.transform = `translateX(${containerWidth}px)`;
-          marqueeAnimation = requestAnimationFrame(animate);
-          return;
-        }
-        
-        if (progress >= 1) {
-          // Reset for next cycle
-          startTime = null;
-          pauseStart = null;
-          marqueeAnimation = requestAnimationFrame(animate);
-        } else {
-          // Smooth movement with slight easing
-          const easedProgress = progress < 0.1 ? 
-            progress * 10 * progress : // Ease in
-            progress > 0.9 ? 
-            1 - (1 - progress) * 10 * (1 - progress) : // Ease out
-            progress; // Linear middle
-            
-          const position = containerWidth - (totalDistance * easedProgress);
-          marquee.style.transform = `translateX(${position}px)`;
-          marquee.style.transition = "none";
-          marqueeAnimation = requestAnimationFrame(animate);
-        }
+      // If text fits in container, no need to scroll
+      if (textWidth <= containerWidth) {
+        marquee.style.transform = 'translateX(0)';
+        return;
       }
 
-      // Start animation
+      const speed = 100; // pixels per second - adjust for desired speed
+      const totalDistance = containerWidth + textWidth;
+      const cycleDuration = totalDistance / speed * 1000; // ms for one complete cycle
+      
+      let animationStartTime = null;
+
+      function animate(timestamp) {
+        if (!animationStartTime) {
+          animationStartTime = timestamp;
+        }
+
+        const elapsed = timestamp - animationStartTime;
+        const cycleProgress = (elapsed % cycleDuration) / cycleDuration;
+        
+        // Calculate position (starts from right edge, moves to left)
+        const position = containerWidth - (totalDistance * cycleProgress);
+        
+        // Use transform3d for better performance
+        marquee.style.transform = `translate3d(${position}px, 0, 0)`;
+        
+        // Continue animation
+        marqueeAnimation = requestAnimationFrame(animate);
+      }
+
+      // Start the animation
       marqueeAnimation = requestAnimationFrame(animate);
     }
 
