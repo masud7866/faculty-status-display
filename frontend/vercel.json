@@ -10,7 +10,7 @@
     },
     {
       "source": "/api/:path*",
-      "destination": "https://faculty-status-backend.onrender.com/api/:path*"
+      "destination": "https://faculty-status-display.onrender.com/api/:path*"
     }
   ]
 }

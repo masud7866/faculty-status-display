@@ -320,7 +320,7 @@
 
     // Redirect if already logged in
     document.addEventListener("DOMContentLoaded", () => {
-      fetch("https://faculty-status-backend.onrender.com/api/check-login", {
+      fetch("https://faculty-status-display.onrender.com/api/check-login", {
         credentials: "include"
       })
         .then(r => r.ok ? r.json() : Promise.reject())
@@ -385,7 +385,7 @@
         localStorage.removeItem("fsu_remember_user");
       }
       setLoading(true);
-      fetch("https://faculty-status-backend.onrender.com/api/login", {
+      fetch("https://faculty-status-display.onrender.com/api/login", {
         method: "POST",
         credentials: "include",
         headers: { "Content-Type": "application/json" },

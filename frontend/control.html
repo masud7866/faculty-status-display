@@ -561,7 +561,7 @@
 
     async function fetchFacultyData() {
       try {
-        const res = await fetchWithSessionCheck("https://faculty-status-backend.onrender.com/api/faculty", {
+        const res = await fetchWithSessionCheck("https://faculty-status-display.onrender.com/api/faculty", {
           credentials: "include"
         });
         const data = await res.json();
@@ -578,7 +578,7 @@
 
     async function updateFaculty(updates) {
       try {
-        await fetchWithSessionCheck("https://faculty-status-backend.onrender.com/api/update", {
+        await fetchWithSessionCheck("https://faculty-status-display.onrender.com/api/update", {
           method: "POST",
           credentials: "include",
           headers: { "Content-Type": "application/json" },
@@ -634,7 +634,7 @@
 
         div.innerHTML = "";
         const img = document.createElement("img");
-        img.src = "https://faculty-status-backend.onrender.com" + f.image;
+        img.src = "https://faculty-status-display.onrender.com" + f.image;
         img.alt = f.name;
         img.style.width = "36px";
         img.style.height = "36px";
@@ -944,7 +944,7 @@
 
     function logout() {
       showMessage("Logging out...", false, true);
-      fetch("https://faculty-status-backend.onrender.com/api/logout", {
+      fetch("https://faculty-status-display.onrender.com/api/logout", {
         method: "POST",
         credentials: "include"
       })
