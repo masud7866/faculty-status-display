@@ -36,9 +36,82 @@ app.use(session({
 app.use("/images", express.static("public"));
 app.use("/ads", express.static(path.join(__dirname, "public/ads")));
 
+// === SYNC FUNCTION ===
+async function syncFacultyFromJSON() {
+  const jsonPath = path.join(__dirname, "faculty.json");
+  
+  if (!fs.existsSync(jsonPath)) {
+    console.log('No faculty.json found for sync');
+    return;
+  }
+
+  try {
+    const db = await facultyDB.connect();
+    const jsonData = JSON.parse(fs.readFileSync(jsonPath, 'utf8'));
+    
+    // Get existing faculty with their current overrides
+    const existingFaculty = await db.collection('faculty').find({}).toArray();
+    const overrideMap = new Map();
+    
+    existingFaculty.forEach(f => {
+      if (f.manualOverride && f.overrideExpiry) {
+        const expiry = new Date(f.overrideExpiry);
+        if (expiry > new Date()) {
+          overrideMap.set(f.name, {
+            manualOverride: f.manualOverride,
+            overrideExpiry: f.overrideExpiry
+          });
+        }
+      }
+    });
+    
+    // Clear existing faculty data and replace with JSON data
+    await db.collection('faculty').deleteMany({});
+    
+    for (const faculty of jsonData) {
+      const facultyData = {
+        ...faculty,
+        createdAt: new Date(),
+        updatedAt: new Date()
+      };
+      
+      // Preserve valid manual overrides
+      if (overrideMap.has(faculty.name)) {
+        const override = overrideMap.get(faculty.name);
+        facultyData.manualOverride = override.manualOverride;
+        facultyData.overrideExpiry = override.overrideExpiry;
+      }
+      
+      await db.collection('faculty').insertOne(facultyData);
+    }
+    
+    console.log(`✅ Synced ${jsonData.length} faculty records from faculty.json to database`);
+  } catch (error) {
+    console.error("❌ Error syncing from faculty.json:", error);
+    throw error;
+  }
+}
+
 // === API ROUTES ===
 app.get("/api/faculty", async (req, res) => {
   try {
+    // Check if faculty.json exists and has been updated
+    const jsonPath = path.join(__dirname, "faculty.json");
+    if (fs.existsSync(jsonPath)) {
+      const jsonStat = fs.statSync(jsonPath);
+      
+      // Check if we need to sync from file
+      const lastSync = await facultyDB.getSetting('last_faculty_sync');
+      const jsonModified = jsonStat.mtime.toISOString();
+      
+      if (!lastSync || jsonModified > lastSync) {
+        console.log("📄 faculty.json has been updated, syncing to database...");
+        await syncFacultyFromJSON();
+        await facultyDB.setSetting('last_faculty_sync', jsonModified);
+      }
+    }
+    
+    // Get faculty data from database
     const faculty = await facultyDB.getAllFaculty();
     res.json(faculty);
   } catch (error) {
@@ -102,31 +175,39 @@ app.get("/api/ads", (req, res) => {
   });
 });
 
+// HYBRID MARQUEE - File takes precedence over database
 app.get("/api/marquee", async (req, res) => {
   try {
-    const marqueeText = await facultyDB.getSetting('marquee_text');
-    res.send(marqueeText || 'Welcome to Faculty Status Display');
+    // Try file first (takes precedence)
+    const marqueePath = path.join(__dirname, "public/marquee.txt");
+    if (fs.existsSync(marqueePath)) {
+      const fileMarquee = fs.readFileSync(marqueePath, 'utf8').trim();
+      if (fileMarquee) {
+        // Update database with file content
+        await facultyDB.setSetting('marquee_text', fileMarquee);
+        console.log("📄 Using marquee text from marquee.txt file");
+        return res.send(fileMarquee);
+      }
+    }
+    
+    // Fallback to database
+    const dbMarquee = await facultyDB.getSetting('marquee_text');
+    if (dbMarquee) {
+      console.log("💾 Using marquee text from database");
+      return res.send(dbMarquee);
+    }
+    
+    // Default fallback
+    console.log("🔤 Using default marquee text");
+    res.send('Welcome to Faculty Status Display');
   } catch (error) {
     console.error("❌ Error fetching marquee:", error);
-    res.status(500).send("Error fetching marquee text");
-  }
-});
-
-app.post("/api/marquee", async (req, res) => {
-  if (!req.session.loggedIn) return res.status(403).send("Unauthorized");
-  
-  const { text } = req.body;
-  try {
-    await facultyDB.setSetting('marquee_text', text);
-    res.json({ message: "Marquee text updated successfully." });
-  } catch (error) {
-    console.error("❌ Error updating marquee:", error);
-    res.status(500).json({ error: "Failed to update marquee text" });
+    res.send('Welcome to Faculty Status Display');
   }
 });
 
 app.get("/", (req, res) => {
-  res.send("Faculty Status Backend with MongoDB - Running! 🚀");
+  res.send("Faculty Status Backend with MongoDB (Hybrid File/DB) - Running! 🚀");
 });
 
 // === AUTO STATUS LOGIC ===
@@ -215,7 +296,7 @@ async function startup() {
     
     facultyDB = new FacultyDB();
     
-    // Only migrate if database is completely empty
+    // Check for initial migration or file sync
     try {
       const db = await facultyDB.connect();
       const existingCount = await db.collection('faculty').countDocuments();
@@ -224,10 +305,22 @@ async function startup() {
         console.log("📦 Database is empty, performing initial migration...");
         await facultyDB.migrateFromJSON();
       } else {
-        console.log(`✅ Database has ${existingCount} faculty records, preserving existing data`);
+        console.log(`✅ Database has ${existingCount} faculty records`);
+        
+        // Check if faculty.json exists and sync if needed
+        const jsonPath = path.join(__dirname, "faculty.json");
+        if (fs.existsSync(jsonPath)) {
+          const lastSync = await facultyDB.getSetting('last_faculty_sync');
+          if (!lastSync) {
+            console.log("📄 Performing initial faculty.json sync...");
+            await syncFacultyFromJSON();
+            const jsonStat = fs.statSync(jsonPath);
+            await facultyDB.setSetting('last_faculty_sync', jsonStat.mtime.toISOString());
+          }
+        }
       }
     } catch (error) {
-      console.log("⚠️ Migration check failed:", error.message);
+      console.log("⚠️ Migration/sync check failed:", error.message);
     }
     
     // Start auto status updates
@@ -236,7 +329,8 @@ async function startup() {
     
     app.listen(PORT, () => {
       console.log(`✅ Server running on http://localhost:${PORT}`);
-      console.log("💾 Database: MongoDB Atlas");
+      console.log("💾 Database: MongoDB Atlas (with file sync)");
+      console.log("📄 Edit faculty.json or marquee.txt to update data");
       console.log("🟢 Status: Ready");
     });
   } catch (error) {
