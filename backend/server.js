@@ -215,11 +215,19 @@ async function startup() {
     
     facultyDB = new FacultyDB();
     
-    // Migrate existing data if faculty.json exists
+    // Only migrate if database is completely empty
     try {
-      await facultyDB.migrateFromJSON();
+      const db = await facultyDB.connect();
+      const existingCount = await db.collection('faculty').countDocuments();
+      
+      if (existingCount === 0) {
+        console.log("📦 Database is empty, performing initial migration...");
+        await facultyDB.migrateFromJSON();
+      } else {
+        console.log(`✅ Database has ${existingCount} faculty records, preserving existing data`);
+      }
     } catch (error) {
-      console.log("⚠️ Migration skipped:", error.message);
+      console.log("⚠️ Migration check failed:", error.message);
     }
     
     // Start auto status updates
