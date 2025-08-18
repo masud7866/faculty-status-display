@@ -786,21 +786,31 @@
             setAdStretch(adImage);
           };
 
-          let elapsed = 0;
+          let startTime = Date.now();
+          let progressAnimationId = null;
+
           function updateImageProgress() {
-            elapsed += 50; // Update every 50ms
-            updateAdProgress(duration, elapsed);
-            if (elapsed < duration) {
-              setTimeout(updateImageProgress, 50);
+            const elapsed = Date.now() - startTime;
+            
+            if (elapsed >= duration) {
+              // Ensure progress bar reaches 100% before finishing
+              updateAdProgress(duration, duration);
+              if (progressAnimationId) {
+                cancelAnimationFrame(progressAnimationId);
+                progressAnimationId = null;
+              }
+              
+              totalAdTime += duration; // Add the full 20 seconds
+              console.log(`✅ Image ${current + 1} complete. Total so far: ${Math.round(totalAdTime / 1000)}s`);
+              nextAd();
+            } else {
+              updateAdProgress(duration, elapsed);
+              progressAnimationId = requestAnimationFrame(updateImageProgress);
             }
           }
-          updateImageProgress();
-
-          setTimeout(() => {
-            totalAdTime += duration; // Add the full 20 seconds
-            console.log(`✅ Image ${current + 1} complete. Total so far: ${Math.round(totalAdTime / 1000)}s`);
-            nextAd();
-          }, duration);
+          
+          // Start smooth progress animation
+          progressAnimationId = requestAnimationFrame(updateImageProgress);
 
         } else if (ad.type === "video") {
           const src = "https://faculty-status-backend.onrender.com" + ad.src;
