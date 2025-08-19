@@ -401,6 +401,68 @@ app.post("/api/upload", async (req, res) => {
   }
 });
 
+// Delete ad file (admin only)
+app.delete('/api/admin/ads/:filename', requireAuth, async (req, res) => {
+  try {
+      const filename = req.params.filename;
+      
+      if (!process.env.GITHUB_TOKEN) {
+          return res.status(500).json({ error: 'GitHub token not configured' });
+      }
+
+      // Delete from GitHub
+      const githubUrl = `https://api.github.com/repos/masud7866/faculty-status-display/contents/backend/public/ads/${filename}`;
+      
+      // First, get the file to get its SHA
+      const getResponse = await fetch(githubUrl, {
+          headers: {
+              'Authorization': `token ${process.env.GITHUB_TOKEN}`,
+              'Accept': 'application/vnd.github.v3+json'
+          }
+      });
+
+      if (!getResponse.ok) {
+          if (getResponse.status === 404) {
+              return res.status(404).json({ error: 'File not found' });
+          }
+          throw new Error(`GitHub API error: ${getResponse.status}`);
+      }
+
+      const fileData = await getResponse.json();
+      
+      // Delete the file
+      const deleteResponse = await fetch(githubUrl, {
+          method: 'DELETE',
+          headers: {
+              'Authorization': `token ${process.env.GITHUB_TOKEN}`,
+              'Accept': 'application/vnd.github.v3+json',
+              'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({
+              message: `Delete ad file: ${filename}`,
+              sha: fileData.sha
+          })
+      });
+
+      if (!deleteResponse.ok) {
+          const error = await deleteResponse.json();
+          throw new Error(error.message || 'Failed to delete file from GitHub');
+      }
+
+      res.json({ 
+          success: true, 
+          message: `File ${filename} deleted successfully`,
+          filename: filename
+      });
+
+  } catch (error) {
+      console.error('Delete ad error:', error);
+      res.status(500).json({ 
+          error: error.message || 'Failed to delete advertisement file' 
+      });
+  }
+});
+
 // === AUTO STATUS LOGIC ===
 function getCurrentStatus(faculty) {
   const now = new Date();

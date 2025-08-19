@@ -283,6 +283,21 @@
             padding: 8px;
             text-align: center;
             background: #f8fafc;
+            position: relative;
+        }
+
+        .ad-item.selected {
+            border-color: #2563eb;
+            background: #eff6ff;
+        }
+
+        .ad-checkbox {
+            position: absolute;
+            top: 5px;
+            left: 5px;
+            width: 18px;
+            height: 18px;
+            cursor: pointer;
         }
 
         .ad-preview {
@@ -430,7 +445,8 @@
 
         .btn-group {
             display: flex;
-            gap: 8px;
+            gap: 4px;
+            justify-content: center;
             flex-wrap: wrap;
         }
 
@@ -739,10 +755,14 @@
                     <div class="file-info">
                         <strong>Upload Location:</strong> backend/public/ads/<br>
                         <strong>Supported Formats:</strong> .jpg, .jpeg, .png, .gif, .mp4, .webm<br>
-                        <strong>Instructions:</strong> Use the Upload Ads tab to add new files or upload directly to GitHub.
+                        <strong>Instructions:</strong> Use the Upload Ads tab to add new files or click Delete to remove individual files.
                     </div>
                     
-                    <button onclick="loadAds()" class="btn btn-primary">Refresh Ads List</button>
+                    <div class="btn-group" style="margin-bottom: 15px;">
+                        <button onclick="loadAds()" class="btn btn-primary">Refresh Ads List</button>
+                        <button onclick="selectAllAds()" class="btn btn-secondary" id="selectAllBtn">Select All</button>
+                        <button onclick="deleteSelectedAds()" class="btn btn-danger" id="deleteSelectedBtn">Delete Selected</button>
+                    </div>
                     
                     <div id="adsList" class="ads-grid"></div>
                 </div>
@@ -1440,23 +1460,30 @@
                     
                     if (ad.type === 'image') {
                         adDiv.innerHTML = `
+                            <input type="checkbox" class="ad-checkbox" data-filename="${filename}" onchange="updateSelection()">
                             <img src="${API_BASE}${ad.src}" class="ad-preview" alt="Ad" loading="lazy">
                             <div class="ad-filename">${filename}</div>
-                            <button class="btn btn-danger" onclick="deleteAd('${filename}')">Delete Info</button>
+                            <div class="btn-group" style="margin-top: 8px;">
+                                <button class="btn btn-danger" onclick="deleteAdFile('${filename}')" style="font-size: 11px; padding: 4px 8px;">Delete</button>
+                            </div>
                         `;
                     } else {
                         adDiv.innerHTML = `
+                            <input type="checkbox" class="ad-checkbox" data-filename="${filename}" onchange="updateSelection()">
                             <video class="ad-preview" controls preload="none">
                                 <source src="${API_BASE}${ad.src}" type="video/mp4">
                             </video>
                             <div class="ad-filename">${filename}</div>
-                            <button class="btn btn-danger" onclick="deleteAd('${filename}')">Delete Info</button>
+                            <div class="btn-group" style="margin-top: 8px;">
+                                <button class="btn btn-danger" onclick="deleteAdFile('${filename}')" style="font-size: 11px; padding: 4px 8px;">Delete</button>
+                            </div>
                         `;
                     }
                     
                     container.appendChild(adDiv);
                 });
                 
+                updateSelection(); // Update button states
                 showToast(`Loaded ${ads.length} ad files`, 'info');
             } catch (error) {
                 showToast('Failed to load ads', 'error');
@@ -1464,8 +1491,92 @@
             }
         }
 
-        function deleteAd(filename) {
-            showToast(`To delete ${filename}:\n1. Go to GitHub repository\n2. Navigate to backend/public/ads/\n3. Delete the file\n4. Commit changes`, 'info');
+        async function deleteAdFile(filename) {
+            if (!confirm(`Are you sure you want to delete "${filename}"?\n\nThis will permanently remove the file from your repository and cannot be undone.`)) {
+                return;
+            }
+
+            try {
+                showToast('Deleting advertisement...', 'info');
+
+                const response = await fetch(`${API_BASE}/api/admin/ads/${encodeURIComponent(filename)}`, {
+                    method: 'DELETE',
+                    credentials: 'include'
+                });
+
+                if (!response.ok) {
+                    if (response.status === 403) {
+                        showToast('Session expired. Redirecting to login...', 'error');
+                        setTimeout(() => redirectToLogin(), 2000);
+                        return;
+                    }
+                    if (response.status === 404) {
+                        showToast('File not found. It may have already been deleted.', 'error');
+                        loadAds(); // Refresh the list
+                        return;
+                    }
+                    const error = await response.json();
+                    throw new Error(error.error || 'Failed to delete file');
+                }
+
+                const result = await response.json();
+                showToast(`Advertisement "${filename}" deleted successfully!`);
+                
+                // Refresh the ads list
+                loadAds();
+
+            } catch (error) {
+                showToast(`Failed to delete advertisement: ${error.message}`, 'error');
+                console.error('Delete ad error:', error);
+            }
+        }
+
+        // Add this new function for bulk delete (optional feature)
+        async function deleteSelectedAds() {
+            const selectedCheckboxes = document.querySelectorAll('.ad-checkbox:checked');
+            
+            if (selectedCheckboxes.length === 0) {
+                showToast('Please select at least one advertisement to delete', 'error');
+                return;
+            }
+
+            const filenames = Array.from(selectedCheckboxes).map(cb => cb.dataset.filename);
+            
+            if (!confirm(`Are you sure you want to delete ${filenames.length} advertisement(s)?\n\nFiles: ${filenames.join(', ')}\n\nThis action cannot be undone.`)) {
+                return;
+            }
+
+            let deletedCount = 0;
+            let errorCount = 0;
+
+            showToast(`Deleting ${filenames.length} advertisements...`, 'info');
+
+            for (const filename of filenames) {
+                try {
+                    const response = await fetch(`${API_BASE}/api/admin/ads/${encodeURIComponent(filename)}`, {
+                        method: 'DELETE',
+                        credentials: 'include'
+                    });
+
+                    if (response.ok) {
+                        deletedCount++;
+                    } else {
+                        errorCount++;
+                        console.error(`Failed to delete ${filename}`);
+                    }
+                } catch (error) {
+                    errorCount++;
+                    console.error(`Error deleting ${filename}:`, error);
+                }
+            }
+
+            if (deletedCount > 0) {
+                showToast(`Successfully deleted ${deletedCount} advertisement(s)${errorCount > 0 ? ` (${errorCount} failed)` : ''}!`);
+            } else {
+                showToast('Failed to delete advertisements', 'error');
+            }
+
+            loadAds(); // Refresh the list
         }
 
         // File Upload Setup (for ads only)
@@ -1623,6 +1734,96 @@
             }
         `;
         document.head.appendChild(style);
+        
+        // Replace the loadAds function with this enhanced version
+        async function loadAds() {
+            try {
+                const response = await fetch(`${API_BASE}/api/ads`);
+                const ads = await response.json();
+                
+                const container = document.getElementById('adsList');
+                container.innerHTML = '';
+                
+                if (ads.length === 0) {
+                    container.innerHTML = '<p>No ads found. Use the Upload Ads tab to add files.</p>';
+                    return;
+                }
+                
+                ads.forEach(ad => {
+                    const adDiv = document.createElement('div');
+                    adDiv.className = 'ad-item';
+                    
+                    const filename = ad.src.split('/').pop();
+                    
+                    if (ad.type === 'image') {
+                        adDiv.innerHTML = `
+                            <input type="checkbox" class="ad-checkbox" data-filename="${filename}" onchange="updateSelection()">
+                            <img src="${API_BASE}${ad.src}" class="ad-preview" alt="Ad" loading="lazy">
+                            <div class="ad-filename">${filename}</div>
+                            <div class="btn-group" style="margin-top: 8px;">
+                                <button class="btn btn-danger" onclick="deleteAdFile('${filename}')" style="font-size: 11px; padding: 4px 8px;">Delete</button>
+                            </div>
+                        `;
+                    } else {
+                        adDiv.innerHTML = `
+                            <input type="checkbox" class="ad-checkbox" data-filename="${filename}" onchange="updateSelection()">
+                            <video class="ad-preview" controls preload="none">
+                                <source src="${API_BASE}${ad.src}" type="video/mp4">
+                            </video>
+                            <div class="ad-filename">${filename}</div>
+                            <div class="btn-group" style="margin-top: 8px;">
+                                <button class="btn btn-danger" onclick="deleteAdFile('${filename}')" style="font-size: 11px; padding: 4px 8px;">Delete</button>
+                            </div>
+                        `;
+                    }
+                    
+                    container.appendChild(adDiv);
+                });
+                
+                updateSelection(); // Update button states
+                showToast(`Loaded ${ads.length} ad files`, 'info');
+            } catch (error) {
+                showToast('Failed to load ads', 'error');
+                console.error(error);
+            }
+        }
+
+        // Add helper functions for bulk operations
+        function selectAllAds() {
+            const checkboxes = document.querySelectorAll('.ad-checkbox');
+            const allSelected = Array.from(checkboxes).every(cb => cb.checked);
+            
+            checkboxes.forEach(cb => {
+                cb.checked = !allSelected;
+                cb.closest('.ad-item').classList.toggle('selected', !allSelected);
+            });
+            
+            updateSelection();
+        }
+
+        function updateSelection() {
+            const checkboxes = document.querySelectorAll('.ad-checkbox');
+            const selectedCount = document.querySelectorAll('.ad-checkbox:checked').length;
+            const totalCount = checkboxes.length;
+            
+            // Update visual selection
+            checkboxes.forEach(cb => {
+                cb.closest('.ad-item').classList.toggle('selected', cb.checked);
+            });
+            
+            // Update button text and states
+            const selectAllBtn = document.getElementById('selectAllBtn');
+            const deleteSelectedBtn = document.getElementById('deleteSelectedBtn');
+            
+            if (selectAllBtn) {
+                selectAllBtn.textContent = selectedCount === totalCount ? 'Deselect All' : 'Select All';
+            }
+            
+            if (deleteSelectedBtn) {
+                deleteSelectedBtn.disabled = selectedCount === 0;
+                deleteSelectedBtn.textContent = selectedCount > 0 ? `Delete Selected (${selectedCount})` : 'Delete Selected';
+            }
+        }
     </script>
 </body>
 </html>
