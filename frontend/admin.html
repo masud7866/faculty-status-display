@@ -1,0 +1,1187 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Faculty Admin Panel</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+    <style>
+        * { 
+            box-sizing: border-box; 
+            margin: 0;
+            padding: 0;
+        }
+        
+        body {
+            font-family: 'Inter', 'Segoe UI', Arial, sans-serif;
+            background: linear-gradient(135deg, #eef2f7, #dbe5f5);
+            padding: 10px;
+            min-height: 100vh;
+            font-size: 14px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .header {
+            background: #fff;
+            border-radius: 12px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+            padding: 15px;
+            margin-bottom: 15px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+
+        .header h1 {
+            color: #1e3a8a;
+            font-size: 1.5rem;
+            font-weight: 600;
+        }
+
+        .nav-buttons {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+
+        .btn {
+            padding: 8px 12px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: 500;
+            text-decoration: none;
+            display: inline-block;
+            text-align: center;
+            transition: all 0.2s;
+            font-size: 13px;
+            white-space: nowrap;
+        }
+
+        .btn-primary { background: #2563eb; color: white; }
+        .btn-primary:hover { background: #1d4ed8; }
+        .btn-secondary { background: #6b7280; color: white; }
+        .btn-secondary:hover { background: #4b5563; }
+        .btn-danger { background: #ef4444; color: white; }
+        .btn-danger:hover { background: #dc2626; }
+        .btn-success { background: #10b981; color: white; }
+        .btn-success:hover { background: #059669; }
+
+        .section {
+            background: #fff;
+            border-radius: 12px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+            padding: 15px;
+            margin-bottom: 15px;
+        }
+
+        .section h2 {
+            color: #1e3a8a;
+            margin: 0 0 15px 0;
+            font-size: 1.2rem;
+            border-bottom: 2px solid #e5e7eb;
+            padding-bottom: 8px;
+        }
+
+        .form-group {
+            margin-bottom: 12px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 4px;
+            font-weight: 500;
+            color: #374151;
+            font-size: 13px;
+        }
+
+        .form-control {
+            width: 100%;
+            padding: 8px;
+            border: 1px solid #d1d5db;
+            border-radius: 6px;
+            font-size: 14px;
+            background: #f9fafb;
+        }
+
+        .form-control:focus {
+            outline: none;
+            border-color: #2563eb;
+            background: #fff;
+            box-shadow: 0 0 0 2px rgba(37, 99, 235, 0.1);
+        }
+
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 12px;
+        }
+
+        @media (min-width: 640px) {
+            .form-row {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+
+        @media (min-width: 1024px) {
+            .form-row {
+                grid-template-columns: repeat(3, 1fr);
+            }
+        }
+
+        .schedule-section {
+            border: 1px solid #e5e7eb;
+            border-radius: 8px;
+            padding: 12px;
+            margin: 10px 0;
+            background: #f8fafc;
+        }
+
+        .schedule-section h3 {
+            margin: 0 0 10px 0;
+            font-size: 1rem;
+            color: #374151;
+        }
+
+        .schedule-day {
+            margin-bottom: 12px;
+        }
+
+        .schedule-day h4 {
+            margin: 0 0 8px 0;
+            font-size: 0.9rem;
+            color: #6b7280;
+        }
+
+        .time-input, .class-input {
+            display: grid;
+            gap: 8px;
+            margin-bottom: 8px;
+            grid-template-columns: 1fr 1fr auto;
+        }
+
+        @media (min-width: 768px) {
+            .class-input {
+                grid-template-columns: 1fr 1fr 1fr 1fr auto;
+            }
+        }
+
+        .checkbox-group {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
+            gap: 10px;
+            margin-top: 5px;
+        }
+
+        .checkbox-item {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            font-size: 13px;
+        }
+
+        .faculty-card {
+            border: 1px solid #e5e7eb;
+            border-radius: 8px;
+            padding: 12px;
+            margin-bottom: 12px;
+            background: #f8fafc;
+        }
+
+        .faculty-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 8px;
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+
+        .faculty-name {
+            font-weight: 600;
+            color: #1e3a8a;
+            font-size: 1rem;
+            flex: 1;
+            min-width: 0;
+        }
+
+        .faculty-actions {
+            display: flex;
+            gap: 5px;
+            flex-shrink: 0;
+        }
+
+        .faculty-info {
+            font-size: 13px;
+            margin-bottom: 4px;
+            color: #4b5563;
+        }
+
+        .file-upload-section {
+            background: #f0f9ff;
+            border: 2px dashed #0ea5e9;
+            border-radius: 8px;
+            padding: 15px;
+            margin: 15px 0;
+            text-align: center;
+        }
+
+        .file-upload-area {
+            border: 2px dashed #d1d5db;
+            border-radius: 8px;
+            padding: 20px;
+            text-align: center;
+            background: #f9fafb;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .file-upload-area:hover {
+            border-color: #2563eb;
+            background: #eff6ff;
+        }
+
+        .file-upload-area.drag-over {
+            border-color: #2563eb;
+            background: #dbeafe;
+        }
+
+        .file-info {
+            background: #f0f9ff;
+            border: 1px solid #0ea5e9;
+            border-radius: 6px;
+            padding: 10px;
+            margin: 10px 0;
+            color: #0c4a6e;
+            font-size: 12px;
+        }
+
+        .ads-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+            gap: 12px;
+            margin-top: 15px;
+        }
+
+        @media (min-width: 640px) {
+            .ads-grid {
+                grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            }
+        }
+
+        .ad-item {
+            border: 1px solid #e5e7eb;
+            border-radius: 8px;
+            padding: 8px;
+            text-align: center;
+            background: #f8fafc;
+        }
+
+        .ad-preview {
+            width: 100%;
+            height: 100px;
+            object-fit: cover;
+            border-radius: 4px;
+            margin-bottom: 8px;
+        }
+
+        .ad-filename {
+            font-size: 11px;
+            color: #6b7280;
+            margin-bottom: 8px;
+            word-break: break-all;
+        }
+
+        .tabs {
+            display: flex;
+            border-bottom: 1px solid #e5e7eb;
+            margin-bottom: 15px;
+            overflow-x: auto;
+        }
+
+        .tab {
+            padding: 10px 15px;
+            border: none;
+            background: none;
+            cursor: pointer;
+            border-bottom: 2px solid transparent;
+            font-weight: 500;
+            color: #6b7280;
+            white-space: nowrap;
+            font-size: 13px;
+        }
+
+        .tab.active {
+            color: #2563eb;
+            border-bottom-color: #2563eb;
+        }
+
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        .toast {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            padding: 10px 15px;
+            border-radius: 6px;
+            color: white;
+            z-index: 1000;
+            animation: slideIn 0.3s ease;
+            max-width: calc(100vw - 40px);
+            font-size: 13px;
+        }
+
+        .toast.success { background: #10b981; }
+        .toast.error { background: #ef4444; }
+        .toast.info { background: #3b82f6; }
+
+        @keyframes slideIn {
+            from { transform: translateX(100%); opacity: 0; }
+            to { transform: translateX(0); opacity: 1; }
+        }
+
+        .hidden { display: none; }
+
+        .upload-progress {
+            background: #e5e7eb;
+            border-radius: 4px;
+            height: 8px;
+            margin: 10px 0;
+            overflow: hidden;
+        }
+
+        .upload-progress-bar {
+            background: #2563eb;
+            height: 100%;
+            width: 0%;
+            transition: width 0.3s ease;
+        }
+
+        .mobile-hide {
+            display: none;
+        }
+
+        @media (min-width: 640px) {
+            .mobile-hide {
+                display: block;
+            }
+        }
+
+        /* Mobile optimizations */
+        @media (max-width: 639px) {
+            body {
+                padding: 5px;
+                font-size: 13px;
+            }
+            
+            .header {
+                padding: 10px;
+                border-radius: 8px;
+            }
+            
+            .header h1 {
+                font-size: 1.3rem;
+            }
+            
+            .section {
+                padding: 10px;
+                border-radius: 8px;
+            }
+            
+            .btn {
+                padding: 6px 10px;
+                font-size: 12px;
+            }
+            
+            .form-control {
+                padding: 6px;
+            }
+            
+            .tabs {
+                margin-bottom: 10px;
+            }
+            
+            .tab {
+                padding: 8px 12px;
+                font-size: 12px;
+            }
+        }
+
+        .form-actions {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+            margin-top: 15px;
+        }
+
+        .btn-group {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>Faculty Admin Panel</h1>
+            <div class="nav-buttons">
+                <a href="control.html" class="btn btn-secondary">Control Panel</a>
+                <button onclick="logout()" class="btn btn-danger">Logout</button>
+            </div>
+        </div>
+
+        <div class="section">
+            <div class="tabs">
+                <button class="tab active" onclick="showTab('faculty')">Faculty</button>
+                <button class="tab" onclick="showTab('marquee')">Marquee</button>
+                <button class="tab" onclick="showTab('ads')">Ads</button>
+                <button class="tab" onclick="showTab('upload')">Upload</button>
+            </div>
+
+            <!-- Faculty Management Tab -->
+            <div id="faculty-tab" class="tab-content active">
+                <div class="section">
+                    <h2>Add New Faculty</h2>
+                    <form id="addFacultyForm">
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="name">Full Name *</label>
+                                <input type="text" id="name" class="form-control" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="designation">Designation</label>
+                                <input type="text" id="designation" class="form-control" placeholder="e.g., Professor">
+                            </div>
+                            <div class="form-group">
+                                <label for="contact">Contact Number</label>
+                                <input type="text" id="contact" class="form-control" placeholder="+8801234567890">
+                            </div>
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="email">Email</label>
+                                <input type="email" id="email" class="form-control">
+                            </div>
+                            <div class="form-group">
+                                <label for="image">Image Path</label>
+                                <input type="text" id="image" class="form-control" placeholder="/images/john_doe.jpg">
+                                <small style="color: #6b7280;">Upload images via Upload tab</small>
+                            </div>
+                        </div>
+                        
+                        <div class="schedule-section">
+                            <h3>Weekend Days</h3>
+                            <div class="checkbox-group">
+                                <div class="checkbox-item">
+                                    <input type="checkbox" id="weekend-Sunday" value="Sunday">
+                                    <label for="weekend-Sunday">Sunday</label>
+                                </div>
+                                <div class="checkbox-item">
+                                    <input type="checkbox" id="weekend-Monday" value="Monday">
+                                    <label for="weekend-Monday">Monday</label>
+                                </div>
+                                <div class="checkbox-item">
+                                    <input type="checkbox" id="weekend-Tuesday" value="Tuesday">
+                                    <label for="weekend-Tuesday">Tuesday</label>
+                                </div>
+                                <div class="checkbox-item">
+                                    <input type="checkbox" id="weekend-Wednesday" value="Wednesday">
+                                    <label for="weekend-Wednesday">Wednesday</label>
+                                </div>
+                                <div class="checkbox-item">
+                                    <input type="checkbox" id="weekend-Thursday" value="Thursday">
+                                    <label for="weekend-Thursday">Thursday</label>
+                                </div>
+                                <div class="checkbox-item">
+                                    <input type="checkbox" id="weekend-Friday" value="Friday">
+                                    <label for="weekend-Friday">Friday</label>
+                                </div>
+                                <div class="checkbox-item">
+                                    <input type="checkbox" id="weekend-Saturday" value="Saturday">
+                                    <label for="weekend-Saturday">Saturday</label>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="schedule-section">
+                            <h3>Office Hours</h3>
+                            <div id="officeHours"></div>
+                        </div>
+
+                        <div class="schedule-section">
+                            <h3>Class Times</h3>
+                            <div id="classTimes"></div>
+                        </div>
+
+                        <div class="form-actions">
+                            <button type="submit" class="btn btn-success">Add Faculty</button>
+                            <button type="button" onclick="resetForm()" class="btn btn-secondary">Reset Form</button>
+                        </div>
+                    </form>
+                </div>
+
+                <div class="section">
+                    <h2>Existing Faculty</h2>
+                    <div class="btn-group" style="margin-bottom: 15px;">
+                        <button onclick="loadFaculty()" class="btn btn-primary">Refresh List</button>
+                        <button onclick="exportFaculty()" class="btn btn-secondary">Export JSON</button>
+                    </div>
+                    <div id="facultyList"></div>
+                </div>
+            </div>
+
+            <!-- Marquee Tab -->
+            <div id="marquee-tab" class="tab-content">
+                <div class="section">
+                    <h2>Marquee Text Management</h2>
+                    <div class="file-info">
+                        <strong>File Location:</strong> backend/public/marquee.txt<br>
+                        <strong>Instructions:</strong> File changes take precedence over database updates. You can edit here or directly edit the file in GitHub.
+                    </div>
+                    <div class="form-group">
+                        <label for="marqueeText">Marquee Text</label>
+                        <textarea id="marqueeText" class="form-control" rows="4" placeholder="Enter marquee text..."></textarea>
+                    </div>
+                    <div class="btn-group">
+                        <button onclick="updateMarquee()" class="btn btn-primary">Update Marquee</button>
+                        <button onclick="loadMarquee()" class="btn btn-secondary">Reload from Server</button>
+                        <button onclick="previewMarquee()" class="btn btn-secondary">Preview</button>
+                    </div>
+                    
+                    <div id="marqueePreview" class="hidden" style="background: #1e3a8a; color: white; padding: 10px; margin: 15px 0; border-radius: 6px; overflow: hidden;">
+                        <div style="white-space: nowrap; animation: scroll 15s linear infinite;">
+                            <span id="marqueePreviewText"></span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Ads Management Tab -->
+            <div id="ads-tab" class="tab-content">
+                <div class="section">
+                    <h2>Ads Management</h2>
+                    <div class="file-info">
+                        <strong>Upload Location:</strong> backend/public/ads/<br>
+                        <strong>Supported Formats:</strong> .jpg, .jpeg, .png, .gif, .mp4, .webm<br>
+                        <strong>Instructions:</strong> Use the Upload tab to add new files or upload directly to GitHub.
+                    </div>
+                    
+                    <button onclick="loadAds()" class="btn btn-primary">Refresh Ads List</button>
+                    
+                    <div id="adsList" class="ads-grid"></div>
+                </div>
+            </div>
+
+            <!-- Upload Tab -->
+            <div id="upload-tab" class="tab-content">
+                <div class="section">
+                    <h2>File Upload</h2>
+                    <div class="file-info">
+                        <strong>GitHub Integration:</strong> Files are uploaded directly to your GitHub repository.<br>
+                        <strong>Setup Required:</strong> Add GITHUB_TOKEN environment variable to Render.<br>
+                        <strong>Alternative:</strong> Upload files manually to GitHub repository.
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Upload Type</label>
+                            <select id="uploadType" class="form-control">
+                                <option value="images">Faculty Images (/images/)</option>
+                                <option value="ads">Advertisements (/ads/)</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="file-upload-section">
+                        <div class="file-upload-area" id="uploadArea">
+                            <div>📁 Click here or drag files to upload</div>
+                            <div style="font-size: 12px; color: #6b7280; margin-top: 5px;">
+                                Max file size: 25MB per file<br>
+                                Supported: JPG, PNG, GIF, MP4, WEBM
+                            </div>
+                        </div>
+                        <input type="file" id="fileInput" multiple accept="image/*,video/*" style="display: none;">
+                        
+                        <div id="uploadProgress" class="upload-progress hidden">
+                            <div id="uploadProgressBar" class="upload-progress-bar"></div>
+                        </div>
+                        
+                        <div id="uploadStatus"></div>
+                    </div>
+
+                    <div class="file-info">
+                        <strong>Manual Upload Instructions:</strong><br>
+                        1. Go to your repository on GitHub: <code>masud7866/faculty-status-display</code><br>
+                        2. Navigate to <code>backend/public/images/</code> or <code>backend/public/ads/</code><br>
+                        3. Click "Add file" → "Upload files"<br>
+                        4. Drag and drop your files<br>
+                        5. Add commit message and commit changes<br>
+                        6. Wait for deployment (2-3 minutes)
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const API_BASE = 'https://faculty-status-display.onrender.com';
+        const days = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
+
+        // Check authentication
+        document.addEventListener('DOMContentLoaded', function() {
+            checkAuth();
+            generateScheduleForms();
+            loadFaculty();
+            loadMarquee();
+            loadAds();
+            setupFileUpload();
+        });
+
+        function checkAuth() {
+            fetch(`${API_BASE}/api/check-login`, { credentials: 'include' })
+                .then(r => r.json())
+                .then(data => {
+                    if (!data.loggedIn) {
+                        window.location.href = 'login.html';
+                    }
+                })
+                .catch(() => {
+                    window.location.href = 'login.html';
+                });
+        }
+
+        function showToast(message, type = 'success') {
+            const toast = document.createElement('div');
+            toast.className = `toast ${type}`;
+            toast.textContent = message;
+            document.body.appendChild(toast);
+            
+            setTimeout(() => {
+                toast.style.animation = 'slideIn 0.3s ease reverse';
+                setTimeout(() => toast.remove(), 300);
+            }, 3000);
+        }
+
+        function showTab(tabName) {
+            document.querySelectorAll('.tab-content').forEach(tab => {
+                tab.classList.remove('active');
+            });
+            document.querySelectorAll('.tab').forEach(tab => {
+                tab.classList.remove('active');
+            });
+            
+            document.getElementById(`${tabName}-tab`).classList.add('active');
+            event.target.classList.add('active');
+        }
+
+        function generateScheduleForms() {
+            generateOfficeHours();
+            generateClassTimes();
+        }
+
+        function generateOfficeHours() {
+            const container = document.getElementById('officeHours');
+            container.innerHTML = '';
+            
+            days.forEach(day => {
+                const dayDiv = document.createElement('div');
+                dayDiv.className = 'schedule-day';
+                dayDiv.innerHTML = `
+                    <h4>${day}</h4>
+                    <div class="time-input">
+                        <div class="form-group">
+                            <label>Start</label>
+                            <input type="time" class="form-control" id="office-${day}-start">
+                        </div>
+                        <div class="form-group">
+                            <label>End</label>
+                            <input type="time" class="form-control" id="office-${day}-end">
+                        </div>
+                        <button type="button" class="btn btn-secondary" onclick="clearOfficeHours('${day}')">Clear</button>
+                    </div>
+                `;
+                container.appendChild(dayDiv);
+            });
+        }
+
+        function generateClassTimes() {
+            const container = document.getElementById('classTimes');
+            container.innerHTML = '';
+            
+            days.forEach(day => {
+                const dayDiv = document.createElement('div');
+                dayDiv.className = 'schedule-day';
+                dayDiv.innerHTML = `
+                    <h4>${day}</h4>
+                    <div id="classes-${day}"></div>
+                    <button type="button" class="btn btn-secondary" onclick="addClass('${day}')">Add Class</button>
+                `;
+                container.appendChild(dayDiv);
+            });
+        }
+
+        function addClass(day) {
+            const container = document.getElementById(`classes-${day}`);
+            const classIndex = container.children.length;
+            const classDiv = document.createElement('div');
+            classDiv.className = 'class-input';
+            classDiv.innerHTML = `
+                <div class="form-group">
+                    <label>Start</label>
+                    <input type="time" class="form-control" id="class-${day}-${classIndex}-start">
+                </div>
+                <div class="form-group">
+                    <label>End</label>
+                    <input type="time" class="form-control" id="class-${day}-${classIndex}-end">
+                </div>
+                <div class="form-group mobile-hide">
+                    <label>Room</label>
+                    <input type="text" class="form-control" id="class-${day}-${classIndex}-room" placeholder="101">
+                </div>
+                <div class="form-group mobile-hide">
+                    <label>Batch</label>
+                    <input type="text" class="form-control" id="class-${day}-${classIndex}-batch" placeholder="CSE-21">
+                </div>
+                <button type="button" class="btn btn-danger" onclick="removeClass(this)">Remove</button>
+            `;
+            container.appendChild(classDiv);
+        }
+
+        function removeClass(button) {
+            button.parentElement.remove();
+        }
+
+        function clearOfficeHours(day) {
+            document.getElementById(`office-${day}-start`).value = '';
+            document.getElementById(`office-${day}-end`).value = '';
+        }
+
+        function resetForm() {
+            document.getElementById('addFacultyForm').reset();
+            generateScheduleForms();
+            showToast('Form reset!', 'info');
+        }
+
+        // Faculty Management
+        document.getElementById('addFacultyForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            const facultyData = {
+                name: document.getElementById('name').value.trim(),
+                designation: document.getElementById('designation').value.trim(),
+                contact: document.getElementById('contact').value.trim(),
+                email: document.getElementById('email').value.trim(),
+                image: document.getElementById('image').value.trim() || '/images/default.jpg',
+                weekend: [],
+                officeHours: {},
+                classTimes: {}
+            };
+
+            // Get weekend days
+            document.querySelectorAll('[id^="weekend-"]:checked').forEach(checkbox => {
+                facultyData.weekend.push(checkbox.value);
+            });
+
+            // Get office hours
+            days.forEach(day => {
+                const start = document.getElementById(`office-${day}-start`).value;
+                const end = document.getElementById(`office-${day}-end`).value;
+                if (start && end) {
+                    facultyData.officeHours[day] = [start, end];
+                }
+            });
+
+            // Get class times
+            days.forEach(day => {
+                const classes = [];
+                const container = document.getElementById(`classes-${day}`);
+                Array.from(container.children).forEach((classDiv, index) => {
+                    const start = document.getElementById(`class-${day}-${index}-start`)?.value;
+                    const end = document.getElementById(`class-${day}-${index}-end`)?.value;
+                    const room = document.getElementById(`class-${day}-${index}-room`)?.value || '';
+                    const batch = document.getElementById(`class-${day}-${index}-batch`)?.value || '';
+                    
+                    if (start && end) {
+                        classes.push({ start, end, room, batch });
+                    }
+                });
+                if (classes.length > 0) {
+                    facultyData.classTimes[day] = classes;
+                }
+            });
+
+            try {
+                const response = await fetch(`${API_BASE}/api/admin/faculty`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    credentials: 'include',
+                    body: JSON.stringify(facultyData)
+                });
+
+                if (response.ok) {
+                    showToast('Faculty added successfully!');
+                    resetForm();
+                    loadFaculty();
+                } else {
+                    const error = await response.json();
+                    showToast(error.error || 'Failed to add faculty', 'error');
+                }
+            } catch (error) {
+                showToast('Error adding faculty', 'error');
+                console.error(error);
+            }
+        });
+
+        async function loadFaculty() {
+            try {
+                const response = await fetch(`${API_BASE}/api/faculty`, { credentials: 'include' });
+                const faculty = await response.json();
+                
+                const container = document.getElementById('facultyList');
+                container.innerHTML = '';
+                
+                if (faculty.length === 0) {
+                    container.innerHTML = '<p>No faculty found. Add some faculty members using the form above.</p>';
+                    return;
+                }
+                
+                faculty.forEach(f => {
+                    const facultyCard = document.createElement('div');
+                    facultyCard.className = 'faculty-card';
+                    facultyCard.innerHTML = `
+                        <div class="faculty-header">
+                            <div class="faculty-name">${f.name}</div>
+                            <div class="faculty-actions">
+                                <button class="btn btn-primary" onclick="editFaculty('${f.name}')">Edit</button>
+                                <button class="btn btn-danger" onclick="deleteFaculty('${f.name}')">Delete</button>
+                            </div>
+                        </div>
+                        <div class="faculty-info"><strong>Designation:</strong> ${f.designation || 'N/A'}</div>
+                        <div class="faculty-info"><strong>Contact:</strong> ${f.contact || 'N/A'}</div>
+                        <div class="faculty-info"><strong>Email:</strong> ${f.email || 'N/A'}</div>
+                        <div class="faculty-info"><strong>Weekend:</strong> ${f.weekend?.join(', ') || 'None'}</div>
+                        <div class="faculty-info"><strong>Status:</strong> ${f.status || 'Unknown'}</div>
+                    `;
+                    container.appendChild(facultyCard);
+                });
+                
+                showToast(`Loaded ${faculty.length} faculty members`, 'info');
+            } catch (error) {
+                showToast('Failed to load faculty', 'error');
+                console.error(error);
+            }
+        }
+
+        async function deleteFaculty(name) {
+            if (!confirm(`Are you sure you want to delete ${name}?\n\nThis action cannot be undone.`)) return;
+
+            try {
+                const response = await fetch(`${API_BASE}/api/admin/faculty/${encodeURIComponent(name)}`, {
+                    method: 'DELETE',
+                    credentials: 'include'
+                });
+
+                if (response.ok) {
+                    showToast('Faculty deleted successfully!');
+                    loadFaculty();
+                } else {
+                    const error = await response.json();
+                    showToast(error.error || 'Failed to delete faculty', 'error');
+                }
+            } catch (error) {
+                showToast('Error deleting faculty', 'error');
+                console.error(error);
+            }
+        }
+
+        function editFaculty(name) {
+            showToast(`Edit functionality for ${name} - Coming soon!`, 'info');
+            // TODO: Implement edit functionality
+        }
+
+        function exportFaculty() {
+            fetch(`${API_BASE}/api/faculty`, { credentials: 'include' })
+                .then(r => r.json())
+                .then(faculty => {
+                    const dataStr = JSON.stringify(faculty, null, 2);
+                    const dataBlob = new Blob([dataStr], {type: 'application/json'});
+                    const url = URL.createObjectURL(dataBlob);
+                    const link = document.createElement('a');
+                    link.href = url;
+                    link.download = 'faculty_export.json';
+                    link.click();
+                    URL.revokeObjectURL(url);
+                    showToast('Faculty data exported!');
+                })
+                .catch(() => showToast('Export failed', 'error'));
+        }
+
+        // Marquee Management
+        async function loadMarquee() {
+            try {
+                const response = await fetch(`${API_BASE}/api/marquee`);
+                const text = await response.text();
+                document.getElementById('marqueeText').value = text;
+            } catch (error) {
+                showToast('Failed to load marquee', 'error');
+            }
+        }
+
+        async function updateMarquee() {
+            const text = document.getElementById('marqueeText').value;
+            
+            if (!text.trim()) {
+                showToast('Please enter some text', 'error');
+                return;
+            }
+            
+            try {
+                const response = await fetch(`${API_BASE}/api/admin/marquee`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    credentials: 'include',
+                    body: JSON.stringify({ text })
+                });
+
+                if (response.ok) {
+                    showToast('Marquee updated successfully!');
+                } else {
+                    showToast('Failed to update marquee', 'error');
+                }
+            } catch (error) {
+                showToast('Error updating marquee', 'error');
+            }
+        }
+
+        function previewMarquee() {
+            const text = document.getElementById('marqueeText').value;
+            const preview = document.getElementById('marqueePreview');
+            const previewText = document.getElementById('marqueePreviewText');
+            
+            if (text.trim()) {
+                previewText.textContent = text;
+                preview.classList.remove('hidden');
+                setTimeout(() => preview.classList.add('hidden'), 5000);
+            } else {
+                showToast('Enter some text to preview', 'error');
+            }
+        }
+
+        // Ads Management
+        async function loadAds() {
+            try {
+                const response = await fetch(`${API_BASE}/api/ads`);
+                const ads = await response.json();
+                
+                const container = document.getElementById('adsList');
+                container.innerHTML = '';
+                
+                if (ads.length === 0) {
+                    container.innerHTML = '<p>No ads found. Use the Upload tab to add files.</p>';
+                    return;
+                }
+                
+                ads.forEach(ad => {
+                    const adDiv = document.createElement('div');
+                    adDiv.className = 'ad-item';
+                    
+                    const filename = ad.src.split('/').pop();
+                    
+                    if (ad.type === 'image') {
+                        adDiv.innerHTML = `
+                            <img src="${API_BASE}${ad.src}" class="ad-preview" alt="Ad" loading="lazy">
+                            <div class="ad-filename">${filename}</div>
+                            <button class="btn btn-danger" onclick="deleteAd('${filename}')">Delete Info</button>
+                        `;
+                    } else {
+                        adDiv.innerHTML = `
+                            <video class="ad-preview" controls preload="none">
+                                <source src="${API_BASE}${ad.src}" type="video/mp4">
+                            </video>
+                            <div class="ad-filename">${filename}</div>
+                            <button class="btn btn-danger" onclick="deleteAd('${filename}')">Delete Info</button>
+                        `;
+                    }
+                    
+                    container.appendChild(adDiv);
+                });
+                
+                showToast(`Loaded ${ads.length} ad files`, 'info');
+            } catch (error) {
+                showToast('Failed to load ads', 'error');
+                console.error(error);
+            }
+        }
+
+        function deleteAd(filename) {
+            showToast(`To delete ${filename}:\n1. Go to GitHub repository\n2. Navigate to backend/public/ads/\n3. Delete the file\n4. Commit changes`, 'info');
+        }
+
+        // File Upload Setup
+        function setupFileUpload() {
+            const uploadArea = document.getElementById('uploadArea');
+            const fileInput = document.getElementById('fileInput');
+
+            uploadArea.addEventListener('click', () => fileInput.click());
+
+            uploadArea.addEventListener('dragover', (e) => {
+                e.preventDefault();
+                uploadArea.classList.add('drag-over');
+            });
+
+            uploadArea.addEventListener('dragleave', () => {
+                uploadArea.classList.remove('drag-over');
+            });
+
+            uploadArea.addEventListener('drop', (e) => {
+                e.preventDefault();
+                uploadArea.classList.remove('drag-over');
+                handleFiles(e.dataTransfer.files);
+            });
+
+            fileInput.addEventListener('change', (e) => {
+                handleFiles(e.target.files);
+            });
+        }
+
+        async function handleFiles(files) {
+            if (files.length === 0) return;
+            
+            const uploadType = document.getElementById('uploadType').value;
+            const statusDiv = document.getElementById('uploadStatus');
+            const progressDiv = document.getElementById('uploadProgress');
+            const progressBar = document.getElementById('uploadProgressBar');
+
+            statusDiv.innerHTML = '';
+            progressDiv.classList.remove('hidden');
+
+            let uploadedCount = 0;
+            const totalFiles = files.length;
+
+            for (let i = 0; i < files.length; i++) {
+                const file = files[i];
+                
+                // Check file size (25MB limit)
+                if (file.size > 25 * 1024 * 1024) {
+                    const statusItem = document.createElement('div');
+                    statusItem.style.color = '#ef4444';
+                    statusItem.style.fontSize = '12px';
+                    statusItem.style.marginBottom = '4px';
+                    statusItem.textContent = `❌ ${file.name} is too large (max 25MB)`;
+                    statusDiv.appendChild(statusItem);
+                    continue;
+                }
+                
+                try {
+                    await uploadFileToGitHub(file, uploadType);
+                    uploadedCount++;
+                    
+                    const progress = (i + 1) / totalFiles * 100;
+                    progressBar.style.width = `${progress}%`;
+                    
+                    const statusItem = document.createElement('div');
+                    statusItem.style.color = '#10b981';
+                    statusItem.style.fontSize = '12px';
+                    statusItem.style.marginBottom = '4px';
+                    statusItem.textContent = `✅ ${file.name} uploaded successfully`;
+                    statusDiv.appendChild(statusItem);
+                    
+                } catch (error) {
+                    const statusItem = document.createElement('div');
+                    statusItem.style.color = '#ef4444';
+                    statusItem.style.fontSize = '12px';
+                    statusItem.style.marginBottom = '4px';
+                    statusItem.textContent = `❌ ${file.name} failed: ${error.message}`;
+                    statusDiv.appendChild(statusItem);
+                }
+            }
+
+            progressDiv.classList.add('hidden');
+            progressBar.style.width = '0%';
+            
+            if (uploadedCount > 0) {
+                showToast(`${uploadedCount} file(s) uploaded successfully!`);
+                if (uploadType === 'ads') {
+                    setTimeout(() => loadAds(), 2000); // Reload ads after a delay
+                }
+            }
+            
+            // Clear file input
+            document.getElementById('fileInput').value = '';
+        }
+
+        async function uploadFileToGitHub(file, uploadType) {
+            const path = uploadType === 'images' ? 'backend/public/images' : 'backend/public/ads';
+            
+            try {
+                const response = await fetch(`${API_BASE}/api/upload`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    credentials: 'include',
+                    body: JSON.stringify({
+                        filename: file.name,
+                        content: await fileToBase64(file),
+                        path: path
+                    })
+                });
+
+                if (!response.ok) {
+                    const error = await response.json();
+                    throw new Error(error.error || 'Upload failed');
+                }
+
+                return await response.json();
+            } catch (error) {
+                throw error;
+            }
+        }
+
+        function fileToBase64(file) {
+            return new Promise((resolve, reject) => {
+                const reader = new FileReader();
+                reader.onload = () => {
+                    // Remove the data:mime-type;base64, prefix
+                    const base64 = reader.result.split(',')[1];
+                    resolve(base64);
+                };
+                reader.onerror = reject;
+                reader.readAsDataURL(file);
+            });
+        }
+
+        function logout() {
+            fetch(`${API_BASE}/api/logout`, {
+                method: 'POST',
+                credentials: 'include'
+            }).then(() => {
+                window.location.href = 'login.html';
+            });
+        }
+
+        // Add CSS for marquee animation
+        const style = document.createElement('style');
+        style.textContent = `
+            @keyframes scroll {
+                0% { transform: translateX(100%); }
+                100% { transform: translateX(-100%); }
+            }
+        `;
+        document.head.appendChild(style);
+    </script>
+</body>
+</html>

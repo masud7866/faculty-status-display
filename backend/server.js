@@ -210,6 +210,196 @@ app.get("/", (req, res) => {
   res.send("Faculty Status Backend with MongoDB (Hybrid File/DB) - Running! 🚀");
 });
 
+// === ADMIN ROUTES ===
+
+// Get single faculty member
+app.get("/api/admin/faculty/:name", async (req, res) => {
+  if (!req.session.loggedIn) return res.status(403).send("Unauthorized");
+  
+  try {
+    const faculty = await facultyDB.getAllFaculty();
+    const member = faculty.find(f => f.name === req.params.name);
+    if (!member) return res.status(404).json({ error: "Faculty not found" });
+    res.json(member);
+  } catch (error) {
+    console.error("Error fetching faculty:", error);
+    res.status(500).json({ error: "Failed to fetch faculty" });
+  }
+});
+
+// Add new faculty member
+app.post("/api/admin/faculty", async (req, res) => {
+  if (!req.session.loggedIn) return res.status(403).send("Unauthorized");
+  
+  try {
+    const db = await facultyDB.connect();
+    const newFaculty = {
+      ...req.body,
+      createdAt: new Date(),
+      updatedAt: new Date(),
+      status: "off_duty",
+      manualOverride: null,
+      overrideExpiry: null
+    };
+    
+    // Check if faculty already exists
+    const existing = await db.collection('faculty').findOne({ name: newFaculty.name });
+    if (existing) {
+      return res.status(400).json({ error: "Faculty with this name already exists" });
+    }
+    
+    await db.collection('faculty').insertOne(newFaculty);
+    console.log(`✅ Added new faculty: ${newFaculty.name}`);
+    res.json({ message: "Faculty added successfully" });
+  } catch (error) {
+    console.error("Error adding faculty:", error);
+    res.status(500).json({ error: "Failed to add faculty" });
+  }
+});
+
+// Update faculty member (schedule, contact info, etc.)
+app.put("/api/admin/faculty/:name", async (req, res) => {
+  if (!req.session.loggedIn) return res.status(403).send("Unauthorized");
+  
+  try {
+    const db = await facultyDB.connect();
+    const updateData = {
+      ...req.body,
+      updatedAt: new Date()
+    };
+    
+    // Don't allow updating status, manualOverride, or overrideExpiry through this route
+    delete updateData.status;
+    delete updateData.manualOverride;
+    delete updateData.overrideExpiry;
+    delete updateData.createdAt;
+    
+    const result = await db.collection('faculty').updateOne(
+      { name: req.params.name },
+      { $set: updateData }
+    );
+    
+    if (result.matchedCount === 0) {
+      return res.status(404).json({ error: "Faculty not found" });
+    }
+    
+    console.log(`✅ Updated faculty: ${req.params.name}`);
+    res.json({ message: "Faculty updated successfully" });
+  } catch (error) {
+    console.error("Error updating faculty:", error);
+    res.status(500).json({ error: "Failed to update faculty" });
+  }
+});
+
+// Delete faculty member
+app.delete("/api/admin/faculty/:name", async (req, res) => {
+  if (!req.session.loggedIn) return res.status(403).send("Unauthorized");
+  
+  try {
+    const db = await facultyDB.connect();
+    const result = await db.collection('faculty').deleteOne({ name: req.params.name });
+    
+    if (result.deletedCount === 0) {
+      return res.status(404).json({ error: "Faculty not found" });
+    }
+    
+    console.log(`✅ Deleted faculty: ${req.params.name}`);
+    res.json({ message: "Faculty deleted successfully" });
+  } catch (error) {
+    console.error("Error deleting faculty:", error);
+    res.status(500).json({ error: "Failed to delete faculty" });
+  }
+});
+
+// Update marquee text (database version for admin panel)
+app.post("/api/admin/marquee", async (req, res) => {
+  if (!req.session.loggedIn) return res.status(403).send("Unauthorized");
+  
+  const { text } = req.body;
+  try {
+    await facultyDB.setSetting('marquee_text', text);
+    console.log("✅ Updated marquee text via admin panel");
+    res.json({ message: "Marquee text updated successfully." });
+  } catch (error) {
+    console.error("❌ Error updating marquee:", error);
+    res.status(500).json({ error: "Failed to update marquee text" });
+  }
+});
+
+// GitHub file upload route
+app.post("/api/upload", async (req, res) => {
+  if (!req.session.loggedIn) return res.status(403).send("Unauthorized");
+  
+  const { filename, content, path } = req.body;
+  
+  if (!process.env.GITHUB_TOKEN) {
+    return res.status(500).json({ error: "GitHub token not configured. Upload manually to GitHub." });
+  }
+
+  try {
+    const githubOwner = 'masud7866';
+    const githubRepo = 'faculty-status-display';
+    const filePath = `${path}/${filename}`;
+
+    // Check if file already exists
+    let sha = null;
+    try {
+      const existingFile = await fetch(
+        `https://api.github.com/repos/${githubOwner}/${githubRepo}/contents/${filePath}`,
+        {
+          headers: {
+            'Authorization': `token ${process.env.GITHUB_TOKEN}`,
+            'Accept': 'application/vnd.github.v3+json'
+          }
+        }
+      );
+      
+      if (existingFile.ok) {
+        const fileData = await existingFile.json();
+        sha = fileData.sha;
+      }
+    } catch (error) {
+      // File doesn't exist, that's fine
+    }
+
+    // Upload/update file
+    const uploadResponse = await fetch(
+      `https://api.github.com/repos/${githubOwner}/${githubRepo}/contents/${filePath}`,
+      {
+        method: 'PUT',
+        headers: {
+          'Authorization': `token ${process.env.GITHUB_TOKEN}`,
+          'Accept': 'application/vnd.github.v3+json',
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          message: `Upload ${filename} via admin panel`,
+          content: content,
+          sha: sha // Include SHA if file exists (for update)
+        })
+      }
+    );
+
+    if (!uploadResponse.ok) {
+      const error = await uploadResponse.json();
+      throw new Error(error.message || 'GitHub upload failed');
+    }
+
+    const result = await uploadResponse.json();
+    console.log(`✅ Uploaded ${filename} to GitHub: ${filePath}`);
+    
+    res.json({ 
+      message: 'File uploaded successfully',
+      path: filePath,
+      url: result.content.download_url
+    });
+
+  } catch (error) {
+    console.error('❌ GitHub upload error:', error);
+    res.status(500).json({ error: error.message || 'Upload failed' });
+  }
+});
+
 // === AUTO STATUS LOGIC ===
 function getCurrentStatus(faculty) {
   const now = new Date();
