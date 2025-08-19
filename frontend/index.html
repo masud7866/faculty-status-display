@@ -949,19 +949,22 @@
         .then(text => {
           // Only update if text has changed or if forced
           if (text !== currentMarqueeText || forceUpdate) {
+            const previousText = currentMarqueeText;
             currentMarqueeText = text;
             const marquee = document.getElementById("marqueeText");
             marquee.textContent = text;
-            
-            // Restart animation for new text
-            setTimeout(() => {
-              animateMarquee();
-            }, 100);
-            
+
+            // Restart your existing animation for new text
+            if (text !== previousText) {
+              setTimeout(() => {
+                animateMarquee(); // Uses your existing function
+              }, 100);
+            }
+
             if (forceUpdate) {
-              console.log("🔄 Marquee manually refreshed");
-            } else {
-              console.log("📝 Marquee text updated automatically");
+              console.log("🔄 Marquee manually refreshed:", text);
+            } else if (text !== previousText) {
+              console.log("📝 Marquee text updated automatically:", text);
             }
           }
         })
@@ -970,30 +973,58 @@
         });
     }
 
-    // Add manual refresh function
-    function refreshMarquee() {
-      loadMarquee(true);
-      
-      // Visual feedback
-      const button = document.getElementById("marqueeRefresh");
-      if (button) {
-        button.style.background = "rgba(34, 197, 94, 0.3)";
-        button.textContent = "✓";
-        setTimeout(() => {
-          button.style.background = "rgba(255, 255, 255, 0.1)";
-          button.textContent = "⟳";
-        }, 1000);
-      }
-    }
-
-    // Smart marquee checking function
+    // Add this NEW function after loadMarquee (around line 620):
     function startSmartMarqueeCheck() {
-      // Check every 15 seconds for changes
+      // Check every 15 seconds for changes (much faster than 5 minutes)
       marqueeCheckInterval = setInterval(() => {
-        loadMarquee(false);
+        loadMarquee(false); // Check for updates without forcing
       }, 15000);
     }
 
+    function animateMarquee() {
+      const marquee = document.getElementById("marqueeText");
+
+      if (marqueeAnimation) {
+        cancelAnimationFrame(marqueeAnimation);
+      }
+
+      const container = marquee.parentElement;
+      const containerWidth = container.offsetWidth - 150; // Account for date display
+      const textWidth = marquee.scrollWidth;
+
+      // If text fits in container, no need to scroll
+      if (textWidth <= containerWidth) {
+        marquee.style.transform = 'translateX(0)';
+        return;
+      }
+
+      const speed = 100; // pixels per second - adjust for desired speed
+      const totalDistance = containerWidth + textWidth;
+      const cycleDuration = totalDistance / speed * 1000; // ms for one complete cycle
+
+      let animationStartTime = null;
+
+      function animate(timestamp) {
+        if (!animationStartTime) {
+          animationStartTime = timestamp;
+        }
+
+        const elapsed = timestamp - animationStartTime;
+        const cycleProgress = (elapsed % cycleDuration) / cycleDuration;
+
+        // Calculate position (starts from right edge, moves to left)
+        const position = containerWidth - (totalDistance * cycleProgress);
+
+        // Use transform3d for better performance
+        marquee.style.transform = `translate3d(${position}px, 0, 0)`;
+
+        // Continue animation
+        marqueeAnimation = requestAnimationFrame(animate);
+      }
+
+      // Start the animation
+      marqueeAnimation = requestAnimationFrame(animate);
+    }
 
     function updateDate() {
       if (!dateDisplay) {
@@ -1028,8 +1059,8 @@
       setInterval(updateClock, 1000);
       setInterval(loadFaculty, 3000);
       
-      // Replace the old marquee interval with smart checking
-      startSmartMarqueeCheck();
+      // Replace the old 5-minute marquee interval with smart checking
+      startSmartMarqueeCheck(); // Check every 15 seconds
       
       setInterval(loadAds, 300000);
       setInterval(updateDate, 60000);
