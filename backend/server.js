@@ -33,7 +33,8 @@ app.use(session({
 }));
 
 // Serve images
-app.use("/images", express.static("public"));
+app.use("/images", express.static(path.join(__dirname, "public")));
+app.use("/public", express.static(path.join(__dirname, "public")));
 app.use("/ads", express.static(path.join(__dirname, "public/ads")));
 
 // === SYNC FUNCTION ===

@@ -519,6 +519,7 @@
                             <h3>Faculty Image</h3>
                             <div class="file-info">
                                 <strong>Image Path:</strong> Will be saved as /public/facultyname.jpg<br>
+                                <strong>JSON Format:</strong> Will be stored as /images/facultyname.jpg for compatibility<br>
                                 <strong>Format:</strong> JPG, PNG (max 5MB)
                             </div>
                             
@@ -534,7 +535,8 @@
                                 <img id="imagePreview" class="image-preview" alt="Faculty Image">
                                 <div>
                                     <div><strong>Uploaded:</strong> <span id="uploadedImageName"></span></div>
-                                    <div><strong>Path:</strong> <span id="uploadedImagePath"></span></div>
+                                    <div><strong>Backend Path:</strong> <span id="uploadedImagePath"></span></div>
+                                    <div><strong>JSON Path:</strong> <span id="uploadedJsonPath"></span></div>
                                 </div>
                             </div>
                             
@@ -871,20 +873,25 @@
                 }
 
                 const result = await response.json();
-                const imagePath = `/public/${filename}`;
                 
-                // Update form with uploaded image path
-                document.getElementById('image').value = imagePath;
+                // Backend serves from /public/, but JSON needs /images/ format for compatibility
+                const backendPath = `/public/${filename}`;
+                const jsonPath = `/images/${filename}`;
+                
+                // Store the JSON-compatible path for the database
+                document.getElementById('image').value = jsonPath;
                 
                 // Show preview
                 const preview = document.getElementById('imagePreview');
                 const previewSection = document.getElementById('imagePreviewSection');
                 const nameSpan = document.getElementById('uploadedImageName');
                 const pathSpan = document.getElementById('uploadedImagePath');
+                const jsonPathSpan = document.getElementById('uploadedJsonPath');
                 
                 preview.src = URL.createObjectURL(file);
                 nameSpan.textContent = filename;
-                pathSpan.textContent = imagePath;
+                pathSpan.textContent = backendPath;
+                jsonPathSpan.textContent = jsonPath;
                 previewSection.classList.remove('hidden');
                 
                 showToast('Faculty image uploaded successfully!');
@@ -903,7 +910,7 @@
                 designation: document.getElementById('designation').value.trim(),
                 contact: document.getElementById('contact').value.trim(),
                 email: document.getElementById('email').value.trim(),
-                image: document.getElementById('image').value || '/public/default.jpg',
+                image: document.getElementById('image').value || '/images/default.jpg', // JSON format
                 weekend: [],
                 officeHours: {},
                 classTimes: {}
@@ -978,6 +985,14 @@
                 }
                 
                 faculty.forEach(f => {
+                    // Convert image path for display (handle both formats)
+                    let displayImagePath = f.image;
+                    if (f.image && f.image.startsWith('/images/')) {
+                        displayImagePath = f.image; // Keep as is for JSON compatibility
+                    } else if (f.image && f.image.startsWith('/public/')) {
+                        displayImagePath = f.image; // Keep as is for backend compatibility
+                    }
+                    
                     const facultyCard = document.createElement('div');
                     facultyCard.className = 'faculty-card';
                     facultyCard.innerHTML = `
@@ -991,7 +1006,7 @@
                         <div class="faculty-info"><strong>Designation:</strong> ${f.designation || 'N/A'}</div>
                         <div class="faculty-info"><strong>Contact:</strong> ${f.contact || 'N/A'}</div>
                         <div class="faculty-info"><strong>Email:</strong> ${f.email || 'N/A'}</div>
-                        <div class="faculty-info"><strong>Image:</strong> ${f.image || 'N/A'}</div>
+                        <div class="faculty-info"><strong>Image Path:</strong> ${displayImagePath || 'N/A'}</div>
                         <div class="faculty-info"><strong>Weekend:</strong> ${f.weekend?.join(', ') || 'None'}</div>
                         <div class="faculty-info"><strong>Status:</strong> ${f.status || 'Unknown'}</div>
                     `;
