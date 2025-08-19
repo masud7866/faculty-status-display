@@ -32,6 +32,15 @@ app.use(session({
   }
 }));
 
+// === MIDDLEWARE ===
+// Authentication middleware
+function requireAuth(req, res, next) {
+  if (!req.session.loggedIn) {
+    return res.status(403).json({ error: "Unauthorized" });
+  }
+  next();
+}
+
 // Serve images
 app.use("/images", express.static(path.join(__dirname, "public")));
 app.use("/public", express.static(path.join(__dirname, "public")));
@@ -131,9 +140,7 @@ app.post("/api/login", (req, res) => {
   }
 });
 
-app.post("/api/update", async (req, res) => {
-  if (!req.session.loggedIn) return res.status(403).send("Unauthorized");
-
+app.post("/api/update", requireAuth, async (req, res) => {
   const overrides = req.body;
 
   try {
@@ -214,9 +221,7 @@ app.get("/", (req, res) => {
 // === ADMIN ROUTES ===
 
 // Get single faculty member
-app.get("/api/admin/faculty/:name", async (req, res) => {
-  if (!req.session.loggedIn) return res.status(403).send("Unauthorized");
-  
+app.get("/api/admin/faculty/:name", requireAuth, async (req, res) => {
   try {
     const faculty = await facultyDB.getAllFaculty();
     const member = faculty.find(f => f.name === req.params.name);
@@ -229,9 +234,7 @@ app.get("/api/admin/faculty/:name", async (req, res) => {
 });
 
 // Add new faculty member
-app.post("/api/admin/faculty", async (req, res) => {
-  if (!req.session.loggedIn) return res.status(403).send("Unauthorized");
-  
+app.post("/api/admin/faculty", requireAuth, async (req, res) => {
   try {
     const db = await facultyDB.connect();
     const newFaculty = {
@@ -259,9 +262,7 @@ app.post("/api/admin/faculty", async (req, res) => {
 });
 
 // Update faculty member (schedule, contact info, etc.)
-app.put("/api/admin/faculty/:name", async (req, res) => {
-  if (!req.session.loggedIn) return res.status(403).send("Unauthorized");
-  
+app.put("/api/admin/faculty/:name", requireAuth, async (req, res) => {
   try {
     const db = await facultyDB.connect();
     const updateData = {
@@ -293,9 +294,7 @@ app.put("/api/admin/faculty/:name", async (req, res) => {
 });
 
 // Delete faculty member
-app.delete("/api/admin/faculty/:name", async (req, res) => {
-  if (!req.session.loggedIn) return res.status(403).send("Unauthorized");
-  
+app.delete("/api/admin/faculty/:name", requireAuth, async (req, res) => {
   try {
     const db = await facultyDB.connect();
     const result = await db.collection('faculty').deleteOne({ name: req.params.name });
@@ -313,9 +312,7 @@ app.delete("/api/admin/faculty/:name", async (req, res) => {
 });
 
 // Update marquee text (database version for admin panel)
-app.post("/api/admin/marquee", async (req, res) => {
-  if (!req.session.loggedIn) return res.status(403).send("Unauthorized");
-  
+app.post("/api/admin/marquee", requireAuth, async (req, res) => {
   const { text } = req.body;
   try {
     await facultyDB.setSetting('marquee_text', text);
@@ -328,9 +325,7 @@ app.post("/api/admin/marquee", async (req, res) => {
 });
 
 // GitHub file upload route
-app.post("/api/upload", async (req, res) => {
-  if (!req.session.loggedIn) return res.status(403).send("Unauthorized");
-  
+app.post("/api/upload", requireAuth, async (req, res) => {
   const { filename, content, path } = req.body;
   
   if (!process.env.GITHUB_TOKEN) {
