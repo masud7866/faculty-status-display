@@ -457,7 +457,7 @@
     let dateDisplay = null;
     let currentMarqueeText = '';
     let marqueeCheckInterval = null;
-    
+
     // Ad configuration constants
     const IMAGE_AD_DURATION = 20000; // 20 seconds for images
     const MAX_VIDEO_CAP_MS = 5 * 60 * 1000; // 5 minute safety cap for videos
@@ -472,7 +472,7 @@
           .then(data => {
             const grid = document.getElementById("grid");
             const fragment = document.createDocumentFragment();
-            
+
             data.forEach(f => {
               let statusObj = f.manualOverride ?? f.status;
               let statusStr, room, batch;
@@ -506,7 +506,7 @@
               `;
               fragment.appendChild(cardDiv);
             });
-            
+
             grid.innerHTML = '';
             grid.appendChild(fragment);
           })
@@ -560,13 +560,13 @@
       if (!clockContainer) {
         clockContainer = document.getElementById("clock");
       }
-      
+
       const digits = [
         ...String(h).padStart(2, '0'),
         ...String(m).padStart(2, '0'),
         ...String(s).padStart(2, '0')
       ];
-      
+
       const html = `
         ${renderDigit(digits[0])}
         ${renderDigit(digits[1])}
@@ -578,7 +578,7 @@
         ${renderDigit(digits[5])}
         <span class="ampm">${ampm}</span>
       `;
-      
+
       clockContainer.innerHTML = html;
     }
 
@@ -620,7 +620,7 @@
       overlay.classList.remove("stretch-horizontal", "stretch-vertical");
       const overlayRect = overlay.getBoundingClientRect();
       let mediaWidth, mediaHeight;
-      
+
       if (mediaEl.tagName === "IMG") {
         mediaWidth = mediaEl.naturalWidth;
         mediaHeight = mediaEl.naturalHeight;
@@ -628,7 +628,7 @@
         mediaWidth = mediaEl.videoWidth;
         mediaHeight = mediaEl.videoHeight;
       }
-      
+
       if (mediaWidth && mediaHeight) {
         if ((mediaWidth / mediaHeight) > (overlayRect.width / overlayRect.height)) {
           overlay.classList.add("stretch-horizontal");
@@ -650,7 +650,7 @@
         .then(data => {
           ads = data;
           console.log("Ads loaded:", ads.length);
-          
+
           // Only try to start if we're not in break period and not already running
           if (!inBreakPeriod && !adCycleRunning && ads.length > 0) {
             checkAndStartAds();
@@ -664,20 +664,20 @@
 
     function checkAndStartAds() {
       const now = Date.now();
-      
+
       // If we're in a break period
       if (inBreakPeriod) {
         if (now >= breakEndsAt) {
           // Break is over, reset state
           inBreakPeriod = false;
           console.log("✅ Break period ended. Ads can now start.");
-          
+
           // Clear any pending timeout
           if (nextAdTimeout) {
             clearTimeout(nextAdTimeout);
             nextAdTimeout = null;
           }
-          
+
           // Start ads immediately after break
           if (ads.length > 0 && !adCycleRunning) {
             runAdSequence();
@@ -688,7 +688,7 @@
         }
         return;
       }
-      
+
       // Not in break and not running, start ads
       if (!adCycleRunning && ads.length > 0) {
         runAdSequence();
@@ -698,7 +698,7 @@
     function startBreakPeriod(totalAdDuration) {
       // Calculate break duration based on cumulative ad duration
       let breakDurationMs = 60000; // Default 1 minute
-      
+
       if (totalAdDuration > 120000) {       // > 2 minutes of ads
         breakDurationMs = 240000;           // 4 minutes break
       } else if (totalAdDuration > 30000 && totalAdDuration < 60000) { // 30 seconds to 1 minute of ads
@@ -706,22 +706,22 @@
       } else if (totalAdDuration > 60000) { // > 1 minute of ads
         breakDurationMs = 180000;            // 3 minutes break
       }
-      
+
       // Set break period flags
       inBreakPeriod = true;
       breakEndsAt = Date.now() + breakDurationMs;
-      
+
       console.log("🛑 STARTING BREAK PERIOD");
       console.log("📊 Total ad duration was:", Math.round(totalAdDuration / 1000), "seconds");
       console.log("⏰ Break duration:", Math.round(breakDurationMs / 1000), "seconds");
       console.log("🔄 Next ads will start at:", new Date(breakEndsAt).toLocaleTimeString());
-      
+
       // Schedule end of break
       nextAdTimeout = setTimeout(() => {
         inBreakPeriod = false;
         nextAdTimeout = null;
         console.log("✅ Break period completed! Ready for next ad cycle.");
-        
+
         // Try to start ads immediately after break ends
         if (ads.length > 0 && !adCycleRunning) {
           runAdSequence();
@@ -752,11 +752,11 @@
       function finishAdSequence() {
         hideOverlay();
         adCycleRunning = false;
-        
+
         console.log("🏁 AD SEQUENCE COMPLETE");
         console.log("📺 Total ads shown:", ads.length);
         console.log("⏱️ Total ad time:", Math.round(totalAdTime / 1000), "seconds");
-        
+
         // Start break period (no ads during break)
         startBreakPeriod(totalAdTime);
       }
@@ -779,7 +779,7 @@
         if (ad.type === "image") {
           // Images: fixed 20-second duration
           const duration = IMAGE_AD_DURATION;
-          console.log(`📷 Image ${current + 1}/${ads.length}: ${ad.src} (${duration/1000}s)`);
+          console.log(`📷 Image ${current + 1}/${ads.length}: ${ad.src} (${duration / 1000}s)`);
 
           updateAdProgress(duration, 0);
           adImage.src = "https://faculty-status-display.onrender.com" + ad.src;
@@ -793,7 +793,7 @@
 
           function updateImageProgress() {
             const elapsed = Date.now() - startTime;
-            
+
             if (elapsed >= duration) {
               // Ensure progress bar reaches 100% before finishing
               updateAdProgress(duration, duration);
@@ -801,7 +801,7 @@
                 cancelAnimationFrame(progressAnimationId);
                 progressAnimationId = null;
               }
-              
+
               totalAdTime += duration; // Add the full 20 seconds
               console.log(`✅ Image ${current + 1} complete. Total so far: ${Math.round(totalAdTime / 1000)}s`);
               nextAd();
@@ -810,18 +810,18 @@
               progressAnimationId = requestAnimationFrame(updateImageProgress);
             }
           }
-          
+
           // Start smooth progress animation
           progressAnimationId = requestAnimationFrame(updateImageProgress);
 
         } else if (ad.type === "video") {
           const src = "https://faculty-status-display.onrender.com" + ad.src;
           console.log(`🎥 Video ${current + 1}/${ads.length}: ${src}`);
-          
+
           adVideo.pause();
           adVideo.removeAttribute("src");
           adVideo.load();
-          
+
           let started = false;
           let finished = false;
           let videoDuration = null;
@@ -831,12 +831,12 @@
           function cleanupVideo(actualDuration) {
             if (finished) return;
             finished = true;
-            
+
             if (progressAnimationId) {
               cancelAnimationFrame(progressAnimationId);
               progressAnimationId = null;
             }
-            
+
             // Clear all event listeners
             adVideo.onended = null;
             adVideo.onstalled = null;
@@ -857,7 +857,7 @@
             if (started || finished) return;
             started = true;
             startTime = Date.now();
-            
+
             adVideo.style.display = "block";
             setAdStretch(adVideo);
 
@@ -877,11 +877,11 @@
             });
 
             updateAdProgress(videoDuration, 0);
-            
+
             // Smooth progress animation
             function updateProgress() {
               if (finished) return;
-              
+
               const elapsed = Date.now() - startTime;
               if (elapsed >= videoDuration) {
                 console.log("⏰ Video reached duration limit");
@@ -891,7 +891,7 @@
                 progressAnimationId = requestAnimationFrame(updateProgress);
               }
             }
-            
+
             progressAnimationId = requestAnimationFrame(updateProgress);
           }
 
@@ -970,6 +970,7 @@
         });
     }
 
+    // Add manual refresh function
     function refreshMarquee() {
       loadMarquee(true);
       
@@ -991,6 +992,24 @@
       marqueeCheckInterval = setInterval(() => {
         loadMarquee(false);
       }, 15000);
+    }
+
+
+    function updateDate() {
+      if (!dateDisplay) {
+        dateDisplay = document.getElementById("dateDisplay");
+      }
+
+      const now = new Date();
+      const days = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+      const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+
+      const dayName = days[now.getDay()];
+      const day = now.getDate();
+      const month = months[now.getMonth()];
+      const year = now.getFullYear();
+
+      dateDisplay.innerHTML = `<div>${dayName}, ${day} ${month}</div><div>${year}</div>`;
     }
 
     // Main initialization
