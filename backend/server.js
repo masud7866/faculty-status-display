@@ -314,10 +314,113 @@ app.delete("/api/admin/faculty/:name", requireAuth, async (req, res) => {
 // Update marquee text (database version for admin panel)
 app.post("/api/admin/marquee", requireAuth, async (req, res) => {
   const { text } = req.body;
+  
   try {
-    await facultyDB.setSetting('marquee_text', text);
-    console.log("✅ Updated marquee text via admin panel");
-    res.json({ message: "Marquee text updated successfully." });
+    // Try to update the file directly first (if GitHub token is available)
+    if (process.env.GITHUB_TOKEN) {
+      try {
+        const githubOwner = 'masud7866';
+        const githubRepo = 'faculty-status-display';
+        const filePath = 'backend/public/marquee.txt';
+
+        // Check if file already exists to get SHA
+        let sha = null;
+        try {
+          const existingFile = await fetch(
+            `https://api.github.com/repos/${githubOwner}/${githubRepo}/contents/${filePath}`,
+            {
+              headers: {
+                'Authorization': `token ${process.env.GITHUB_TOKEN}`,
+                'Accept': 'application/vnd.github.v3+json'
+              }
+            }
+          );
+          
+          if (existingFile.ok) {
+            const fileData = await existingFile.json();
+            sha = fileData.sha;
+          }
+        } catch (error) {
+          // File doesn't exist, that's fine
+        }
+
+        // Update/create file on GitHub
+        const uploadResponse = await fetch(
+          `https://api.github.com/repos/${githubOwner}/${githubRepo}/contents/${filePath}`,
+          {
+            method: 'PUT',
+            headers: {
+              'Authorization': `token ${process.env.GITHUB_TOKEN}`,
+              'Accept': 'application/vnd.github.v3+json',
+              'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+              message: `Update marquee text via admin panel`,
+              content: Buffer.from(text, 'utf8').toString('base64'),
+              sha: sha // Include SHA if file exists (for update)
+            })
+          }
+        );
+
+        if (uploadResponse.ok) {
+          console.log("✅ Updated marquee.txt file on GitHub");
+          
+          // Also update local file if it exists
+          const localMarqueePath = path.join(__dirname, "public/marquee.txt");
+          try {
+            fs.writeFileSync(localMarqueePath, text, 'utf8');
+            console.log("✅ Updated local marquee.txt file");
+          } catch (error) {
+            console.log("⚠️ Could not update local file (that's okay):", error.message);
+          }
+          
+          // Update database as backup
+          await facultyDB.setSetting('marquee_text', text);
+          
+          return res.json({ 
+            message: "Marquee text updated successfully in file and database",
+            method: "file_and_database"
+          });
+        } else {
+          const error = await uploadResponse.json();
+          throw new Error(error.message || 'GitHub file update failed');
+        }
+      } catch (githubError) {
+        console.log("⚠️ GitHub file update failed, falling back to local/database:", githubError.message);
+      }
+    }
+    
+    // Fallback: Try to update local file first
+    const localMarqueePath = path.join(__dirname, "public/marquee.txt");
+    try {
+      // Ensure directory exists
+      const dir = path.dirname(localMarqueePath);
+      if (!fs.existsSync(dir)) {
+        fs.mkdirSync(dir, { recursive: true });
+      }
+      
+      fs.writeFileSync(localMarqueePath, text, 'utf8');
+      console.log("✅ Updated local marquee.txt file");
+      
+      // Also update database as backup
+      await facultyDB.setSetting('marquee_text', text);
+      
+      res.json({ 
+        message: "Marquee text updated successfully in local file and database",
+        method: "local_file_and_database"
+      });
+    } catch (fileError) {
+      console.log("⚠️ Local file update failed, updating database only:", fileError.message);
+      
+      // Last resort: database only
+      await facultyDB.setSetting('marquee_text', text);
+      console.log("✅ Updated marquee text in database only");
+      res.json({ 
+        message: "Marquee text updated in database (file update failed)",
+        method: "database_only",
+        warning: "File could not be updated. Changes may be overwritten if marquee.txt file exists."
+      });
+    }
   } catch (error) {
     console.error("❌ Error updating marquee:", error);
     res.status(500).json({ error: "Failed to update marquee text" });
