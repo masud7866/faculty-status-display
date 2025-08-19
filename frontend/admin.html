@@ -431,6 +431,44 @@
             gap: 8px;
             flex-wrap: wrap;
         }
+
+        .image-upload-section {
+            border: 1px solid #e5e7eb;
+            border-radius: 8px;
+            padding: 12px;
+            margin: 10px 0;
+            background: #f8fafc;
+        }
+
+        .image-preview {
+            width: 80px;
+            height: 80px;
+            object-fit: cover;
+            border-radius: 6px;
+            border: 1px solid #d1d5db;
+            margin: 10px 0;
+        }
+
+        .compact-upload {
+            display: flex;
+            gap: 10px;
+            align-items: end;
+        }
+
+        .compact-upload .form-group {
+            margin-bottom: 0;
+            flex: 1;
+        }
+
+        .preview-section {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-top: 10px;
+            padding: 10px;
+            background: #f1f5f9;
+            border-radius: 6px;
+        }
     </style>
 </head>
 <body>
@@ -448,7 +486,7 @@
                 <button class="tab active" onclick="showTab('faculty')">Faculty</button>
                 <button class="tab" onclick="showTab('marquee')">Marquee</button>
                 <button class="tab" onclick="showTab('ads')">Ads</button>
-                <button class="tab" onclick="showTab('upload')">Upload</button>
+                <button class="tab" onclick="showTab('upload')">Upload Ads</button>
             </div>
 
             <!-- Faculty Management Tab -->
@@ -475,11 +513,32 @@
                                 <label for="email">Email</label>
                                 <input type="email" id="email" class="form-control">
                             </div>
-                            <div class="form-group">
-                                <label for="image">Image Path</label>
-                                <input type="text" id="image" class="form-control" placeholder="/images/john_doe.jpg">
-                                <small style="color: #6b7280;">Upload images via Upload tab</small>
+                        </div>
+                        
+                        <div class="image-upload-section">
+                            <h3>Faculty Image</h3>
+                            <div class="file-info">
+                                <strong>Image Path:</strong> Will be saved as /public/facultyname.jpg<br>
+                                <strong>Format:</strong> JPG, PNG (max 5MB)
                             </div>
+                            
+                            <div class="compact-upload">
+                                <div class="form-group">
+                                    <label for="imageFile">Upload Image</label>
+                                    <input type="file" id="imageFile" class="form-control" accept="image/*">
+                                </div>
+                                <button type="button" onclick="uploadFacultyImage()" class="btn btn-primary">Upload Image</button>
+                            </div>
+                            
+                            <div id="imagePreviewSection" class="preview-section hidden">
+                                <img id="imagePreview" class="image-preview" alt="Faculty Image">
+                                <div>
+                                    <div><strong>Uploaded:</strong> <span id="uploadedImageName"></span></div>
+                                    <div><strong>Path:</strong> <span id="uploadedImagePath"></span></div>
+                                </div>
+                            </div>
+                            
+                            <input type="hidden" id="image" value="">
                         </div>
                         
                         <div class="schedule-section">
@@ -576,7 +635,7 @@
                     <div class="file-info">
                         <strong>Upload Location:</strong> backend/public/ads/<br>
                         <strong>Supported Formats:</strong> .jpg, .jpeg, .png, .gif, .mp4, .webm<br>
-                        <strong>Instructions:</strong> Use the Upload tab to add new files or upload directly to GitHub.
+                        <strong>Instructions:</strong> Use the Upload Ads tab to add new files or upload directly to GitHub.
                     </div>
                     
                     <button onclick="loadAds()" class="btn btn-primary">Refresh Ads List</button>
@@ -585,29 +644,19 @@
                 </div>
             </div>
 
-            <!-- Upload Tab -->
+            <!-- Upload Ads Tab -->
             <div id="upload-tab" class="tab-content">
                 <div class="section">
-                    <h2>File Upload</h2>
+                    <h2>Upload Advertisement Files</h2>
                     <div class="file-info">
                         <strong>GitHub Integration:</strong> Files are uploaded directly to your GitHub repository.<br>
                         <strong>Setup Required:</strong> Add GITHUB_TOKEN environment variable to Render.<br>
                         <strong>Alternative:</strong> Upload files manually to GitHub repository.
                     </div>
 
-                    <div class="form-row">
-                        <div class="form-group">
-                            <label>Upload Type</label>
-                            <select id="uploadType" class="form-control">
-                                <option value="images">Faculty Images (/images/)</option>
-                                <option value="ads">Advertisements (/ads/)</option>
-                            </select>
-                        </div>
-                    </div>
-
                     <div class="file-upload-section">
                         <div class="file-upload-area" id="uploadArea">
-                            <div>📁 Click here or drag files to upload</div>
+                            <div>📁 Click here or drag advertisement files to upload</div>
                             <div style="font-size: 12px; color: #6b7280; margin-top: 5px;">
                                 Max file size: 25MB per file<br>
                                 Supported: JPG, PNG, GIF, MP4, WEBM
@@ -625,9 +674,9 @@
                     <div class="file-info">
                         <strong>Manual Upload Instructions:</strong><br>
                         1. Go to your repository on GitHub: <code>masud7866/faculty-status-display</code><br>
-                        2. Navigate to <code>backend/public/images/</code> or <code>backend/public/ads/</code><br>
+                        2. Navigate to <code>backend/public/ads/</code><br>
                         3. Click "Add file" → "Upload files"<br>
-                        4. Drag and drop your files<br>
+                        4. Drag and drop your advertisement files<br>
                         5. Add commit message and commit changes<br>
                         6. Wait for deployment (2-3 minutes)
                     </div>
@@ -771,8 +820,78 @@
 
         function resetForm() {
             document.getElementById('addFacultyForm').reset();
+            document.getElementById('imagePreviewSection').classList.add('hidden');
             generateScheduleForms();
             showToast('Form reset!', 'info');
+        }
+
+        // Faculty Image Upload
+        async function uploadFacultyImage() {
+            const fileInput = document.getElementById('imageFile');
+            const nameInput = document.getElementById('name');
+            
+            if (!fileInput.files[0]) {
+                showToast('Please select an image file', 'error');
+                return;
+            }
+            
+            if (!nameInput.value.trim()) {
+                showToast('Please enter faculty name first', 'error');
+                return;
+            }
+            
+            const file = fileInput.files[0];
+            const facultyName = nameInput.value.trim().toLowerCase().replace(/\s+/g, '');
+            const extension = file.name.split('.').pop().toLowerCase();
+            const filename = `${facultyName}.${extension}`;
+            
+            // Check file size (5MB limit for faculty images)
+            if (file.size > 5 * 1024 * 1024) {
+                showToast('Image too large. Max size is 5MB', 'error');
+                return;
+            }
+            
+            try {
+                showToast('Uploading image...', 'info');
+                
+                const response = await fetch(`${API_BASE}/api/upload`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    credentials: 'include',
+                    body: JSON.stringify({
+                        filename: filename,
+                        content: await fileToBase64(file),
+                        path: 'backend/public'
+                    })
+                });
+
+                if (!response.ok) {
+                    const error = await response.json();
+                    throw new Error(error.error || 'Upload failed');
+                }
+
+                const result = await response.json();
+                const imagePath = `/public/${filename}`;
+                
+                // Update form with uploaded image path
+                document.getElementById('image').value = imagePath;
+                
+                // Show preview
+                const preview = document.getElementById('imagePreview');
+                const previewSection = document.getElementById('imagePreviewSection');
+                const nameSpan = document.getElementById('uploadedImageName');
+                const pathSpan = document.getElementById('uploadedImagePath');
+                
+                preview.src = URL.createObjectURL(file);
+                nameSpan.textContent = filename;
+                pathSpan.textContent = imagePath;
+                previewSection.classList.remove('hidden');
+                
+                showToast('Faculty image uploaded successfully!');
+                
+            } catch (error) {
+                showToast(`Upload failed: ${error.message}`, 'error');
+            }
         }
 
         // Faculty Management
@@ -784,7 +903,7 @@
                 designation: document.getElementById('designation').value.trim(),
                 contact: document.getElementById('contact').value.trim(),
                 email: document.getElementById('email').value.trim(),
-                image: document.getElementById('image').value.trim() || '/images/default.jpg',
+                image: document.getElementById('image').value || '/public/default.jpg',
                 weekend: [],
                 officeHours: {},
                 classTimes: {}
@@ -872,6 +991,7 @@
                         <div class="faculty-info"><strong>Designation:</strong> ${f.designation || 'N/A'}</div>
                         <div class="faculty-info"><strong>Contact:</strong> ${f.contact || 'N/A'}</div>
                         <div class="faculty-info"><strong>Email:</strong> ${f.email || 'N/A'}</div>
+                        <div class="faculty-info"><strong>Image:</strong> ${f.image || 'N/A'}</div>
                         <div class="faculty-info"><strong>Weekend:</strong> ${f.weekend?.join(', ') || 'None'}</div>
                         <div class="faculty-info"><strong>Status:</strong> ${f.status || 'Unknown'}</div>
                     `;
@@ -909,7 +1029,6 @@
 
         function editFaculty(name) {
             showToast(`Edit functionality for ${name} - Coming soon!`, 'info');
-            // TODO: Implement edit functionality
         }
 
         function exportFaculty() {
@@ -990,7 +1109,7 @@
                 container.innerHTML = '';
                 
                 if (ads.length === 0) {
-                    container.innerHTML = '<p>No ads found. Use the Upload tab to add files.</p>';
+                    container.innerHTML = '<p>No ads found. Use the Upload Ads tab to add files.</p>';
                     return;
                 }
                 
@@ -1030,7 +1149,7 @@
             showToast(`To delete ${filename}:\n1. Go to GitHub repository\n2. Navigate to backend/public/ads/\n3. Delete the file\n4. Commit changes`, 'info');
         }
 
-        // File Upload Setup
+        // File Upload Setup (for ads only)
         function setupFileUpload() {
             const uploadArea = document.getElementById('uploadArea');
             const fileInput = document.getElementById('fileInput');
@@ -1060,7 +1179,6 @@
         async function handleFiles(files) {
             if (files.length === 0) return;
             
-            const uploadType = document.getElementById('uploadType').value;
             const statusDiv = document.getElementById('uploadStatus');
             const progressDiv = document.getElementById('uploadProgress');
             const progressBar = document.getElementById('uploadProgressBar');
@@ -1086,7 +1204,7 @@
                 }
                 
                 try {
-                    await uploadFileToGitHub(file, uploadType);
+                    await uploadFileToGitHub(file, 'ads');
                     uploadedCount++;
                     
                     const progress = (i + 1) / totalFiles * 100;
@@ -1113,10 +1231,8 @@
             progressBar.style.width = '0%';
             
             if (uploadedCount > 0) {
-                showToast(`${uploadedCount} file(s) uploaded successfully!`);
-                if (uploadType === 'ads') {
-                    setTimeout(() => loadAds(), 2000); // Reload ads after a delay
-                }
+                showToast(`${uploadedCount} ad file(s) uploaded successfully!`);
+                setTimeout(() => loadAds(), 2000);
             }
             
             // Clear file input
@@ -1124,7 +1240,7 @@
         }
 
         async function uploadFileToGitHub(file, uploadType) {
-            const path = uploadType === 'images' ? 'backend/public/images' : 'backend/public/ads';
+            const path = uploadType === 'ads' ? 'backend/public/ads' : 'backend/public';
             
             try {
                 const response = await fetch(`${API_BASE}/api/upload`, {
