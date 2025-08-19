@@ -72,6 +72,8 @@
         .btn-danger:hover { background: #dc2626; }
         .btn-success { background: #10b981; color: white; }
         .btn-success:hover { background: #059669; }
+        .btn-warning { background: #f59e0b; color: white; }
+        .btn-warning:hover { background: #d97706; }
 
         .section {
             background: #fff;
@@ -496,6 +498,70 @@
         @keyframes spin {
             to { transform: rotate(360deg); }
         }
+
+        /* Modal styles */
+        .modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.5);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 10000;
+            padding: 20px;
+        }
+
+        .modal-content {
+            background: white;
+            border-radius: 12px;
+            padding: 20px;
+            max-width: 800px;
+            width: 100%;
+            max-height: 90vh;
+            overflow-y: auto;
+            box-shadow: 0 20px 30px rgba(0, 0, 0, 0.3);
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 1px solid #e5e7eb;
+        }
+
+        .modal-title {
+            font-size: 1.25rem;
+            font-weight: 600;
+            color: #1e3a8a;
+        }
+
+        .close-btn {
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            cursor: pointer;
+            color: #6b7280;
+            padding: 5px;
+            border-radius: 4px;
+        }
+
+        .close-btn:hover {
+            background: #f3f4f6;
+        }
+
+        .edit-mode {
+            background: #fef3c7;
+            border-color: #f59e0b;
+        }
+
+        .edit-mode h2 {
+            color: #92400e;
+        }
     </style>
 </head>
 <body>
@@ -523,9 +589,12 @@
 
             <!-- Faculty Management Tab -->
             <div id="faculty-tab" class="tab-content active">
-                <div class="section">
-                    <h2>Add New Faculty</h2>
+                <div class="section" id="facultyFormSection">
+                    <h2 id="facultyFormTitle">Add New Faculty</h2>
                     <form id="addFacultyForm">
+                        <input type="hidden" id="editMode" value="false">
+                        <input type="hidden" id="originalName" value="">
+                        
                         <div class="form-row">
                             <div class="form-group">
                                 <label for="name">Full Name *</label>
@@ -620,8 +689,9 @@
                         </div>
 
                         <div class="form-actions">
-                            <button type="submit" class="btn btn-success">Add Faculty</button>
+                            <button type="submit" class="btn btn-success" id="submitBtn">Add Faculty</button>
                             <button type="button" onclick="resetForm()" class="btn btn-secondary">Reset Form</button>
+                            <button type="button" onclick="cancelEdit()" class="btn btn-warning hidden" id="cancelEditBtn">Cancel Edit</button>
                         </div>
                     </form>
                 </div>
@@ -722,13 +792,11 @@
     <script>
         const API_BASE = 'https://faculty-status-display.onrender.com';
         const days = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
+        let facultyData = []; // Store faculty data for editing
 
         // Function to redirect to login with proper parameters
         function redirectToLogin() {
-            // Store that we came from admin for proper redirect back
             localStorage.setItem('lastVisitedPage', 'admin');
-            
-            // Add redirect parameter to ensure we come back to admin
             window.location.href = 'login.html?redirect=admin';
         }
 
@@ -741,7 +809,7 @@
             try {
                 const response = await fetch(`${API_BASE}/api/check-login`, { 
                     credentials: 'include',
-                    timeout: 10000 // 10 second timeout
+                    timeout: 10000
                 });
                 
                 if (!response.ok) {
@@ -756,16 +824,13 @@
                     return;
                 }
                 
-                // User is authenticated, show the main content
                 document.getElementById('loadingOverlay').style.display = 'none';
                 document.getElementById('mainContent').style.display = 'block';
                 
-                // Initialize the admin panel
                 initializeAdminPanel();
                 
             } catch (error) {
                 console.error('Auth check failed:', error);
-                // If there's any error checking auth, redirect to login
                 redirectToLogin();
             }
         }
@@ -800,6 +865,11 @@
             
             document.getElementById(`${tabName}-tab`).classList.add('active');
             event.target.classList.add('active');
+            
+            // If switching tabs, cancel any ongoing edit
+            if (tabName !== 'faculty') {
+                cancelEdit();
+            }
         }
 
         function generateScheduleForms() {
@@ -887,8 +957,119 @@
         function resetForm() {
             document.getElementById('addFacultyForm').reset();
             document.getElementById('imagePreviewSection').classList.add('hidden');
+            document.getElementById('editMode').value = 'false';
+            document.getElementById('originalName').value = '';
+            
+            // Reset UI
+            document.getElementById('facultyFormTitle').textContent = 'Add New Faculty';
+            document.getElementById('submitBtn').textContent = 'Add Faculty';
+            document.getElementById('submitBtn').className = 'btn btn-success';
+            document.getElementById('cancelEditBtn').classList.add('hidden');
+            document.getElementById('facultyFormSection').classList.remove('edit-mode');
+            
             generateScheduleForms();
             showToast('Form reset!', 'info');
+        }
+
+        function cancelEdit() {
+            resetForm();
+            showToast('Edit cancelled', 'info');
+        }
+
+        // Edit Faculty Function
+        function editFaculty(name) {
+            const faculty = facultyData.find(f => f.name === name);
+            if (!faculty) {
+                showToast(`Faculty ${name} not found`, 'error');
+                return;
+            }
+
+            // Set edit mode
+            document.getElementById('editMode').value = 'true';
+            document.getElementById('originalName').value = name;
+            
+            // Update UI
+            document.getElementById('facultyFormTitle').textContent = `Edit Faculty - ${name}`;
+            document.getElementById('submitBtn').textContent = 'Update Faculty';
+            document.getElementById('submitBtn').className = 'btn btn-warning';
+            document.getElementById('cancelEditBtn').classList.remove('hidden');
+            document.getElementById('facultyFormSection').classList.add('edit-mode');
+
+            // Fill basic info
+            document.getElementById('name').value = faculty.name;
+            document.getElementById('designation').value = faculty.designation || '';
+            document.getElementById('contact').value = faculty.contact || '';
+            document.getElementById('email').value = faculty.email || '';
+            document.getElementById('image').value = faculty.image || '';
+
+            // Show image preview if exists
+            if (faculty.image) {
+                const preview = document.getElementById('imagePreview');
+                const previewSection = document.getElementById('imagePreviewSection');
+                const nameSpan = document.getElementById('uploadedImageName');
+                const pathSpan = document.getElementById('uploadedImagePath');
+                const jsonPathSpan = document.getElementById('uploadedJsonPath');
+                
+                // Convert path for display
+                const filename = faculty.image.split('/').pop();
+                const backendPath = faculty.image.startsWith('/images/') ? 
+                    faculty.image.replace('/images/', '/public/') : faculty.image;
+                
+                preview.src = `${API_BASE}${backendPath}`;
+                nameSpan.textContent = filename;
+                pathSpan.textContent = backendPath;
+                jsonPathSpan.textContent = faculty.image;
+                previewSection.classList.remove('hidden');
+            }
+
+            // Set weekend days
+            document.querySelectorAll('[id^="weekend-"]').forEach(checkbox => {
+                checkbox.checked = faculty.weekend?.includes(checkbox.value) || false;
+            });
+
+            // Regenerate schedule forms
+            generateScheduleForms();
+
+            // Set office hours
+            if (faculty.officeHours) {
+                Object.entries(faculty.officeHours).forEach(([day, times]) => {
+                    if (times && times.length === 2) {
+                        const startInput = document.getElementById(`office-${day}-start`);
+                        const endInput = document.getElementById(`office-${day}-end`);
+                        if (startInput) startInput.value = times[0];
+                        if (endInput) endInput.value = times[1];
+                    }
+                });
+            }
+
+            // Set class times
+            if (faculty.classTimes) {
+                Object.entries(faculty.classTimes).forEach(([day, classes]) => {
+                    if (classes && Array.isArray(classes)) {
+                        classes.forEach((classInfo, index) => {
+                            addClass(day);
+                            
+                            const startInput = document.getElementById(`class-${day}-${index}-start`);
+                            const endInput = document.getElementById(`class-${day}-${index}-end`);
+                            const roomInput = document.getElementById(`class-${day}-${index}-room`);
+                            const batchInput = document.getElementById(`class-${day}-${index}-batch`);
+                            
+                            if (startInput) startInput.value = classInfo.start || '';
+                            if (endInput) endInput.value = classInfo.end || '';
+                            if (roomInput) roomInput.value = classInfo.room || '';
+                            if (batchInput) batchInput.value = classInfo.batch || '';
+                        });
+                    }
+                });
+            }
+
+            // Scroll to form
+            document.getElementById('facultyFormSection').scrollIntoView({ 
+                behavior: 'smooth', 
+                block: 'start' 
+            });
+
+            showToast(`Editing ${name}`, 'info');
         }
 
         // Faculty Image Upload
@@ -911,7 +1092,6 @@
             const extension = file.name.split('.').pop().toLowerCase();
             const filename = `${facultyName}.${extension}`;
             
-            // Check file size (5MB limit for faculty images)
             if (file.size > 5 * 1024 * 1024) {
                 showToast('Image too large. Max size is 5MB', 'error');
                 return;
@@ -943,14 +1123,11 @@
 
                 const result = await response.json();
                 
-                // Backend serves from /public/, but JSON needs /images/ format for compatibility
                 const backendPath = `/public/${filename}`;
                 const jsonPath = `/images/${filename}`;
                 
-                // Store the JSON-compatible path for the database
                 document.getElementById('image').value = jsonPath;
                 
-                // Show preview
                 const preview = document.getElementById('imagePreview');
                 const previewSection = document.getElementById('imagePreviewSection');
                 const nameSpan = document.getElementById('uploadedImageName');
@@ -970,16 +1147,19 @@
             }
         }
 
-        // Faculty Management
+        // Faculty Management - Form submission
         document.getElementById('addFacultyForm').addEventListener('submit', async function(e) {
             e.preventDefault();
             
-            const facultyData = {
+            const isEditMode = document.getElementById('editMode').value === 'true';
+            const originalName = document.getElementById('originalName').value;
+            
+            const newFacultyData = {
                 name: document.getElementById('name').value.trim(),
                 designation: document.getElementById('designation').value.trim(),
                 contact: document.getElementById('contact').value.trim(),
                 email: document.getElementById('email').value.trim(),
-                image: document.getElementById('image').value || '/images/default.jpg', // JSON format
+                image: document.getElementById('image').value || '/images/default.jpg',
                 weekend: [],
                 officeHours: {},
                 classTimes: {}
@@ -987,7 +1167,7 @@
 
             // Get weekend days
             document.querySelectorAll('[id^="weekend-"]:checked').forEach(checkbox => {
-                facultyData.weekend.push(checkbox.value);
+                newFacultyData.weekend.push(checkbox.value);
             });
 
             // Get office hours
@@ -995,7 +1175,7 @@
                 const start = document.getElementById(`office-${day}-start`).value;
                 const end = document.getElementById(`office-${day}-end`).value;
                 if (start && end) {
-                    facultyData.officeHours[day] = [start, end];
+                    newFacultyData.officeHours[day] = [start, end];
                 }
             });
 
@@ -1014,17 +1194,30 @@
                     }
                 });
                 if (classes.length > 0) {
-                    facultyData.classTimes[day] = classes;
+                    newFacultyData.classTimes[day] = classes;
                 }
             });
 
             try {
-                const response = await fetch(`${API_BASE}/api/admin/faculty`, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    credentials: 'include',
-                    body: JSON.stringify(facultyData)
-                });
+                let response;
+                
+                if (isEditMode) {
+                    // Update existing faculty
+                    response = await fetch(`${API_BASE}/api/admin/faculty/${encodeURIComponent(originalName)}`, {
+                        method: 'PUT',
+                        headers: { 'Content-Type': 'application/json' },
+                        credentials: 'include',
+                        body: JSON.stringify(newFacultyData)
+                    });
+                } else {
+                    // Add new faculty
+                    response = await fetch(`${API_BASE}/api/admin/faculty`, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        credentials: 'include',
+                        body: JSON.stringify(newFacultyData)
+                    });
+                }
 
                 if (!response.ok) {
                     if (response.status === 403) {
@@ -1033,15 +1226,15 @@
                         return;
                     }
                     const error = await response.json();
-                    showToast(error.error || 'Failed to add faculty', 'error');
+                    showToast(error.error || `Failed to ${isEditMode ? 'update' : 'add'} faculty`, 'error');
                     return;
                 }
 
-                showToast('Faculty added successfully!');
+                showToast(`Faculty ${isEditMode ? 'updated' : 'added'} successfully!`);
                 resetForm();
                 loadFaculty();
             } catch (error) {
-                showToast('Error adding faculty', 'error');
+                showToast(`Error ${isEditMode ? 'updating' : 'adding'} faculty`, 'error');
                 console.error(error);
             }
         });
@@ -1059,6 +1252,7 @@
                 }
                 
                 const faculty = await response.json();
+                facultyData = faculty; // Store for editing
                 
                 const container = document.getElementById('facultyList');
                 container.innerHTML = '';
@@ -1069,12 +1263,11 @@
                 }
                 
                 faculty.forEach(f => {
-                    // Convert image path for display (handle both formats)
                     let displayImagePath = f.image;
                     if (f.image && f.image.startsWith('/images/')) {
-                        displayImagePath = f.image; // Keep as is for JSON compatibility
+                        displayImagePath = f.image;
                     } else if (f.image && f.image.startsWith('/public/')) {
-                        displayImagePath = f.image; // Keep as is for backend compatibility
+                        displayImagePath = f.image;
                     }
                     
                     const facultyCard = document.createElement('div');
@@ -1083,8 +1276,8 @@
                         <div class="faculty-header">
                             <div class="faculty-name">${f.name}</div>
                             <div class="faculty-actions">
-                                <button class="btn btn-primary" onclick="editFaculty('${f.name}')">Edit</button>
-                                <button class="btn btn-danger" onclick="deleteFaculty('${f.name}')">Delete</button>
+                                <button class="btn btn-primary" onclick="editFaculty('${f.name.replace(/'/g, "\\'")}')">Edit</button>
+                                <button class="btn btn-danger" onclick="deleteFaculty('${f.name.replace(/'/g, "\\'")}')">Delete</button>
                             </div>
                         </div>
                         <div class="faculty-info"><strong>Designation:</strong> ${f.designation || 'N/A'}</div>
@@ -1125,15 +1318,18 @@
                 }
 
                 showToast('Faculty deleted successfully!');
+                
+                // Cancel edit if we're editing the deleted faculty
+                if (document.getElementById('editMode').value === 'true' && 
+                    document.getElementById('originalName').value === name) {
+                    cancelEdit();
+                }
+                
                 loadFaculty();
             } catch (error) {
                 showToast('Error deleting faculty', 'error');
                 console.error(error);
             }
-        }
-
-        function editFaculty(name) {
-            showToast(`Edit functionality for ${name} - Coming soon!`, 'info');
         }
 
         function exportFaculty() {
@@ -1315,7 +1511,6 @@
             for (let i = 0; i < files.length; i++) {
                 const file = files[i];
                 
-                // Check file size (25MB limit)
                 if (file.size > 25 * 1024 * 1024) {
                     const statusItem = document.createElement('div');
                     statusItem.style.color = '#ef4444';
@@ -1358,7 +1553,6 @@
                 setTimeout(() => loadAds(), 2000);
             }
             
-            // Clear file input
             document.getElementById('fileInput').value = '';
         }
 
@@ -1399,7 +1593,6 @@
             return new Promise((resolve, reject) => {
                 const reader = new FileReader();
                 reader.onload = () => {
-                    // Remove the data:mime-type;base64, prefix
                     const base64 = reader.result.split(',')[1];
                     resolve(base64);
                 };
@@ -1416,7 +1609,6 @@
                 localStorage.removeItem('lastVisitedPage');
                 window.location.href = 'login.html';
             }).catch(() => {
-                // Even if logout fails, redirect to login
                 localStorage.removeItem('lastVisitedPage');
                 window.location.href = 'login.html';
             });
