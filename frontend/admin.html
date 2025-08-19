@@ -469,10 +469,42 @@
             background: #f1f5f9;
             border-radius: 6px;
         }
+
+        /* Loading overlay */
+        .loading-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(255, 255, 255, 0.9);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 9999;
+        }
+
+        .loading-spinner {
+            width: 40px;
+            height: 40px;
+            border: 4px solid #e5e7eb;
+            border-top-color: #2563eb;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
     </style>
 </head>
 <body>
-    <div class="container">
+    <!-- Loading overlay -->
+    <div id="loadingOverlay" class="loading-overlay">
+        <div class="loading-spinner"></div>
+    </div>
+
+    <div class="container" id="mainContent" style="display: none;">
         <div class="header">
             <h1>Faculty Admin Panel</h1>
             <div class="nav-buttons">
@@ -691,27 +723,59 @@
         const API_BASE = 'https://faculty-status-display.onrender.com';
         const days = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
 
+        // Function to redirect to login with proper parameters
+        function redirectToLogin() {
+            // Store that we came from admin for proper redirect back
+            localStorage.setItem('lastVisitedPage', 'admin');
+            
+            // Add redirect parameter to ensure we come back to admin
+            window.location.href = 'login.html?redirect=admin';
+        }
+
         // Check authentication
         document.addEventListener('DOMContentLoaded', function() {
             checkAuth();
+        });
+
+        async function checkAuth() {
+            try {
+                const response = await fetch(`${API_BASE}/api/check-login`, { 
+                    credentials: 'include',
+                    timeout: 10000 // 10 second timeout
+                });
+                
+                if (!response.ok) {
+                    throw new Error('Network response was not ok');
+                }
+                
+                const data = await response.json();
+                
+                if (!data.loggedIn) {
+                    console.log('Not logged in, redirecting to login...');
+                    redirectToLogin();
+                    return;
+                }
+                
+                // User is authenticated, show the main content
+                document.getElementById('loadingOverlay').style.display = 'none';
+                document.getElementById('mainContent').style.display = 'block';
+                
+                // Initialize the admin panel
+                initializeAdminPanel();
+                
+            } catch (error) {
+                console.error('Auth check failed:', error);
+                // If there's any error checking auth, redirect to login
+                redirectToLogin();
+            }
+        }
+
+        function initializeAdminPanel() {
             generateScheduleForms();
             loadFaculty();
             loadMarquee();
             loadAds();
             setupFileUpload();
-        });
-
-        function checkAuth() {
-            fetch(`${API_BASE}/api/check-login`, { credentials: 'include' })
-                .then(r => r.json())
-                .then(data => {
-                    if (!data.loggedIn) {
-                        window.location.href = 'login.html';
-                    }
-                })
-                .catch(() => {
-                    window.location.href = 'login.html';
-                });
         }
 
         function showToast(message, type = 'success') {
@@ -868,6 +932,11 @@
                 });
 
                 if (!response.ok) {
+                    if (response.status === 403) {
+                        showToast('Session expired. Redirecting to login...', 'error');
+                        setTimeout(() => redirectToLogin(), 2000);
+                        return;
+                    }
                     const error = await response.json();
                     throw new Error(error.error || 'Upload failed');
                 }
@@ -957,14 +1026,20 @@
                     body: JSON.stringify(facultyData)
                 });
 
-                if (response.ok) {
-                    showToast('Faculty added successfully!');
-                    resetForm();
-                    loadFaculty();
-                } else {
+                if (!response.ok) {
+                    if (response.status === 403) {
+                        showToast('Session expired. Redirecting to login...', 'error');
+                        setTimeout(() => redirectToLogin(), 2000);
+                        return;
+                    }
                     const error = await response.json();
                     showToast(error.error || 'Failed to add faculty', 'error');
+                    return;
                 }
+
+                showToast('Faculty added successfully!');
+                resetForm();
+                loadFaculty();
             } catch (error) {
                 showToast('Error adding faculty', 'error');
                 console.error(error);
@@ -974,6 +1049,15 @@
         async function loadFaculty() {
             try {
                 const response = await fetch(`${API_BASE}/api/faculty`, { credentials: 'include' });
+                
+                if (!response.ok) {
+                    if (response.status === 403) {
+                        redirectToLogin();
+                        return;
+                    }
+                    throw new Error('Failed to load faculty');
+                }
+                
                 const faculty = await response.json();
                 
                 const container = document.getElementById('facultyList');
@@ -1029,13 +1113,19 @@
                     credentials: 'include'
                 });
 
-                if (response.ok) {
-                    showToast('Faculty deleted successfully!');
-                    loadFaculty();
-                } else {
+                if (!response.ok) {
+                    if (response.status === 403) {
+                        showToast('Session expired. Redirecting to login...', 'error');
+                        setTimeout(() => redirectToLogin(), 2000);
+                        return;
+                    }
                     const error = await response.json();
                     showToast(error.error || 'Failed to delete faculty', 'error');
+                    return;
                 }
+
+                showToast('Faculty deleted successfully!');
+                loadFaculty();
             } catch (error) {
                 showToast('Error deleting faculty', 'error');
                 console.error(error);
@@ -1048,7 +1138,16 @@
 
         function exportFaculty() {
             fetch(`${API_BASE}/api/faculty`, { credentials: 'include' })
-                .then(r => r.json())
+                .then(r => {
+                    if (!r.ok) {
+                        if (r.status === 403) {
+                            redirectToLogin();
+                            return;
+                        }
+                        throw new Error('Export failed');
+                    }
+                    return r.json();
+                })
                 .then(faculty => {
                     const dataStr = JSON.stringify(faculty, null, 2);
                     const dataBlob = new Blob([dataStr], {type: 'application/json'});
@@ -1060,7 +1159,10 @@
                     URL.revokeObjectURL(url);
                     showToast('Faculty data exported!');
                 })
-                .catch(() => showToast('Export failed', 'error'));
+                .catch((error) => {
+                    showToast('Export failed', 'error');
+                    console.error(error);
+                });
         }
 
         // Marquee Management
@@ -1090,11 +1192,17 @@
                     body: JSON.stringify({ text })
                 });
 
-                if (response.ok) {
-                    showToast('Marquee updated successfully!');
-                } else {
+                if (!response.ok) {
+                    if (response.status === 403) {
+                        showToast('Session expired. Redirecting to login...', 'error');
+                        setTimeout(() => redirectToLogin(), 2000);
+                        return;
+                    }
                     showToast('Failed to update marquee', 'error');
+                    return;
                 }
+
+                showToast('Marquee updated successfully!');
             } catch (error) {
                 showToast('Error updating marquee', 'error');
             }
@@ -1272,6 +1380,11 @@
                 });
 
                 if (!response.ok) {
+                    if (response.status === 403) {
+                        showToast('Session expired. Redirecting to login...', 'error');
+                        setTimeout(() => redirectToLogin(), 2000);
+                        return;
+                    }
                     const error = await response.json();
                     throw new Error(error.error || 'Upload failed');
                 }
@@ -1300,6 +1413,11 @@
                 method: 'POST',
                 credentials: 'include'
             }).then(() => {
+                localStorage.removeItem('lastVisitedPage');
+                window.location.href = 'login.html';
+            }).catch(() => {
+                // Even if logout fails, redirect to login
+                localStorage.removeItem('lastVisitedPage');
                 window.location.href = 'login.html';
             });
         }
