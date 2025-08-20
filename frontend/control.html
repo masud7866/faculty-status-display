@@ -811,6 +811,17 @@
       postponed: "Postpone Class"
     };
 
+    // ADD THESE MISSING CONSTANTS:
+    // All available rooms
+    const ALL_ROOMS = ['003', '102', '203', '204', '205', '206', '303', '304', '305', '306', '307'];
+
+    // Time slots for the day (8 AM to 6 PM)
+    const TIME_SLOTS = [
+      '08:00-09:00', '09:00-10:00', '10:00-11:00', '11:00-12:00',
+      '12:00-13:00', '13:00-14:00', '14:00-15:00', '15:00-16:00',
+      '16:00-17:00', '17:00-18:00'
+    ];
+
     const controls = document.getElementById('controls');
 
     function debounce(fn, ms) {
