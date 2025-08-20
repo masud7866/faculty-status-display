@@ -601,9 +601,45 @@
     }
 
     .current-time-indicator {
-      background: #fffaec  !important;
+      background: #fffaec !important;
       border: 2px solid #f59e0b;
       animation: pulse 2s infinite;
+    }
+
+    /* Add this to your existing CSS */
+    .empty-rooms-content {
+      background: white;
+      border-radius: 16px;
+      padding: 20px;
+      max-width: 900px;
+      width: 100%;
+      max-height: 90vh;
+      overflow-y: auto;
+      box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+      transform: scale(0.9);
+      transition: transform 0.3s ease;
+      scroll-behavior: smooth;
+      /* Add smooth scrolling */
+    }
+
+    .current-time-indicator {
+      background: #fffaec !important;
+      border: 2px solid #f59e0b;
+      animation: pulse 2s infinite;
+      transition: transform 0.3s ease;
+      /* Add transition for scale animation */
+      scroll-margin-top: 20px;
+      /* Add scroll margin for better positioning */
+    }
+
+    .time-slot {
+      margin-bottom: 20px;
+      background: #f8fafc;
+      border-radius: 12px;
+      padding: 15px;
+      border-left: 4px solid #059669;
+      scroll-margin-top: 20px;
+      /* Add scroll margin for all time slots */
     }
 
     @keyframes pulse {
@@ -1419,11 +1455,11 @@
     function getEmptyRoomsData() {
       const emptyRoomsData = [];
       const currentTimeSlot = getCurrentTimeSlot();
-      
+
       TIME_SLOTS.forEach(timeSlot => {
         const occupiedRooms = getOccupiedRooms(timeSlot);
         const emptyRooms = ALL_ROOMS.filter(room => !occupiedRooms.includes(room));
-        
+
         emptyRoomsData.push({
           timeSlot,
           emptyRooms,
@@ -1433,34 +1469,35 @@
           totalRooms: ALL_ROOMS.length
         });
       });
-      
+
       return emptyRoomsData;
     }
 
     // Add this helper function for display formatting:
     function formatTimeSlotFor12Hour(timeSlot24h) {
       const [start, end] = timeSlot24h.split('-');
-      
+
       function convertTo12Hour(time24) {
         const [hours, minutes] = time24.split(':').map(Number);
         const period = hours >= 12 ? 'PM' : 'AM';
         const hours12 = hours === 0 ? 12 : hours > 12 ? hours - 12 : hours;
         return `${hours12}:${minutes.toString().padStart(2, '0')} ${period}`;
       }
-      
+
       return `${convertTo12Hour(start)} - ${convertTo12Hour(end)}`;
     }
 
     function renderEmptyRoomsOverlay() {
       debugFacultyClassTimes();
       console.log('Faculty data:', facultyData);
-      
+
       const emptyRoomsData = getEmptyRoomsData();
       const currentDay = getCurrentDay();
-      
+      const currentTimeSlot = getCurrentTimeSlot();
+
       const overlay = document.getElementById('emptyRoomsOverlay');
       const content = overlay.querySelector('.empty-rooms-content');
-      
+
       content.innerHTML = `
         <div class="empty-rooms-header">
           <h2 class="empty-rooms-title">📍 Empty Rooms - ${currentDay}</h2>
@@ -1478,9 +1515,11 @@
           </div>
         </div>
         
-        <div class="time-slots-container">
-          ${emptyRoomsData.map(data => `
-            <div class="time-slot ${data.isCurrentSlot ? 'current-time-indicator' : ''}">
+        <div class="time-slots-container" id="timeSlotsContainer">
+          ${emptyRoomsData.map((data, index) => `
+            <div class="time-slot ${data.isCurrentSlot ? 'current-time-indicator' : ''}" 
+                 id="timeSlot-${index}" 
+                 data-time-slot="${data.timeSlot}">
               <div class="time-slot-header">
                 <h3 class="time-slot-title">
                   ${formatTimeSlotFor12Hour(data.timeSlot)} ${data.isCurrentSlot ? '🔴 Current' : ''}
@@ -1507,11 +1546,101 @@
           `).join('')}
         </div>
       `;
+
+      // Auto-scroll to current time slot after DOM is updated
+      setTimeout(() => {
+        scrollToCurrentTimeSlot();
+      }, 100);
+    }
+
+    function scrollToCurrentTimeSlot() {
+      const currentTimeSlot = getCurrentTimeSlot();
+
+      if (!currentTimeSlot) {
+        console.log('No current time slot found');
+        return;
+      }
+
+      // Find the current time slot element
+      const currentSlotElement = document.querySelector('.current-time-indicator');
+
+      if (currentSlotElement) {
+        // Get the container
+        const container = document.querySelector('.empty-rooms-content');
+
+        if (container) {
+          // Calculate scroll position
+          const containerRect = container.getBoundingClientRect();
+          const elementRect = currentSlotElement.getBoundingClientRect();
+
+          // Calculate offset from top of container
+          const relativeTop = elementRect.top - containerRect.top + container.scrollTop;
+
+          // Scroll to center the current time slot
+          const targetScrollTop = relativeTop - (container.clientHeight / 2) + (currentSlotElement.offsetHeight / 2);
+
+          // Smooth scroll to the target position
+          container.scrollTo({
+            top: Math.max(0, targetScrollTop),
+            behavior: 'smooth'
+          });
+
+          console.log(`Auto-scrolled to current time slot: ${currentTimeSlot}`);
+
+          // Optional: Add a brief highlight animation
+          currentSlotElement.style.transform = 'scale(1.02)';
+          setTimeout(() => {
+            currentSlotElement.style.transform = 'scale(1)';
+          }, 300);
+        }
+      } else {
+        console.log('Current time slot element not found in DOM');
+
+        // Fallback: If no current slot is highlighted, scroll to the appropriate time
+        scrollToNearestTimeSlot();
+      }
+    }
+
+    function scrollToNearestTimeSlot() {
+      const now = new Date();
+      const currentHour = now.getHours();
+
+      // Determine which time slot to scroll to based on current time
+      let targetIndex = 0;
+
+      if (currentHour < 8) {
+        // Before 8 AM - scroll to first slot
+        targetIndex = 0;
+      } else if (currentHour >= 18) {
+        // After 6 PM - scroll to last slot
+        targetIndex = TIME_SLOTS.length - 1;
+      } else {
+        // During class hours - find the nearest slot
+        targetIndex = Math.max(0, currentHour - 8);
+      }
+
+      const targetElement = document.getElementById(`timeSlot-${targetIndex}`);
+
+      if (targetElement) {
+        const container = document.querySelector('.empty-rooms-content');
+        if (container) {
+          const containerRect = container.getBoundingClientRect();
+          const elementRect = targetElement.getBoundingClientRect();
+          const relativeTop = elementRect.top - containerRect.top + container.scrollTop;
+
+          container.scrollTo({
+            top: Math.max(0, relativeTop - 100), // 100px offset from top
+            behavior: 'smooth'
+          });
+
+          console.log(`Scrolled to nearest time slot: index ${targetIndex}`);
+        }
+      }
     }
 
     function toggleEmptyRoomsOverlay() {
       let overlay = document.getElementById('emptyRoomsOverlay');
-      
+
       if (!overlay) {
         overlay = document.createElement('div');
         overlay.id = 'emptyRoomsOverlay';
@@ -1522,14 +1651,14 @@
           </div>
         `;
         document.body.appendChild(overlay);
-        
+
         overlay.addEventListener('click', (e) => {
           if (e.target === overlay) {
             toggleEmptyRoomsOverlay();
           }
         });
       }
-      
+
       if (overlay.classList.contains('active')) {
         overlay.classList.remove('active');
       } else {
@@ -1542,7 +1671,18 @@
       setInterval(() => {
         const overlay = document.getElementById('emptyRoomsOverlay');
         if (overlay && overlay.classList.contains('active')) {
+          // Save current scroll position
+          const container = document.querySelector('.empty-rooms-content');
+          const savedScrollTop = container ? container.scrollTop : 0;
+
           renderEmptyRoomsOverlay();
+
+          // Restore scroll position after a brief delay (unless it's a major time change)
+          setTimeout(() => {
+            if (container && Math.abs(container.scrollTop - savedScrollTop) < 100) {
+              container.scrollTop = savedScrollTop;
+            }
+          }, 150);
         }
       }, 60000);
     }
@@ -1564,7 +1704,7 @@
         }
       })
       .catch(() => showMessage("Failed to load data.", true));
-    
+
     startEmptyRoomsAutoRefresh();
   </script>
 </body>
