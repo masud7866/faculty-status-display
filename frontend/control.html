@@ -601,7 +601,7 @@
     }
 
     .current-time-indicator {
-      background: #fbbf24 !important;
+      background: #fffaec  !important;
       border: 2px solid #f59e0b;
       animation: pulse 2s infinite;
     }
@@ -1437,6 +1437,20 @@
       return emptyRoomsData;
     }
 
+    // Add this helper function for display formatting:
+    function formatTimeSlotFor12Hour(timeSlot24h) {
+      const [start, end] = timeSlot24h.split('-');
+      
+      function convertTo12Hour(time24) {
+        const [hours, minutes] = time24.split(':').map(Number);
+        const period = hours >= 12 ? 'PM' : 'AM';
+        const hours12 = hours === 0 ? 12 : hours > 12 ? hours - 12 : hours;
+        return `${hours12}:${minutes.toString().padStart(2, '0')} ${period}`;
+      }
+      
+      return `${convertTo12Hour(start)} - ${convertTo12Hour(end)}`;
+    }
+
     function renderEmptyRoomsOverlay() {
       debugFacultyClassTimes();
       console.log('Faculty data:', facultyData);
@@ -1469,7 +1483,7 @@
             <div class="time-slot ${data.isCurrentSlot ? 'current-time-indicator' : ''}">
               <div class="time-slot-header">
                 <h3 class="time-slot-title">
-                  ${data.timeSlot} ${data.isCurrentSlot ? '🔴 Current' : ''}
+                  ${formatTimeSlotFor12Hour(data.timeSlot)} ${data.isCurrentSlot ? '🔴 Current' : ''}
                 </h3>
                 <div class="time-slot-count">
                   ${data.emptyCount}/${data.totalRooms} Available
