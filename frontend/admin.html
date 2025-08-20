@@ -1910,6 +1910,30 @@
                 deleteSelectedBtn.textContent = selectedCount > 0 ? `Delete Selected (${selectedCount})` : 'Delete Selected';
             }
         }
+
+        // Add this function to update JSON via GitHub API
+        async function updateFacultyJSON(facultyData) {
+          try {
+            const response = await fetch(`${API_BASE}/api/upload`, {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              credentials: 'include',
+              body: JSON.stringify({
+                filename: 'faculty.json',
+                content: btoa(JSON.stringify(facultyData, null, 2)),
+                path: 'backend'
+              })
+            });
+            
+            if (response.ok) {
+              console.log('✅ faculty.json updated on GitHub');
+              return true;
+            }
+          } catch (error) {
+            console.error('Failed to update faculty.json:', error);
+          }
+          return false;
+        }
     </script>
 </body>
 </html>
