@@ -416,13 +416,352 @@
         max-width: 200px;
       }
     }
+
+    /* Add these styles to your existing CSS section */
+
+    .empty-rooms-btn {
+      padding: 0.7rem 1.3rem;
+      background: #059669;
+      color: #fff;
+      border: none;
+      border-radius: 10px;
+      cursor: pointer;
+      font-size: 1rem;
+      font-weight: 600;
+      letter-spacing: .5px;
+      box-shadow: 0 2px 8px rgba(16, 34, 74, .08);
+      transition: background-color 0.18s, transform 0.1s;
+    }
+
+    .empty-rooms-btn:hover {
+      background: #047857;
+      transform: translateY(-1px);
+    }
+
+    .empty-rooms-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: rgba(0, 0, 0, 0.7);
+      z-index: 1000;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      padding: 20px;
+      opacity: 0;
+      visibility: hidden;
+      transition: all 0.3s ease;
+    }
+
+    .empty-rooms-overlay.active {
+      opacity: 1;
+      visibility: visible;
+    }
+
+    .empty-rooms-content {
+      background: white;
+      border-radius: 16px;
+      padding: 20px;
+      max-width: 900px;
+      width: 100%;
+      max-height: 90vh;
+      overflow-y: auto;
+      box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+      transform: scale(0.9);
+      transition: transform 0.3s ease;
+    }
+
+    .empty-rooms-overlay.active .empty-rooms-content {
+      transform: scale(1);
+    }
+
+    .empty-rooms-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 20px;
+      padding-bottom: 15px;
+      border-bottom: 2px solid #e5e7eb;
+    }
+
+    .empty-rooms-title {
+      color: #1e3a8a;
+      font-size: 1.5rem;
+      font-weight: 600;
+      margin: 0;
+    }
+
+    .close-overlay-btn {
+      background: #ef4444;
+      color: white;
+      border: none;
+      border-radius: 8px;
+      padding: 8px 12px;
+      cursor: pointer;
+      font-size: 14px;
+      font-weight: 500;
+    }
+
+    .close-overlay-btn:hover {
+      background: #dc2626;
+    }
+
+    .time-slot {
+      margin-bottom: 20px;
+      background: #f8fafc;
+      border-radius: 12px;
+      padding: 15px;
+      border-left: 4px solid #059669;
+    }
+
+    .time-slot-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 10px;
+    }
+
+    .time-slot-title {
+      font-size: 1.1rem;
+      font-weight: 600;
+      color: #1e3a8a;
+      margin: 0;
+    }
+
+    .time-slot-count {
+      background: #059669;
+      color: white;
+      padding: 4px 8px;
+      border-radius: 6px;
+      font-size: 0.8rem;
+      font-weight: 500;
+    }
+
+    .empty-rooms-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(80px, 1fr));
+      gap: 8px;
+      margin-top: 10px;
+    }
+
+    .room-item {
+      background: #10b981;
+      color: white;
+      padding: 8px 12px;
+      border-radius: 6px;
+      text-align: center;
+      font-weight: 500;
+      font-size: 0.9rem;
+    }
+
+    .room-item.occupied {
+      background: #ef4444;
+      opacity: 0.6;
+    }
+
+    .no-empty-rooms {
+      color: #6b7280;
+      font-style: italic;
+      text-align: center;
+      padding: 20px;
+      background: #fef3c7;
+      border-radius: 8px;
+      border: 1px solid #f59e0b;
+    }
+
+    .legend {
+      display: flex;
+      gap: 15px;
+      justify-content: center;
+      margin-bottom: 20px;
+      flex-wrap: wrap;
+    }
+
+    .legend-item {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 0.9rem;
+    }
+
+    .legend-color {
+      width: 16px;
+      height: 16px;
+      border-radius: 4px;
+    }
+
+    .legend-available {
+      background: #10b981;
+    }
+
+    .legend-occupied {
+      background: #ef4444;
+    }
+
+    .current-time-indicator {
+      background: #fbbf24 !important;
+      border: 2px solid #f59e0b;
+      animation: pulse 2s infinite;
+    }
+
+    @keyframes pulse {
+
+      0%,
+      100% {
+        border-color: #fd7e14;
+      }
+
+      50% {
+        border-color: #f97316;
+      }
+    }
+
+    @keyframes fadeIn {
+      from {
+        opacity: 0;
+        transform: translate(-50%, -20px);
+      }
+
+      to {
+        opacity: 1;
+        transform: translate(-50%, 0);
+      }
+    }
+
+    @keyframes fadeOut {
+      from {
+        opacity: 1;
+        transform: translate(-50%, 0);
+      }
+
+      to {
+        opacity: 0;
+        transform: translate(-50%, -20px);
+      }
+    }
+
+    @keyframes progress {
+      from {
+        width: 100%;
+      }
+
+      to {
+        width: 0;
+      }
+    }
+
+    @media (min-width: 600px) {
+      .faculty-card {
+        flex-direction: row;
+        align-items: center;
+        justify-content: space-between;
+        padding: 0.75rem;
+      }
+
+      .bulk-status {
+        max-width: 400px;
+        margin: 0.75rem auto;
+        flex-direction: row;
+        align-items: center;
+      }
+
+      .bulk-status label {
+        flex: 1;
+      }
+
+      .bulk-status select {
+        flex: 2;
+      }
+
+      .bulk-status button {
+        flex: 1;
+        max-width: 200px;
+      }
+
+      .faculty-card label {
+        flex: 1;
+      }
+
+      .faculty-card select {
+        flex: 2;
+      }
+
+      .faculty-card button {
+        flex: 1;
+        max-width: 200px;
+      }
+    }
+
+    /* Mobile responsiveness */
+    @media (max-width: 600px) {
+      .header {
+        flex-direction: column;
+        gap: 0.7rem;
+        align-items: stretch;
+      }
+
+      .header>div {
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+        width: 100%;
+      }
+
+      .empty-rooms-btn,
+      .logout-btn {
+        width: 100%;
+        font-size: 1rem;
+      }
+
+      .empty-rooms-content {
+        margin: 10px;
+        padding: 15px;
+      }
+
+      .empty-rooms-title {
+        font-size: 1.2rem;
+      }
+
+      .empty-rooms-grid {
+        grid-template-columns: repeat(auto-fill, minmax(70px, 1fr));
+        gap: 6px;
+      }
+
+      .room-item {
+        padding: 6px 8px;
+        font-size: 0.8rem;
+      }
+
+      .legend {
+        flex-direction: column;
+        align-items: center;
+        gap: 8px;
+      }
+
+      .header div {
+        flex-direction: column;
+        gap: 8px;
+      }
+
+      .empty-rooms-btn,
+      .logout-btn {
+        width: 100%;
+      }
+    }
   </style>
 </head>
 
 <body>
   <div class="header" role="banner" aria-label="Faculty Control Panel">
     <h2 id="panelTitle">Control Panel</h2>
-    <button class="logout-btn" onclick="logout()" aria-label="Logout">Logout</button>
+    <div style="display: flex; gap: 10px; align-items: center;">
+      <button class="empty-rooms-btn" onclick="toggleEmptyRoomsOverlay()" aria-label="Show Empty Rooms">
+        📍 Empty Rooms
+      </button>
+      <button class="logout-btn" onclick="logout()" aria-label="Logout">Logout</button>
+    </div>
   </div>
 
   <div class="bulk-status" role="region" aria-labelledby="bulkStatusLabel">
@@ -433,6 +772,18 @@
   </div>
 
   <div class="controls-container" id="controls" role="main" aria-label="Faculty Status Controls"></div>
+
+  <div class="empty-rooms-overlay" id="emptyRoomsOverlay">
+    <div class="empty-rooms-content">
+      <div class="empty-rooms-header">
+        <h3 class="empty-rooms-title">Available Rooms and Batches</h3>
+        <button class="close-overlay-btn" onclick="toggleEmptyRoomsOverlay()">✖</button>
+      </div>
+      <div class="empty-rooms-body">
+        <!-- Content will be populated by JavaScript -->
+      </div>
+    </div>
+  </div>
 
   <script>
     let facultyData = [];
@@ -973,6 +1324,208 @@
       }, 6000);
     }
 
+        // Add these functions to your existing JavaScript section
+
+    // All available rooms
+    const ALL_ROOMS = ['003', '102', '203', '204', '205', '206', '303', '304', '305', '306', '307'];
+
+    // Time slots for the day (8 AM to 6 PM)
+    const TIME_SLOTS = [
+      '08:00-09:00', '09:00-10:00', '10:00-11:00', '11:00-12:00',
+      '12:00-13:00', '13:00-14:00', '14:00-15:00', '15:00-16:00',
+      '16:00-17:00', '17:00-18:00'
+    ];
+
+    function getCurrentDay() {
+      const days = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
+      const today = new Date();
+      return days[today.getDay()];
+    }
+
+    function getCurrentTimeSlot() {
+      const now = new Date();
+      const hour = now.getHours();
+      const minute = now.getMinutes();
+      const currentTime = hour * 100 + minute; // Convert to HHMM format for easy comparison
+
+      for (let i = 0; i < TIME_SLOTS.length; i++) {
+        const [start, end] = TIME_SLOTS[i].split('-');
+        const [startHour, startMin] = start.split(':').map(Number);
+        const [endHour, endMin] = end.split(':').map(Number);
+
+        const startTime = startHour * 100 + startMin;
+        const endTime = endHour * 100 + endMin;
+
+        if (currentTime >= startTime && currentTime < endTime) {
+          return TIME_SLOTS[i];
+        }
+      }
+      return null;
+    }
+
+    function isTimeInRange(timeSlot, classStart, classEnd) {
+      const [slotStart, slotEnd] = timeSlot.split('-');
+
+      // Convert times to minutes for easier comparison
+      function timeToMinutes(timeStr) {
+        const [hours, minutes] = timeStr.split(':').map(Number);
+        return hours * 60 + minutes;
+      }
+
+      const slotStartMin = timeToMinutes(slotStart);
+      const slotEndMin = timeToMinutes(slotEnd);
+      const classStartMin = timeToMinutes(classStart);
+      const classEndMin = timeToMinutes(classEnd);
+
+      // Check if there's any overlap
+      return !(classEndMin <= slotStartMin || classStartMin >= slotEndMin);
+    }
+
+    function getOccupiedRooms(timeSlot) {
+      const currentDay = getCurrentDay();
+      const occupiedRooms = new Set();
+
+      facultyData.forEach(faculty => {
+        if (faculty.classTimes && faculty.classTimes[currentDay]) {
+          faculty.classTimes[currentDay].forEach(classInfo => {
+            if (classInfo.start && classInfo.end && classInfo.room) {
+              if (isTimeInRange(timeSlot, classInfo.start, classInfo.end)) {
+                occupiedRooms.add(classInfo.room);
+              }
+            }
+          });
+        }
+      });
+
+      return Array.from(occupiedRooms);
+    }
+
+    function getEmptyRoomsData() {
+      const emptyRoomsData = [];
+      const currentTimeSlot = getCurrentTimeSlot();
+
+      TIME_SLOTS.forEach(timeSlot => {
+        const occupiedRooms = getOccupiedRooms(timeSlot);
+        const emptyRooms = ALL_ROOMS.filter(room => !occupiedRooms.includes(room));
+
+        emptyRoomsData.push({
+          timeSlot,
+          emptyRooms,
+          occupiedRooms,
+          isCurrentSlot: timeSlot === currentTimeSlot,
+          emptyCount: emptyRooms.length,
+          totalRooms: ALL_ROOMS.length
+        });
+      });
+
+      return emptyRoomsData;
+    }
+
+    function renderEmptyRoomsOverlay() {
+      const emptyRoomsData = getEmptyRoomsData();
+      const currentDay = getCurrentDay();
+
+      const overlay = document.getElementById('emptyRoomsOverlay');
+      const content = overlay.querySelector('.empty-rooms-content');
+
+      content.innerHTML = `
+    <div class="empty-rooms-header">
+      <h2 class="empty-rooms-title">📍 Empty Rooms - ${currentDay}</h2>
+      <button class="close-overlay-btn" onclick="toggleEmptyRoomsOverlay()">✕ Close</button>
+    </div>
+    
+    <div class="legend">
+      <div class="legend-item">
+        <div class="legend-color legend-available"></div>
+        <span>Available</span>
+      </div>
+      <div class="legend-item">
+        <div class="legend-color legend-occupied"></div>
+        <span>Occupied</span>
+      </div>
+    </div>
+    
+    <div class="time-slots-container">
+      ${emptyRoomsData.map(data => `
+        <div class="time-slot ${data.isCurrentSlot ? 'current-time-indicator' : ''}">
+          <div class="time-slot-header">
+            <h3 class="time-slot-title">
+              ${data.timeSlot} ${data.isCurrentSlot ? '🔴 Current' : ''}
+            </h3>
+            <div class="time-slot-count">
+              ${data.emptyCount}/${data.totalRooms} Available
+            </div>
+          </div>
+          
+          ${data.emptyCount === 0 ? `
+            <div class="no-empty-rooms">
+              All rooms are occupied during this time slot
+            </div>
+          ` : `
+            <div class="empty-rooms-grid">
+              ${ALL_ROOMS.map(room => `
+                <div class="room-item ${data.occupiedRooms.includes(room) ? 'occupied' : ''}">
+                  ${room}
+                </div>
+              `).join('')}
+            </div>
+          `}
+        </div>
+      `).join('')}
+    </div>
+  `;
+    }
+
+    function toggleEmptyRoomsOverlay() {
+      let overlay = document.getElementById('emptyRoomsOverlay');
+
+      if (!overlay) {
+        // Create overlay if it doesn't exist
+        overlay = document.createElement('div');
+        overlay.id = 'emptyRoomsOverlay';
+        overlay.className = 'empty-rooms-overlay';
+        overlay.innerHTML = `
+      <div class="empty-rooms-content">
+        <!-- Content will be populated by renderEmptyRoomsOverlay -->
+      </div>
+    `;
+        document.body.appendChild(overlay);
+
+        // Close overlay when clicking outside
+        overlay.addEventListener('click', (e) => {
+          if (e.target === overlay) {
+            toggleEmptyRoomsOverlay();
+          }
+        });
+      }
+
+      if (overlay.classList.contains('active')) {
+        // Hide overlay
+        overlay.classList.remove('active');
+      } else {
+        // Show overlay and render content
+        renderEmptyRoomsOverlay();
+        overlay.classList.add('active');
+      }
+    }
+
+    // Optional: Auto-refresh empty rooms data every minute
+    function startEmptyRoomsAutoRefresh() {
+      setInterval(() => {
+        const overlay = document.getElementById('emptyRoomsOverlay');
+        if (overlay && overlay.classList.contains('active')) {
+          renderEmptyRoomsOverlay();
+        }
+      }, 60000); // Refresh every minute
+    }
+    // Add this to your existing initialization code
+    document.addEventListener('DOMContentLoaded', function () {
+      // ... your existing DOMContentLoaded code ...
+
+      // Start auto-refresh for empty rooms
+      startEmptyRoomsAutoRefresh();
+    });
+
     fetchFacultyData()
       .then(data => {
         if (data) {
@@ -989,6 +1542,8 @@
         }
       })
       .catch(() => showMessage("Failed to load data.", true));
+    startEmptyRoomsAutoRefresh();
+
   </script>
 </body>
 
