@@ -1404,14 +1404,125 @@
 
       console.log('=== End Debug ===');
     }
-    // Add this to your existing initialization code
-    document.addEventListener('DOMContentLoaded', function () {
-      // ... your existing DOMContentLoaded code ...
 
-      // Start auto-refresh for empty rooms
-      startEmptyRoomsAutoRefresh();
-    });
+    function getEmptyRoomsData() {
+      const emptyRoomsData = [];
+      const currentTimeSlot = getCurrentTimeSlot();
+      
+      TIME_SLOTS.forEach(timeSlot => {
+        const occupiedRooms = getOccupiedRooms(timeSlot);
+        const emptyRooms = ALL_ROOMS.filter(room => !occupiedRooms.includes(room));
+        
+        emptyRoomsData.push({
+          timeSlot,
+          emptyRooms,
+          occupiedRooms,
+          isCurrentSlot: timeSlot === currentTimeSlot,
+          emptyCount: emptyRooms.length,
+          totalRooms: ALL_ROOMS.length
+        });
+      });
+      
+      return emptyRoomsData;
+    }
 
+    function renderEmptyRoomsOverlay() {
+      debugFacultyClassTimes();
+      console.log('Faculty data:', facultyData);
+      
+      const emptyRoomsData = getEmptyRoomsData();
+      const currentDay = getCurrentDay();
+      
+      const overlay = document.getElementById('emptyRoomsOverlay');
+      const content = overlay.querySelector('.empty-rooms-content');
+      
+      content.innerHTML = `
+        <div class="empty-rooms-header">
+          <h2 class="empty-rooms-title">📍 Empty Rooms - ${currentDay}</h2>
+          <button class="close-overlay-btn" onclick="toggleEmptyRoomsOverlay()">✕ Close</button>
+        </div>
+        
+        <div class="legend">
+          <div class="legend-item">
+            <div class="legend-color legend-available"></div>
+            <span>Available</span>
+          </div>
+          <div class="legend-item">
+            <div class="legend-color legend-occupied"></div>
+            <span>Occupied</span>
+          </div>
+        </div>
+        
+        <div class="time-slots-container">
+          ${emptyRoomsData.map(data => `
+            <div class="time-slot ${data.isCurrentSlot ? 'current-time-indicator' : ''}">
+              <div class="time-slot-header">
+                <h3 class="time-slot-title">
+                  ${data.timeSlot} ${data.isCurrentSlot ? '🔴 Current' : ''}
+                </h3>
+                <div class="time-slot-count">
+                  ${data.emptyCount}/${data.totalRooms} Available
+                </div>
+              </div>
+              
+              ${data.emptyCount === 0 ? `
+                <div class="no-empty-rooms">
+                  All rooms are occupied during this time slot
+                </div>
+              ` : `
+                <div class="empty-rooms-grid">
+                  ${ALL_ROOMS.map(room => `
+                    <div class="room-item ${data.occupiedRooms.includes(room) ? 'occupied' : ''}">
+                      ${room}
+                    </div>
+                  `).join('')}
+                </div>
+              `}
+            </div>
+          `).join('')}
+        </div>
+      `;
+    }
+
+    function toggleEmptyRoomsOverlay() {
+      let overlay = document.getElementById('emptyRoomsOverlay');
+      
+      if (!overlay) {
+        overlay = document.createElement('div');
+        overlay.id = 'emptyRoomsOverlay';
+        overlay.className = 'empty-rooms-overlay';
+        overlay.innerHTML = `
+          <div class="empty-rooms-content">
+            <!-- Content will be populated by renderEmptyRoomsOverlay -->
+          </div>
+        `;
+        document.body.appendChild(overlay);
+        
+        overlay.addEventListener('click', (e) => {
+          if (e.target === overlay) {
+            toggleEmptyRoomsOverlay();
+          }
+        });
+      }
+      
+      if (overlay.classList.contains('active')) {
+        overlay.classList.remove('active');
+      } else {
+        renderEmptyRoomsOverlay();
+        overlay.classList.add('active');
+      }
+    }
+
+    function startEmptyRoomsAutoRefresh() {
+      setInterval(() => {
+        const overlay = document.getElementById('emptyRoomsOverlay');
+        if (overlay && overlay.classList.contains('active')) {
+          renderEmptyRoomsOverlay();
+        }
+      }, 60000);
+    }
+
+    // Your existing initialization code:
     fetchFacultyData()
       .then(data => {
         if (data) {
@@ -1428,6 +1539,7 @@
         }
       })
       .catch(() => showMessage("Failed to load data.", true));
+    
     startEmptyRoomsAutoRefresh();
   </script>
 </body>
