@@ -335,26 +335,24 @@
       const urlParams = new URLSearchParams(window.location.search);
       const redirectParam = urlParams.get('redirect');
       
-      // Check URL parameter first
+      // Check URL parameter first (highest priority)
       if (redirectParam === 'admin') {
         return 'admin';
       }
       
-      // Check if we came from admin page
+      // Check if we came from admin page (second priority)
       if (document.referrer) {
-        const referrerUrl = new URL(document.referrer);
-        if (referrerUrl.pathname.includes('/admin')) {
-          return 'admin';
+        try {
+          const referrerUrl = new URL(document.referrer);
+          if (referrerUrl.pathname.includes('/admin')) {
+            return 'admin';
+          }
+        } catch (e) {
+          console.log('Referrer parsing failed:', e);
         }
       }
       
-      // Check localStorage for last visited page
-      const lastPage = localStorage.getItem('lastVisitedPage');
-      if (lastPage === 'admin') {
-        return 'admin';
-      }
-      
-      // Default to control panel
+      // Default to control panel (remove localStorage check to prevent persistent admin preference)
       return 'control';
     }
 
@@ -448,9 +446,7 @@
       })
         .then(res => {
           if (res.ok) {
-            // Store the destination for future reference
-            localStorage.setItem('lastVisitedPage', destination);
-            
+            // Don't store destination preference - let each login be independent
             showSuccess(`Login successful. Redirecting to ${destination === 'admin' ? 'Admin Panel' : 'Control Panel'}...`);
             setTimeout(() => window.location.href = destination, 600);
           } else {

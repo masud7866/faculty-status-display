@@ -1348,8 +1348,10 @@
       })
         .then(res => {
           if (res.ok) {
+            // Clear any stored preferences to ensure clean logout
+            localStorage.removeItem('lastVisitedPage');
             setTimeout(() => {
-              window.location.href = "login";
+              window.location.href = "login.html"; // Use .html extension for consistency
             }, 300);
           } else {
             showMessage("Logout failed.", true);
@@ -1604,19 +1606,30 @@
     function scrollToNearestTimeSlot() {
       const now = new Date();
       const currentHour = now.getHours();
-
-      // Determine which time slot to scroll to based on current time
+      const currentMinute = now.getMinutes();
+      const currentTime = currentHour * 60 + currentMinute; // Convert to minutes
+      
+      // Convert 8 AM and 6 PM to minutes for comparison
+      const classStartTime = 8 * 60; // 8:00 AM = 480 minutes
+      const classEndTime = 18 * 60; // 6:00 PM = 1080 minutes
+      
       let targetIndex = 0;
-
+      
       if (currentHour < 8) {
-        // Before 8 AM - scroll to first slot
+        // Before 8 AM - scroll to first slot  
         targetIndex = 0;
       } else if (currentHour >= 18) {
         // After 6 PM - scroll to last slot
         targetIndex = TIME_SLOTS.length - 1;
       } else {
-        // During class hours - find the nearest slot
-        targetIndex = Math.max(0, currentHour - 8);
+        // During class hours - find the current or next appropriate slot
+        const currentMinute = now.getMinutes();
+        const currentTime = currentHour * 60 + currentMinute;
+        const classStartTime = 8 * 60; // 8:00 AM in minutes
+        
+        // Calculate exact slot based on time
+        const minutesFromStart = currentTime - classStartTime;
+        targetIndex = Math.min(Math.floor(minutesFromStart / 60), TIME_SLOTS.length - 1);
       }
 
       const targetElement = document.getElementById(`timeSlot-${targetIndex}`);
@@ -1627,13 +1640,27 @@
           const containerRect = container.getBoundingClientRect();
           const elementRect = targetElement.getBoundingClientRect();
           const relativeTop = elementRect.top - containerRect.top + container.scrollTop;
+          
+          // Different scroll behavior based on time
+          let scrollTarget;
+          
+          if (currentHour < 8) {
+            // Before class hours - scroll to top
+            scrollTarget = 0;
+          } else if (currentHour >= 18) {
+            // After 6 PM - scroll to bottom
+            scrollTarget = container.scrollHeight - container.clientHeight;
+          } else {
+            // During class hours - center the current slot
+            scrollTarget = Math.max(0, relativeTop - (container.clientHeight / 2) + (targetElement.offsetHeight / 2));
+          }
 
           container.scrollTo({
-            top: Math.max(0, relativeTop - 100), // 100px offset from top
+            top: scrollTarget,
             behavior: 'smooth'
           });
 
-          console.log(`Scrolled to nearest time slot: index ${targetIndex}`);
+          console.log(`Scrolled to time slot: index ${targetIndex}, time: ${TIME_SLOTS[targetIndex] || 'N/A'}`);
         }
       }
     }
