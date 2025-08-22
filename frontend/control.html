@@ -1385,20 +1385,29 @@
       const now = new Date();
       const hour = now.getHours();
       const minute = now.getMinutes();
-      const currentTime = hour * 100 + minute;
+      
+      // Convert current time to minutes from midnight for easier comparison
+      const currentTimeInMinutes = hour * 60 + minute;
+      
+      console.log(`Current time: ${hour}:${minute.toString().padStart(2, '0')} (${currentTimeInMinutes} minutes from midnight)`);
 
       for (let i = 0; i < TIME_SLOTS.length; i++) {
         const [start, end] = TIME_SLOTS[i].split('-');
         const [startHour, startMin] = start.split(':').map(Number);
         const [endHour, endMin] = end.split(':').map(Number);
 
-        const startTime = startHour * 100 + startMin;
-        const endTime = endHour * 100 + endMin;
+        const startTimeInMinutes = startHour * 60 + startMin;
+        const endTimeInMinutes = endHour * 60 + endMin;
 
-        if (currentTime >= startTime && currentTime < endTime) {
+        console.log(`Checking slot ${TIME_SLOTS[i]}: ${startTimeInMinutes} - ${endTimeInMinutes} minutes`);
+
+        if (currentTimeInMinutes >= startTimeInMinutes && currentTimeInMinutes < endTimeInMinutes) {
+          console.log(`Found current time slot: ${TIME_SLOTS[i]}`);
           return TIME_SLOTS[i];
         }
       }
+      
+      console.log('No current time slot found - outside class hours');
       return null;
     }
 
@@ -1559,7 +1568,9 @@
       const currentTimeSlot = getCurrentTimeSlot();
 
       if (!currentTimeSlot) {
-        console.log('No current time slot found');
+        console.log('No current time slot found - using fallback scroll logic');
+        // Fallback: scroll to the appropriate time based on current hour
+        scrollToNearestTimeSlot();
         return;
       }
 
@@ -1596,8 +1607,7 @@
           }, 300);
         }
       } else {
-        console.log('Current time slot element not found in DOM');
-
+        console.log('Current time slot element not found in DOM - using fallback');
         // Fallback: If no current slot is highlighted, scroll to the appropriate time
         scrollToNearestTimeSlot();
       }
