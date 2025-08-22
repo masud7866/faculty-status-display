@@ -436,52 +436,6 @@
             }
         }
 
-        /* Add this to your existing CSS for mobile optimization */
-        @media (max-width: 768px) {
-            /* Prevent zoom on input focus */
-            input[type="file"],
-            input[type="text"],
-            input[type="email"],
-            input[type="password"],
-            input[type="time"],
-            textarea,
-            select {
-                font-size: 16px !important;
-                -webkit-appearance: none;
-                appearance: none;
-                -webkit-border-radius: 0;
-                border-radius: 6px;
-            }
-            
-            /* Optimize file input for mobile */
-            input[type="file"] {
-                padding: 8px !important;
-                background: #f9fafb;
-                border: 2px dashed #d1d5db;
-            }
-            
-            input[type="file"]:focus {
-                border-color: #2563eb;
-                outline: none;
-            }
-            
-            /* Optimize buttons for touch */
-            .btn {
-                min-height: 44px;
-                font-size: 14px;
-                padding: 8px 16px;
-            }
-        }
-
-        /* Fix for iOS Safari */
-        @supports (-webkit-touch-callout: none) {
-            input[type="file"] {
-                font-size: 16px;
-                -webkit-appearance: none;
-                appearance: none;
-            }
-        }
-
         .form-actions {
             display: flex;
             gap: 10px;
@@ -624,37 +578,6 @@
         .edit-mode h2 {
             color: #92400e;
         }
-
-        @media (max-width: 639px) {
-            .compact-upload {
-                flex-direction: column;
-                gap: 8px;
-            }
-            
-            .compact-upload .form-group {
-                margin-bottom: 8px;
-            }
-            
-            .form-control[type="file"] {
-                padding: 4px;
-                font-size: 14px;
-            }
-            
-            .image-preview {
-                width: 60px;
-                height: 60px;
-            }
-            
-            .preview-section {
-                flex-direction: column;
-                text-align: center;
-                gap: 8px;
-            }
-            
-            .preview-section > div {
-                font-size: 12px;
-            }
-        }
     </style>
 </head>
 <body>
@@ -709,27 +632,18 @@
                             </div>
                         </div>
                         
-                        <!-- Replace the image upload section with this mobile-optimized version -->
                         <div class="image-upload-section">
                             <h3>Faculty Image</h3>
                             <div class="file-info">
                                 <strong>Image Path:</strong> Will be saved as /public/facultyname.jpg<br>
                                 <strong>JSON Format:</strong> Will be stored as /images/facultyname.jpg for compatibility<br>
-                                <strong>Format:</strong> JPG, PNG, GIF, WebP (max 5MB)<br>
-                                <strong>Mobile:</strong> Tap "Choose File" to select from gallery or camera
+                                <strong>Format:</strong> JPG, PNG (max 5MB)
                             </div>
                             
                             <div class="compact-upload">
                                 <div class="form-group">
                                     <label for="imageFile">Upload Image</label>
-                                    <input type="file" 
-                                           id="imageFile" 
-                                           class="form-control" 
-                                           accept="image/*"
-                                           style="font-size: 16px; -webkit-appearance: none; appearance: none;">
-                                    <div style="font-size: 12px; color: #6b7280; margin-top: 4px;">
-                                        📱 Mobile: Tap to choose from camera or gallery
-                                    </div>
+                                    <input type="file" id="imageFile" class="form-control" accept="image/*">
                                 </div>
                                 <button type="button" onclick="uploadFacultyImage()" class="btn btn-primary">Upload Image</button>
                             </div>
@@ -889,16 +803,10 @@
                             <div>📁 Click here or drag advertisement files to upload</div>
                             <div style="font-size: 12px; color: #6b7280; margin-top: 5px;">
                                 Max file size: 25MB per file<br>
-                                Supported: JPG, PNG, GIF, MP4, WEBM<br>
-                                <strong>Mobile:</strong> Tap to select from gallery or camera
+                                Supported: JPG, PNG, GIF, MP4, WEBM
                             </div>
                         </div>
-                        <input type="file" 
-                               id="fileInput" 
-                               multiple 
-                               accept="image/jpeg,image/jpg,image/png,image/gif,image/webp,video/mp4,video/webm"
-                               capture="environment"
-                               style="display: none;">
+                        <input type="file" id="fileInput" multiple accept="image/*,video/*" style="display: none;">
                         
                         <div id="uploadProgress" class="upload-progress hidden">
                             <div id="uploadProgressBar" class="upload-progress-bar"></div>
@@ -932,86 +840,30 @@
           window.location.href = 'login.html?redirect=admin';
         }
 
-        // Add this function to help manage cookies on mobile
-        function ensureCookieSettings() {
-            // Force secure cookie settings for mobile
-            if (document.cookie) {
-                console.log('Current cookies:', document.cookie);
-            }
-            
-            // Set SameSite and Secure attributes if not already set
-            const cookies = document.cookie.split(';');
-            cookies.forEach(cookie => {
-                const [name, value] = cookie.trim().split('=');
-                if (name && value && !cookie.includes('SameSite')) {
-                    // This won't work for HttpOnly cookies, but helps with client-side ones
-                    document.cookie = `${name}=${value}; SameSite=None; Secure; Path=/`;
-                }
-            });
-        }
-
         // Check authentication
         document.addEventListener('DOMContentLoaded', function() {
-            ensureCookieSettings();
             checkAuth();
         });
 
-        // Replace the existing checkAuth function with this mobile-optimized version:
         async function checkAuth() {
             try {
-                // Add mobile-specific headers and retry logic
                 const response = await fetch(`${API_BASE}/api/check-login`, { 
-                    method: 'GET',
                     credentials: 'include',
-                    headers: {
-                        'Accept': 'application/json',
-                        'Cache-Control': 'no-cache',
-                        'X-Requested-With': 'XMLHttpRequest',
-                        'Pragma': 'no-cache'
-                    },
-                    mode: 'cors'
+                    timeout: 10000
                 });
                 
-                console.log('Auth check response status:', response.status);
-                console.log('Auth check response headers:', response.headers.get('content-type'));
-                
                 if (!response.ok) {
-                    console.error('Auth check failed with status:', response.status);
-                    throw new Error(`Auth check failed: ${response.status}`);
+                    throw new Error('Network response was not ok');
                 }
                 
-                // Check if we got HTML instead of JSON (common mobile issue)
-                const contentType = response.headers.get('content-type');
-                if (!contentType || !contentType.includes('application/json')) {
-                    console.error('Non-JSON response received:', contentType);
-                    throw new Error('Invalid response format');
-                }
-                
-                const responseText = await response.text();
-                console.log('Auth response text (first 100 chars):', responseText.substring(0, 100));
-                
-                // Validate JSON response
-                if (responseText.trim().startsWith('<!DOCTYPE') || responseText.includes('<html')) {
-                    console.error('Received HTML instead of JSON');
-                    throw new Error('Server returned login page');
-                }
-                
-                let data;
-                try {
-                    data = JSON.parse(responseText);
-                } catch (parseError) {
-                    console.error('JSON parse error:', parseError);
-                    throw new Error('Invalid JSON response');
-                }
-                
-                console.log('Auth data:', data);
+                const data = await response.json();
                 
                 if (!data.loggedIn) {
-                    console.log('User not logged in, redirecting...');
-                    throw new Error('Not logged in');
+                    console.log('Not logged in, redirecting to login...');
+                    redirectToLogin();
+                    return;
                 }
                 
-                // Success - show main content
                 document.getElementById('loadingOverlay').style.display = 'none';
                 document.getElementById('mainContent').style.display = 'block';
                 
@@ -1019,55 +871,17 @@
                 
             } catch (error) {
                 console.error('Auth check failed:', error);
-                
-                // Clear any problematic cookies/storage
-                if ('serviceWorker' in navigator) {
-                    navigator.serviceWorker.getRegistrations().then(registrations => {
-                        registrations.forEach(registration => registration.unregister());
-                    });
-                }
-                
-                // Force clear storage
-                try {
-                    localStorage.clear();
-                    sessionStorage.clear();
-                } catch (e) {
-                    console.log('Storage clear failed:', e);
-                }
-                
-                // Redirect to login with specific mobile parameters
-                const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
-                const redirectUrl = isMobile ? 
-                    'login.html?mobile=true&redirect=admin' : 
-                    'login.html?redirect=admin';
-                    
-                window.location.href = redirectUrl;
+                redirectToLogin();
             }
-        }
-
-        // Add this function to detect and handle mobile-specific issues:
-        function isMobileDevice() {
-            return /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
         }
 
         function initializeAdminPanel() {
             generateScheduleForms();
             loadFaculty();
             loadMarquee();
-            checkMarqueeStatus();
+            checkMarqueeStatus(); // Add this line
             loadAds();
             setupFileUpload();
-            
-            // Mobile-specific optimizations
-            if (isMobileDevice()) {
-                const fileInput = document.getElementById('fileInput');
-                
-                // Add mobile-specific attributes
-                fileInput.setAttribute('capture', 'camera');
-                fileInput.style.fontSize = '16px'; // Prevents zoom on iOS
-                
-                console.log('Mobile device detected - optimized file upload');
-            }
         }
 
         function showToast(message, type = 'success') {
@@ -1300,7 +1114,6 @@
         }
 
         // Faculty Image Upload
-        // Replace the entire uploadFacultyImage function with this compressed version:
         async function uploadFacultyImage() {
             const fileInput = document.getElementById('imageFile');
             const nameInput = document.getElementById('name');
@@ -1315,228 +1128,42 @@
                 return;
             }
             
-            let file = fileInput.files[0];
+            const file = fileInput.files[0];
             const facultyName = nameInput.value.trim().toLowerCase().replace(/\s+/g, '');
-            const originalExtension = file.name.split('.').pop().toLowerCase();
+            const extension = file.name.split('.').pop().toLowerCase();
+            const filename = `${facultyName}.${extension}`;
             
-            // Validate file type
-            const allowedTypes = ['jpg', 'jpeg', 'png', 'gif', 'webp'];
-            if (!allowedTypes.includes(originalExtension)) {
-                showToast('Invalid file type. Use JPG, PNG, GIF, or WebP', 'error');
+            if (file.size > 5 * 1024 * 1024) {
+                showToast('Image too large. Max size is 5MB', 'error');
                 return;
             }
             
             try {
-                showToast('Preparing image...', 'info');
+                showToast('Uploading image...', 'info');
                 
-                // Step 1: Compress image if it's too large
-                if (file.size > 1024 * 1024) { // 1MB threshold
-                    showToast('Compressing image...', 'info');
-                    
-                    try {
-                        const compressedBlob = await compressImage(file, 800, 600, 0.8);
-                        
-                        // Create a new file from the compressed blob
-                        const compressedFile = new File(
-                            [compressedBlob], 
-                            `${facultyName}.jpg`, 
-                            { type: 'image/jpeg' }
-                        );
-                        
-                        file = compressedFile;
-                        console.log(`Image compressed from ${fileInput.files[0].size} to ${file.size} bytes`);
-                    } catch (compressionError) {
-                        console.error('Compression failed:', compressionError);
-                        showToast('Image compression failed, trying original...', 'info');
-                        
-                        // If compression fails and file is still too large, reject
-                        if (file.size > 5 * 1024 * 1024) {
-                            showToast('Image too large and compression failed. Please use a smaller image.', 'error');
-                            return;
-                        }
-                    }
-                }
-                
-                const filename = `${facultyName}.jpg`; // Always use .jpg for compressed images
-        
-                // Final size check
-                if (file.size > 5 * 1024 * 1024) {
-                    showToast('Image too large even after compression. Max size is 5MB', 'error');
-                    return;
-                }
-                
-                // Step 2: Authentication check
-                showToast('Verifying authentication...', 'info');
-                
-                const authResponse = await fetch(`${API_BASE}/api/check-login`, { 
-                    method: 'GET',
+                const response = await fetch(`${API_BASE}/api/upload`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
                     credentials: 'include',
-                    headers: {
-                        'Accept': 'application/json',
-                        'Cache-Control': 'no-cache',
-                        'X-Requested-With': 'XMLHttpRequest'
-                    },
-                    mode: 'cors'
+                    body: JSON.stringify({
+                        filename: filename,
+                        content: await fileToBase64(file),
+                        path: 'backend/public'
+                    })
                 });
-                
-                if (!authResponse.ok) {
-                    throw new Error('Authentication failed');
-                }
-                
-                const responseText = await authResponse.text();
-                
-                if (responseText.trim().startsWith('<!DOCTYPE') || responseText.includes('<html')) {
-                    throw new Error('Session expired - please logout and login again');
-                }
-                
-                let authData;
-                try {
-                    authData = JSON.parse(responseText);
-                } catch (e) {
-                    throw new Error('Invalid server response - please logout and login again');
-                }
-                
-                if (!authData.loggedIn) {
-                    throw new Error('Session expired - please logout and login again');
-                }
-                
-                // Step 3: Convert to base64
-                showToast('Converting image...', 'info');
-        
-                const base64Content = await new Promise((resolve, reject) => {
-                    const reader = new FileReader();
-                    
-                    const timeout = setTimeout(() => {
-                        reader.abort();
-                        reject(new Error('File reading timeout'));
-                    }, 15000);
-                    
-                    reader.onload = () => {
-                        clearTimeout(timeout);
-                        try {
-                            const result = reader.result;
-                            if (!result || typeof result !== 'string') {
-                                reject(new Error('Invalid file read result'));
-                                return;
-                            }
-                            
-                            const base64 = result.split(',')[1];
-                            if (!base64 || base64.length === 0) {
-                                reject(new Error('Empty base64 conversion'));
-                                return;
-                            }
-                            
-                            console.log(`Base64 size: ${base64.length} characters`);
-                            resolve(base64);
-                        } catch (error) {
-                            reject(new Error(`File processing error: ${error.message}`));
-                        }
-                    };
-                    
-                    reader.onerror = () => {
-                        clearTimeout(timeout);
-                        reject(new Error('File reading failed'));
-                    };
-                    
-                    reader.onabort = () => {
-                        clearTimeout(timeout);
-                        reject(new Error('File reading was aborted'));
-                    };
-                    
-                    try {
-                        reader.readAsDataURL(file);
-                    } catch (error) {
-                        clearTimeout(timeout);
-                        reject(new Error(`Failed to start file reading: ${error.message}`));
+
+                if (!response.ok) {
+                    if (response.status === 403) {
+                        showToast('Session expired. Redirecting to login...', 'error');
+                        setTimeout(() => redirectToLogin(), 2000);
+                        return;
                     }
-                });
-                
-                // Step 4: Upload with retry logic
-                showToast('Uploading to server...', 'info');
-                
-                let uploadSuccess = false;
-                let lastError = null;
-                
-                for (let attempt = 1; attempt <= 3; attempt++) {
-                    try {
-                        console.log(`Upload attempt ${attempt} for ${filename}`);
-                        
-                        const uploadResponse = await fetch(`${API_BASE}/api/upload`, {
-                            method: 'POST',
-                            headers: { 
-                                'Content-Type': 'application/json',
-                                'Accept': 'application/json',
-                                'Cache-Control': 'no-cache',
-                                'X-Requested-With': 'XMLHttpRequest'
-                            },
-                            credentials: 'include',
-                            mode: 'cors',
-                            body: JSON.stringify({
-                                filename: filename,
-                                content: base64Content,
-                                path: 'backend/public'
-                            })
-                        });
-                        
-                        console.log(`Upload response status: ${uploadResponse.status}`);
-                        
-                        // Check response content type
-                        const contentType = uploadResponse.headers.get('content-type');
-                        
-                        if (!contentType || !contentType.includes('application/json')) {
-                            const responseText = await uploadResponse.text();
-                            console.log(`Non-JSON response: ${responseText.substring(0, 200)}`);
-                            
-                            if (responseText.includes('<!DOCTYPE') || responseText.includes('<html')) {
-                                throw new Error('Authentication error - please logout and login again');
-                            } else if (responseText.includes('content too large') || responseText.includes('PayloadTooLargeError')) {
-                                throw new Error('Image still too large - please use a smaller image');
-                            } else {
-                                throw new Error(`Server error: ${responseText.substring(0, 100)}`);
-                            }
-                        }
-                        
-                        if (!uploadResponse.ok) {
-                            const errorData = await uploadResponse.json();
-                            
-                            if (uploadResponse.status === 401 || uploadResponse.status === 403) {
-                                throw new Error('Authentication error - please logout and login again');
-                            } else if (uploadResponse.status === 413) {
-                                throw new Error('Image too large for server - please use a smaller image');
-                            }
-                            
-                            throw new Error(errorData.error || `Upload failed with status ${uploadResponse.status}`);
-                        }
-                        
-                        const result = await uploadResponse.json();
-                        console.log('Upload successful:', result);
-                        
-                        uploadSuccess = true;
-                        break; // Success, exit retry loop
-                        
-                    } catch (error) {
-                        console.error(`Upload attempt ${attempt} failed:`, error);
-                        lastError = error;
-                        
-                        // Don't retry certain errors
-                        if (error.message.includes('Authentication') || 
-                            error.message.includes('too large') ||
-                            error.message.includes('PayloadTooLarge')) {
-                            break;
-                        }
-                        
-                        if (attempt < 3) {
-                            showToast(`Upload attempt ${attempt} failed, retrying...`, 'info');
-                            await new Promise(resolve => setTimeout(resolve, 1000 * attempt));
-                        }
-                    }
+                    const error = await response.json();
+                    throw new Error(error.error || 'Upload failed');
                 }
+
+                const result = await response.json();
                 
-                if (!uploadSuccess) {
-                    throw lastError;
-                }
-                
-                // Step 5: Update UI on success
                 const backendPath = `/public/${filename}`;
                 const jsonPath = `/images/${filename}`;
                 
@@ -1554,46 +1181,10 @@
                 jsonPathSpan.textContent = jsonPath;
                 previewSection.classList.remove('hidden');
                 
-                // Clear the file input
-                fileInput.value = '';
-                
                 showToast('Faculty image uploaded successfully!');
                 
             } catch (error) {
-                console.error('Upload error:', error);
-                
-                let errorMessage = error.message;
-                
-                // Handle authentication errors
-                if (errorMessage.includes('Authentication') || errorMessage.includes('Session') || errorMessage.includes('logout')) {
-                    showToast('Please logout and login again to continue uploading', 'error');
-                    
-                    setTimeout(async () => {
-                        try {
-                            await fetch(`${API_BASE}/api/logout`, {
-                                method: 'POST',
-                                credentials: 'include'
-                            });
-                        } catch (e) {
-                            console.log('Logout request failed');
-                        }
-                        
-                        localStorage.setItem('returnToAdmin', 'true');
-                        window.location.href = 'login.html';
-                    }, 3000);
-                    return;
-                }
-                
-                // Handle other error types
-                if (errorMessage.includes('Network') || errorMessage.includes('Failed to fetch')) {
-                    errorMessage = 'Network error. Please check your internet connection and try again.';
-                } else if (errorMessage.includes('timeout')) {
-                    errorMessage = 'Upload timeout. Please try with a smaller image.';
-                } else if (errorMessage.includes('too large')) {
-                    errorMessage = 'Image is too large. Please use a smaller image (under 1MB recommended).';
-                }
-                
-                showToast(`Upload failed: ${errorMessage}`, 'error');
+                showToast(`Upload failed: ${error.message}`, 'error');
             }
         }
 
@@ -2101,7 +1692,6 @@
             });
         }
 
-        // Replace the existing handleFiles function with this completely enhanced version:
         async function handleFiles(files) {
             if (files.length === 0) return;
             
@@ -2112,66 +1702,12 @@
             statusDiv.innerHTML = '';
             progressDiv.classList.remove('hidden');
 
-            // Enhanced authentication check with explicit session validation
-            try {
-                showToast('Verifying authentication...', 'info');
-                
-                const authResponse = await fetch(`${API_BASE}/api/check-login`, { 
-                    method: 'GET',
-                    credentials: 'include',
-                    headers: {
-                        'Accept': 'application/json',
-                        'Cache-Control': 'no-cache'
-                    }
-                });
-                
-                if (!authResponse.ok) {
-                    throw new Error('AUTH_FAILED');
-                }
-                
-                let authData;
-                try {
-                    authData = await authResponse.json();
-                } catch (e) {
-                    throw new Error('AUTH_INVALID_RESPONSE');
-                }
-                
-                if (!authData.loggedIn) {
-                    throw new Error('AUTH_EXPIRED');
-                }
-                
-                showToast('Authentication verified. Processing files...', 'info');
-                
-            } catch (error) {
-               
-                let errorMessage = 'Authentication failed. ';
-                
-                if (error.message === 'AUTH_EXPIRED') {
-                    errorMessage += 'Session expired. Please logout and login again.';
-                } else if (error.message === 'AUTH_INVALID_RESPONSE') {
-                    errorMessage += 'Invalid server response. Please logout and login again.';
-                } else {
-                    errorMessage += 'Please logout and login again.';
-                }
-                
-                showToast(errorMessage, 'error');
-                progressDiv.classList.add('hidden');
-                
-                // Store return intent and redirect to login
-                localStorage.setItem('returnToAdmin', 'true');
-                setTimeout(() => {
-                    window.location.href = 'login.html';
-                }, 3000);
-                return;
-            }
-
             let uploadedCount = 0;
             const totalFiles = files.length;
 
             for (let i = 0; i < files.length; i++) {
                 const file = files[i];
                 
-                // Enhanced file validation
                 if (file.size > 25 * 1024 * 1024) {
                     const statusItem = document.createElement('div');
                     statusItem.style.color = '#ef4444';
@@ -2182,22 +1718,8 @@
                     continue;
                 }
                 
-                // Check file type
-                const allowedTypes = ['jpg', 'jpeg', 'png', 'gif', 'webp', 'mp4', 'webm'];
-                const extension = file.name.split('.').pop().toLowerCase();
-                if (!allowedTypes.includes(extension)) {
-                    const statusItem = document.createElement('div');
-                    statusItem.style.color = '#ef4444';
-                    statusItem.style.fontSize = '12px';
-                    statusItem.style.marginBottom = '4px';
-                    statusItem.textContent = `❌ ${file.name} has invalid file type (use: ${allowedTypes.join(', ')})`;
-                    statusDiv.appendChild(statusItem);
-                    continue;
-                }
-                
                 try {
-                    showToast(`Uploading ${file.name}...`, 'info');
-                    await uploadFileToGitHubEnhanced(file, 'ads');
+                    await uploadFileToGitHub(file, 'ads');
                     uploadedCount++;
                     
                     const progress = (i + 1) / totalFiles * 100;
@@ -2231,160 +1753,49 @@
             document.getElementById('fileInput').value = '';
         }
 
-        // Add this enhanced ad upload function after the faculty upload function:
-        async function uploadFileToGitHubEnhanced(file, uploadType) {
+        async function uploadFileToGitHub(file, uploadType) {
             const path = uploadType === 'ads' ? 'backend/public/ads' : 'backend/public';
-            let processedFile = file;
             
             try {
-                // Compress images if they're too large
-                if (file.type.startsWith('image/') && file.size > 2 * 1024 * 1024) { // 2MB threshold for ads
-                    showToast(`Compressing ${file.name}...`, 'info');
-                    
-                    try {
-                        const compressedBlob = await compressImage(file, 1200, 900, 0.85);
-                        processedFile = new File([compressedBlob], file.name, { type: 'image/jpeg' });
-                        console.log(`Ad compressed from ${file.size} to ${processedFile.size} bytes`);
-                    } catch (compressionError) {
-                        console.error('Ad compression failed:', compressionError);
-                        
-                        if (file.size > 10 * 1024 * 1024) { // 10MB hard limit
-                            throw new Error('File too large and compression failed');
-                        }
-                        // Continue with original file if compression fails but size is acceptable
-                    }
-                }
-                
-                // Final size check
-                if (processedFile.size > 15 * 1024 * 1024) { // 15MB hard limit
-                    throw new Error('File too large (max 15MB after compression)');
-                }
-                
-                // Convert to base64
-                const base64Content = await new Promise((resolve, reject) => {
-                    const reader = new FileReader();
-                    
-                    reader.onload = () => {
-                        try {
-                            const result = reader.result;
-                            if (!result || typeof result !== 'string') {
-                                reject(new Error('File reading failed'));
-                                return;
-                            }
-                            
-                            const base64 = result.split(',')[1];
-                            if (!base64 || base64.length === 0) {
-                                reject(new Error('File conversion failed'));
-                                return;
-                            }
-                            
-                            resolve(base64);
-                        } catch (error) {
-                            reject(new Error('File processing error'));
-                        }
-                    };
-                    
-                    reader.onerror = () => reject(new Error('File reading error'));
-                    reader.onabort = () => reject(new Error('File reading aborted'));
-                    
-                    const timeout = setTimeout(() => {
-                        reader.abort();
-                        reject(new Error('File reading timeout'));
-                    }, 30000);
-                    
-                    reader.onloadend = () => clearTimeout(timeout);
-                    
-                    try {
-                        reader.readAsDataURL(processedFile);
-                    } catch (error) {
-                        clearTimeout(timeout);
-                        reject(new Error('Failed to start file reading'));
-                    }
+                const response = await fetch(`${API_BASE}/api/upload`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    credentials: 'include',
+                    body: JSON.stringify({
+                        filename: file.name,
+                        content: await fileToBase64(file),
+                        path: path
+                    })
                 });
-                
-                // Upload with retry logic
-                let uploadResponse;
-                let attempt = 1;
-                const maxAttempts = 3;
-                
-                while (attempt <= maxAttempts) {
-                    try {
-                        uploadResponse = await fetch(`${API_BASE}/api/upload`, {
-                            method: 'POST',
-                            headers: {
-                                'Content-Type': 'application/json',
-                                'Accept': 'application/json',
-                                'Cache-Control': 'no-cache',
-                                'X-Requested-With': 'XMLHttpRequest'
-                            },
-                            credentials: 'include',
-                            mode: 'cors',
-                            body: JSON.stringify({
-                                filename: processedFile.name,
-                                content: base64Content,
-                                path: path
-                            })
-                        });
-                        
-                        // Check response
-                        const contentType = uploadResponse.headers.get('content-type');
-                        if (!contentType || !contentType.includes('application/json')) {
-                            const responseText = await uploadResponse.text();
-                            
-                            if (responseText.includes('<!DOCTYPE') || responseText.includes('<html')) {
-                                throw new Error('Authentication error - please logout and login again');
-                            } else if (responseText.includes('content too large') || responseText.includes('PayloadTooLargeError')) {
-                                throw new Error('File still too large after compression');
-                            } else {
-                                throw new Error(`Invalid server response (attempt ${attempt})`);
-                            }
-                        }
-                        
-                        break; // Success
-                        
-                    } catch (error) {
-                        if (error.message.includes('Authentication') || 
-                            error.message.includes('too large') ||
-                            attempt === maxAttempts) {
-                            throw error;
-                        }
-                        
-                        console.log(`Upload attempt ${attempt} failed for ${file.name}, retrying...`);
-                        attempt++;
-                        await new Promise(resolve => setTimeout(resolve, 1000));
+
+                if (!response.ok) {
+                    if (response.status === 403) {
+                        showToast('Session expired. Redirecting to login...', 'error');
+                        setTimeout(() => redirectToLogin(), 2000);
+                        return;
                     }
+                    const error = await response.json();
+                    throw new Error(error.error || 'Upload failed');
                 }
-                
-                if (!uploadResponse.ok) {
-                    const errorText = await uploadResponse.text();
-                    
-                    if (uploadResponse.status === 401 || uploadResponse.status === 403) {
-                        throw new Error('Authentication error - please logout and login again');
-                    } else if (uploadResponse.status === 413) {
-                        throw new Error('File too large for server');
-                    }
-                    
-                    try {
-                        const errorData = JSON.parse(errorText);
-                        throw new Error(errorData.error || `Upload failed (${uploadResponse.status})`);
-                    } catch (e) {
-                        throw new Error(`Upload failed (${uploadResponse.status}): ${errorText.substring(0, 100)}`);
-                    }
-                }
-                
-                return await uploadResponse.json();
-                
+
+                return await response.json();
             } catch (error) {
-                // Handle authentication errors
-                if (error.message.includes('Authentication') || error.message.includes('logout')) {
-                    localStorage.setItem('returnToAdmin', 'true');
-                    setTimeout(() => {
-                        window.location.href = 'login.html';
-                    }, 2000);
-                }
-                
                 throw error;
             }
+        }
+
+        function fileToBase64(file) {
+            return new Promise((resolve, reject) => {
+                const reader = new FileReader();
+                reader.onload = () => {
+                    const base64 = reader.result.split(',')[1];
+                    resolve(base64);
+                };
+                reader.onerror = reject;
+                reader.readAsDataURL(file);
+            });
         }
 
         function logout() {
@@ -2524,104 +1935,6 @@
             console.error('Failed to update faculty.json:', error);
           }
           return false;
-        }
-
-        // Add this function if it's missing or replace the existing one:
-        function fileToBase64(file) {
-            return new Promise((resolve, reject) => {
-                if (file.size > 5 * 1024 * 1024) {
-                    reject(new Error('File too large (max 5MB)'));
-                    return;
-                }
-                
-                const reader = new FileReader();
-                
-                const timeout = setTimeout(() => {
-                    reader.abort();
-                    reject(new Error('File reading timeout'));
-                }, 15000);
-                
-                reader.onload = () => {
-                    clearTimeout(timeout);
-                    try {
-                        const base64 = reader.result.split(',')[1];
-                        if (!base64) {
-                            reject(new Error('Failed to convert file to base64'));
-                            return;
-                        }
-                        resolve(base64);
-                    } catch (error) {
-                        reject(new Error('File processing error'));
-                    }
-                };
-                
-                reader.onerror = () => {
-                    clearTimeout(timeout);
-                    reject(new Error('File reading failed'));
-                };
-                
-                reader.onabort = () => {
-                    clearTimeout(timeout);
-                    reject(new Error('File reading was aborted'));
-                };
-                
-                try {
-                    reader.readAsDataURL(file);
-                } catch (error) {
-                    clearTimeout(timeout);
-                    reject(new Error('Failed to start file reading'));
-                }
-            });
-        }
-
-        // Add this function after your existing functions:
-        function compressImage(file, maxWidth = 800, maxHeight = 600, quality = 0.8) {
-            return new Promise((resolve, reject) => {
-                const canvas = document.createElement('canvas');
-                const ctx = canvas.getContext('2d');
-                const img = new Image();
-                
-                img.onload = () => {
-                    // Calculate new dimensions
-                    let { width, height } = img;
-                    
-                    if (width > height) {
-                        if (width > maxWidth) {
-                            height = (height * maxWidth) / width;
-                            width = maxWidth;
-                        }
-                    } else {
-                        if (height > maxHeight) {
-                            width = (width * maxHeight) / height;
-                            height = maxHeight;
-                        }
-                    }
-                    
-                    // Set canvas dimensions
-                    canvas.width = width;
-                    canvas.height = height;
-                    
-                    // Draw and compress
-                    ctx.drawImage(img, 0, 0, width, height);
-                    
-                    // Convert to blob with compression
-                    canvas.toBlob(
-                        (blob) => {
-                            if (blob) {
-                                console.log(`Compressed image: ${file.size} bytes -> ${blob.size} bytes`);
-                                resolve(blob);
-                            } else {
-                                reject(new Error('Image compression failed'));
-                            }
-                        },
-                        'image/jpeg',
-                        quality
-                    );
-                };
-                
-                img.onerror = () => reject(new Error('Failed to load image for compression'));
-                img.src = URL.createObjectURL(file);
-            });
         }
     </script>
 </body>
