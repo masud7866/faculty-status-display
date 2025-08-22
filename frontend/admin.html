@@ -578,6 +578,37 @@
         .edit-mode h2 {
             color: #92400e;
         }
+
+        @media (max-width: 639px) {
+            .compact-upload {
+                flex-direction: column;
+                gap: 8px;
+            }
+            
+            .compact-upload .form-group {
+                margin-bottom: 8px;
+            }
+            
+            .form-control[type="file"] {
+                padding: 4px;
+                font-size: 14px;
+            }
+            
+            .image-preview {
+                width: 60px;
+                height: 60px;
+            }
+            
+            .preview-section {
+                flex-direction: column;
+                text-align: center;
+                gap: 8px;
+            }
+            
+            .preview-section > div {
+                font-size: 12px;
+            }
+        }
     </style>
 </head>
 <body>
@@ -632,18 +663,24 @@
                             </div>
                         </div>
                         
+                        <!-- Replace the image upload section in your HTML with this mobile-optimized version -->
                         <div class="image-upload-section">
                             <h3>Faculty Image</h3>
                             <div class="file-info">
                                 <strong>Image Path:</strong> Will be saved as /public/facultyname.jpg<br>
                                 <strong>JSON Format:</strong> Will be stored as /images/facultyname.jpg for compatibility<br>
-                                <strong>Format:</strong> JPG, PNG (max 5MB)
+                                <strong>Format:</strong> JPG, PNG, GIF, WebP (max 5MB)<br>
+                                <strong>Mobile:</strong> Tap "Choose File" to select from gallery or camera
                             </div>
                             
                             <div class="compact-upload">
                                 <div class="form-group">
                                     <label for="imageFile">Upload Image</label>
-                                    <input type="file" id="imageFile" class="form-control" accept="image/*">
+                                    <input type="file" 
+                                           id="imageFile" 
+                                           class="form-control" 
+                                           accept="image/jpeg,image/jpg,image/png,image/gif,image/webp"
+                                           capture="environment">
                                 </div>
                                 <button type="button" onclick="uploadFacultyImage()" class="btn btn-primary">Upload Image</button>
                             </div>
@@ -803,10 +840,16 @@
                             <div>📁 Click here or drag advertisement files to upload</div>
                             <div style="font-size: 12px; color: #6b7280; margin-top: 5px;">
                                 Max file size: 25MB per file<br>
-                                Supported: JPG, PNG, GIF, MP4, WEBM
+                                Supported: JPG, PNG, GIF, MP4, WEBM<br>
+                                <strong>Mobile:</strong> Tap to select from gallery or camera
                             </div>
                         </div>
-                        <input type="file" id="fileInput" multiple accept="image/*,video/*" style="display: none;">
+                        <input type="file" 
+                               id="fileInput" 
+                               multiple 
+                               accept="image/jpeg,image/jpg,image/png,image/gif,image/webp,video/mp4,video/webm"
+                               capture="environment"
+                               style="display: none;">
                         
                         <div id="uploadProgress" class="upload-progress hidden">
                             <div id="uploadProgressBar" class="upload-progress-bar"></div>
@@ -1133,33 +1176,76 @@
             const extension = file.name.split('.').pop().toLowerCase();
             const filename = `${facultyName}.${extension}`;
             
+            // Validate file size (5MB limit)
             if (file.size > 5 * 1024 * 1024) {
                 showToast('Image too large. Max size is 5MB', 'error');
+                return;
+            }
+            
+            // Validate file type
+            const allowedTypes = ['jpg', 'jpeg', 'png', 'gif', 'webp'];
+            if (!allowedTypes.includes(extension)) {
+                showToast('Invalid file type. Use JPG, PNG, GIF, or WebP', 'error');
                 return;
             }
             
             try {
                 showToast('Uploading image...', 'info');
                 
+                // First, check if we're still authenticated
+                const authResponse = await fetch(`${API_BASE}/api/check-login`, { 
+                    credentials: 'include',
+                    timeout: 10000
+                });
+                
+                if (!authResponse.ok) {
+                    throw new Error('Authentication check failed');
+                }
+                
+                const authData = await authResponse.json();
+                if (!authData.loggedIn) {
+                    showToast('Session expired. Redirecting to login...', 'error');
+                    setTimeout(() => redirectToLogin(), 2000);
+                    return;
+                }
+                
+                // Convert file to base64
+                const base64Content = await fileToBase64(file);
+                
+                // Upload the file
                 const response = await fetch(`${API_BASE}/api/upload`, {
                     method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
+                    headers: { 
+                        'Content-Type': 'application/json',
+                        'Accept': 'application/json'
+                    },
                     credentials: 'include',
                     body: JSON.stringify({
                         filename: filename,
-                        content: await fileToBase64(file),
+                        content: base64Content,
                         path: 'backend/public'
                     })
                 });
 
-                if (!response.ok) {
-                    if (response.status === 403) {
-                        showToast('Session expired. Redirecting to login...', 'error');
-                        setTimeout(() => redirectToLogin(), 2000);
-                        return;
+                // Check if response is JSON
+                const contentType = response.headers.get('content-type');
+                if (!contentType || !contentType.includes('application/json')) {
+                    console.error('Server returned non-JSON response:', response.status, response.statusText);
+                    
+                    // Try to read as text to see what we got
+                    const responseText = await response.text();
+                    console.error('Response body:', responseText.substring(0, 200));
+                    
+                    if (responseText.includes('<!DOCTYPE')) {
+                        throw new Error('Server authentication error - please logout and login again');
+                    } else {
+                        throw new Error(`Server error (${response.status}): ${response.statusText}`);
                     }
+                }
+
+                if (!response.ok) {
                     const error = await response.json();
-                    throw new Error(error.error || 'Upload failed');
+                    throw new Error(error.error || `Upload failed (${response.status})`);
                 }
 
                 const result = await response.json();
@@ -1181,10 +1267,26 @@
                 jsonPathSpan.textContent = jsonPath;
                 previewSection.classList.remove('hidden');
                 
+                // Clear the file input
+                fileInput.value = '';
+                
                 showToast('Faculty image uploaded successfully!');
                 
             } catch (error) {
-                showToast(`Upload failed: ${error.message}`, 'error');
+                console.error('Upload error:', error);
+                
+                let errorMessage = error.message;
+                
+                // Provide more specific error messages
+                if (error.message.includes('Authentication check failed')) {
+                    errorMessage = 'Unable to verify login status. Please check your connection and try again.';
+                } else if (error.message.includes('HTML page instead of JSON')) {
+                    errorMessage = 'Server authentication error. Please logout and login again.';
+                } else if (error.message.includes('Failed to fetch')) {
+                    errorMessage = 'Network error. Please check your internet connection.';
+                }
+                
+                showToast(`Upload failed: ${errorMessage}`, 'error');
             }
         }
 
@@ -1692,6 +1794,7 @@
             });
         }
 
+        // Replace the existing handleFiles function with this enhanced version:
         async function handleFiles(files) {
             if (files.length === 0) return;
             
@@ -1702,18 +1805,55 @@
             statusDiv.innerHTML = '';
             progressDiv.classList.remove('hidden');
 
+            // First, check authentication
+            try {
+                const authResponse = await fetch(`${API_BASE}/api/check-login`, { 
+                    credentials: 'include',
+                    timeout: 10000
+                });
+                
+                if (!authResponse.ok) {
+                    throw new Error('Authentication check failed');
+                }
+                
+                const authData = await authResponse.json();
+                if (!authData.loggedIn) {
+                    showToast('Session expired. Redirecting to login...', 'error');
+                    setTimeout(() => redirectToLogin(), 2000);
+                    return;
+                }
+            } catch (error) {
+                showToast('Authentication failed. Please login again.', 'error');
+                progressDiv.classList.add('hidden');
+                return;
+            }
+
             let uploadedCount = 0;
             const totalFiles = files.length;
 
             for (let i = 0; i < files.length; i++) {
                 const file = files[i];
                 
+                // Enhanced file validation
                 if (file.size > 25 * 1024 * 1024) {
                     const statusItem = document.createElement('div');
                     statusItem.style.color = '#ef4444';
                     statusItem.style.fontSize = '12px';
                     statusItem.style.marginBottom = '4px';
                     statusItem.textContent = `❌ ${file.name} is too large (max 25MB)`;
+                    statusDiv.appendChild(statusItem);
+                    continue;
+                }
+                
+                // Check file type
+                const allowedTypes = ['jpg', 'jpeg', 'png', 'gif', 'webp', 'mp4', 'webm'];
+                const extension = file.name.split('.').pop().toLowerCase();
+                if (!allowedTypes.includes(extension)) {
+                    const statusItem = document.createElement('div');
+                    statusItem.style.color = '#ef4444';
+                    statusItem.style.fontSize = '12px';
+                    statusItem.style.marginBottom = '4px';
+                    statusItem.textContent = `❌ ${file.name} has invalid file type (use: ${allowedTypes.join(', ')})`;
                     statusDiv.appendChild(statusItem);
                     continue;
                 }
@@ -1753,48 +1893,117 @@
             document.getElementById('fileInput').value = '';
         }
 
+        // Replace the existing uploadFileToGitHub function with this enhanced version:
         async function uploadFileToGitHub(file, uploadType) {
             const path = uploadType === 'ads' ? 'backend/public/ads' : 'backend/public';
             
             try {
+                // Convert file to base64 with error handling
+                const base64Content = await fileToBase64Enhanced(file);
+                
                 const response = await fetch(`${API_BASE}/api/upload`, {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
+                        'Accept': 'application/json'
                     },
                     credentials: 'include',
                     body: JSON.stringify({
                         filename: file.name,
-                        content: await fileToBase64(file),
+                        content: base64Content,
                         path: path
                     })
                 });
 
-                if (!response.ok) {
-                    if (response.status === 403) {
-                        showToast('Session expired. Redirecting to login...', 'error');
-                        setTimeout(() => redirectToLogin(), 2000);
-                        return;
+                // Check if response is JSON
+                const contentType = response.headers.get('content-type');
+                if (!contentType || !contentType.includes('application/json')) {
+                    console.error('Server returned non-JSON response:', response.status, response.statusText);
+                    
+                    // Try to read as text to see what we got
+                    const responseText = await response.text();
+                    console.error('Response body:', responseText.substring(0, 200));
+                    
+                    if (responseText.includes('<!DOCTYPE')) {
+                        throw new Error('Server authentication error - please logout and login again');
+                    } else {
+                        throw new Error(`Server error (${response.status}): ${response.statusText}`);
                     }
+                }
+
+                if (!response.ok) {
                     const error = await response.json();
-                    throw new Error(error.error || 'Upload failed');
+                    throw new Error(error.error || `Upload failed (${response.status})`);
                 }
 
                 return await response.json();
+                
             } catch (error) {
-                throw error;
+                // Provide more specific error messages
+                let errorMessage = error.message;
+                
+                if (error.message.includes('Authentication check failed')) {
+                    errorMessage = 'Unable to verify login status. Please check your connection.';
+                } else if (error.message.includes('HTML page instead of JSON')) {
+                    errorMessage = 'Server authentication error. Please logout and login again.';
+                } else if (error.message.includes('Failed to fetch')) {
+                    errorMessage = 'Network error. Please check your internet connection.';
+                } else if (error.message.includes('File too large')) {
+                    errorMessage = 'File exceeds size limit (25MB)';
+                }
+                
+                throw new Error(errorMessage);
             }
         }
 
-        function fileToBase64(file) {
+        // Enhanced file to base64 function
+        function fileToBase64Enhanced(file) {
             return new Promise((resolve, reject) => {
+                // Check file size again
+                if (file.size > 25 * 1024 * 1024) {
+                    reject(new Error('File too large (max 25MB)'));
+                    return;
+                }
+                
                 const reader = new FileReader();
+                
                 reader.onload = () => {
-                    const base64 = reader.result.split(',')[1];
-                    resolve(base64);
+                    try {
+                        const base64 = reader.result.split(',')[1];
+                        if (!base64) {
+                            reject(new Error('Failed to convert file to base64'));
+                            return;
+                        }
+                        resolve(base64);
+                    } catch (error) {
+                        reject(new Error('File conversion error'));
+                    }
                 };
-                reader.onerror = reject;
-                reader.readAsDataURL(file);
+                
+                reader.onerror = () => {
+                    reject(new Error('File reading failed'));
+                };
+                
+                reader.onabort = () => {
+                    reject(new Error('File reading was aborted'));
+                };
+                
+                // Add timeout for large files
+                const timeout = setTimeout(() => {
+                    reader.abort();
+                    reject(new Error('File reading timeout (file too large?)'));
+                }, 30000); // 30 second timeout
+                
+                reader.onloadend = () => {
+                    clearTimeout(timeout);
+                };
+                
+                try {
+                    reader.readAsDataURL(file);
+                } catch (error) {
+                    clearTimeout(timeout);
+                    reject(new Error('Failed to start file reading'));
+                }
             });
         }
 
