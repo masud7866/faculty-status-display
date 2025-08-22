@@ -436,6 +436,52 @@
             }
         }
 
+        /* Add this to your existing CSS for mobile optimization */
+        @media (max-width: 768px) {
+            /* Prevent zoom on input focus */
+            input[type="file"],
+            input[type="text"],
+            input[type="email"],
+            input[type="password"],
+            input[type="time"],
+            textarea,
+            select {
+                font-size: 16px !important;
+                -webkit-appearance: none;
+                appearance: none;
+                -webkit-border-radius: 0;
+                border-radius: 6px;
+            }
+            
+            /* Optimize file input for mobile */
+            input[type="file"] {
+                padding: 8px !important;
+                background: #f9fafb;
+                border: 2px dashed #d1d5db;
+            }
+            
+            input[type="file"]:focus {
+                border-color: #2563eb;
+                outline: none;
+            }
+            
+            /* Optimize buttons for touch */
+            .btn {
+                min-height: 44px;
+                font-size: 14px;
+                padding: 8px 16px;
+            }
+        }
+
+        /* Fix for iOS Safari */
+        @supports (-webkit-touch-callout: none) {
+            input[type="file"] {
+                font-size: 16px;
+                -webkit-appearance: none;
+                appearance: none;
+            }
+        }
+
         .form-actions {
             display: flex;
             gap: 10px;
@@ -663,7 +709,7 @@
                             </div>
                         </div>
                         
-                        <!-- Replace the image upload section in your HTML with this mobile-optimized version -->
+                        <!-- Replace the image upload section with this mobile-optimized version -->
                         <div class="image-upload-section">
                             <h3>Faculty Image</h3>
                             <div class="file-info">
@@ -679,8 +725,11 @@
                                     <input type="file" 
                                            id="imageFile" 
                                            class="form-control" 
-                                           accept="image/jpeg,image/jpg,image/png,image/gif,image/webp"
-                                           capture="environment">
+                                           accept="image/*"
+                                           style="font-size: 16px; -webkit-appearance: none; appearance: none;">
+                                    <div style="font-size: 12px; color: #6b7280; margin-top: 4px;">
+                                        📱 Mobile: Tap to choose from camera or gallery
+                                    </div>
                                 </div>
                                 <button type="button" onclick="uploadFacultyImage()" class="btn btn-primary">Upload Image</button>
                             </div>
@@ -883,30 +932,86 @@
           window.location.href = 'login.html?redirect=admin';
         }
 
+        // Add this function to help manage cookies on mobile
+        function ensureCookieSettings() {
+            // Force secure cookie settings for mobile
+            if (document.cookie) {
+                console.log('Current cookies:', document.cookie);
+            }
+            
+            // Set SameSite and Secure attributes if not already set
+            const cookies = document.cookie.split(';');
+            cookies.forEach(cookie => {
+                const [name, value] = cookie.trim().split('=');
+                if (name && value && !cookie.includes('SameSite')) {
+                    // This won't work for HttpOnly cookies, but helps with client-side ones
+                    document.cookie = `${name}=${value}; SameSite=None; Secure; Path=/`;
+                }
+            });
+        }
+
         // Check authentication
         document.addEventListener('DOMContentLoaded', function() {
+            ensureCookieSettings();
             checkAuth();
         });
 
+        // Replace the existing checkAuth function with this mobile-optimized version:
         async function checkAuth() {
             try {
+                // Add mobile-specific headers and retry logic
                 const response = await fetch(`${API_BASE}/api/check-login`, { 
+                    method: 'GET',
                     credentials: 'include',
-                    timeout: 10000
+                    headers: {
+                        'Accept': 'application/json',
+                        'Cache-Control': 'no-cache',
+                        'X-Requested-With': 'XMLHttpRequest',
+                        'Pragma': 'no-cache'
+                    },
+                    mode: 'cors'
                 });
                 
+                console.log('Auth check response status:', response.status);
+                console.log('Auth check response headers:', response.headers.get('content-type'));
+                
                 if (!response.ok) {
-                    throw new Error('Network response was not ok');
+                    console.error('Auth check failed with status:', response.status);
+                    throw new Error(`Auth check failed: ${response.status}`);
                 }
                 
-                const data = await response.json();
+                // Check if we got HTML instead of JSON (common mobile issue)
+                const contentType = response.headers.get('content-type');
+                if (!contentType || !contentType.includes('application/json')) {
+                    console.error('Non-JSON response received:', contentType);
+                    throw new Error('Invalid response format');
+                }
+                
+                const responseText = await response.text();
+                console.log('Auth response text (first 100 chars):', responseText.substring(0, 100));
+                
+                // Validate JSON response
+                if (responseText.trim().startsWith('<!DOCTYPE') || responseText.includes('<html')) {
+                    console.error('Received HTML instead of JSON');
+                    throw new Error('Server returned login page');
+                }
+                
+                let data;
+                try {
+                    data = JSON.parse(responseText);
+                } catch (parseError) {
+                    console.error('JSON parse error:', parseError);
+                    throw new Error('Invalid JSON response');
+                }
+                
+                console.log('Auth data:', data);
                 
                 if (!data.loggedIn) {
-                    console.log('Not logged in, redirecting to login...');
-                    redirectToLogin();
-                    return;
+                    console.log('User not logged in, redirecting...');
+                    throw new Error('Not logged in');
                 }
                 
+                // Success - show main content
                 document.getElementById('loadingOverlay').style.display = 'none';
                 document.getElementById('mainContent').style.display = 'block';
                 
@@ -914,7 +1019,29 @@
                 
             } catch (error) {
                 console.error('Auth check failed:', error);
-                redirectToLogin();
+                
+                // Clear any problematic cookies/storage
+                if ('serviceWorker' in navigator) {
+                    navigator.serviceWorker.getRegistrations().then(registrations => {
+                        registrations.forEach(registration => registration.unregister());
+                    });
+                }
+                
+                // Force clear storage
+                try {
+                    localStorage.clear();
+                    sessionStorage.clear();
+                } catch (e) {
+                    console.log('Storage clear failed:', e);
+                }
+                
+                // Redirect to login with specific mobile parameters
+                const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+                const redirectUrl = isMobile ? 
+                    'login.html?mobile=true&redirect=admin' : 
+                    'login.html?redirect=admin';
+                    
+                window.location.href = redirectUrl;
             }
         }
 
@@ -1173,6 +1300,7 @@
         }
 
         // Faculty Image Upload
+        // Replace the entire uploadFacultyImage function with this enhanced version:
         async function uploadFacultyImage() {
             const fileInput = document.getElementById('imageFile');
             const nameInput = document.getElementById('name');
@@ -1206,66 +1334,228 @@
             }
             
             try {
-                showToast('Uploading image...', 'info');
+                showToast('Preparing upload...', 'info');
                 
-                // First, check if we're still authenticated
-                const authResponse = await fetch(`${API_BASE}/api/check-login`, { 
-                    credentials: 'include',
-                    timeout: 10000
-                });
-                
-                if (!authResponse.ok) {
-                    throw new Error('Authentication check failed');
-                }
-                
-                const authData = await authResponse.json();
-                if (!authData.loggedIn) {
-                    showToast('Session expired. Redirecting to login...', 'error');
-                    setTimeout(() => redirectToLogin(), 2000);
+                // Step 1: Enhanced authentication check with multiple methods
+                let authData;
+                try {
+                    const authResponse = await fetch(`${API_BASE}/api/check-login`, { 
+                        method: 'GET',
+                        credentials: 'include',
+                        headers: {
+                            'Accept': 'application/json',
+                            'Cache-Control': 'no-cache',
+                            'X-Requested-With': 'XMLHttpRequest' // Add this header
+                        },
+                        mode: 'cors'
+                    });
+                    
+                    if (!authResponse.ok) {
+                        throw new Error(`Auth check failed: ${authResponse.status}`);
+                    }
+                    
+                    const responseText = await authResponse.text();
+                    
+                    // Check if we got HTML instead of JSON
+                    if (responseText.trim().startsWith('<!DOCTYPE') || responseText.includes('<html')) {
+                        throw new Error('AUTH_HTML_RESPONSE');
+                    }
+                    
+                    try {
+                        authData = JSON.parse(responseText);
+                    } catch (e) {
+                        throw new Error('AUTH_INVALID_JSON');
+                    }
+                    
+                    if (!authData.loggedIn) {
+                        throw new Error('AUTH_NOT_LOGGED_IN');
+                    }
+                    
+                } catch (authError) {
+                    console.error('Auth check error:', authError);
+                    
+                    let errorMessage = 'Authentication failed. ';
+                    if (authError.message === 'AUTH_HTML_RESPONSE') {
+                        errorMessage += 'Server returned login page instead of auth status.';
+                    } else if (authError.message === 'AUTH_INVALID_JSON') {
+                        errorMessage += 'Server returned invalid response.';
+                    } else if (authError.message === 'AUTH_NOT_LOGGED_IN') {
+                        errorMessage += 'Session expired.';
+                    } else {
+                        errorMessage += 'Network or server error.';
+                    }
+                    
+                    showToast(errorMessage + ' Please logout and login again.', 'error');
+                    
+                    // Force logout and redirect
+                    setTimeout(async () => {
+                        try {
+                            await fetch(`${API_BASE}/api/logout`, {
+                                method: 'POST',
+                                credentials: 'include'
+                            });
+                        } catch (e) {
+                            console.log('Logout request failed, redirecting anyway');
+                        }
+                        
+                        localStorage.setItem('returnToAdmin', 'true');
+                        window.location.href = 'login.html';
+                    }, 2000);
+                    
                     return;
                 }
                 
-                // Convert file to base64
-                const base64Content = await fileToBase64(file);
+                showToast('Authentication verified. Converting image...', 'info');
                 
-                // Upload the file
-                const response = await fetch(`${API_BASE}/api/upload`, {
-                    method: 'POST',
-                    headers: { 
-                        'Content-Type': 'application/json',
-                        'Accept': 'application/json'
-                    },
-                    credentials: 'include',
-                    body: JSON.stringify({
-                        filename: filename,
-                        content: base64Content,
-                        path: 'backend/public'
-                    })
+                // Step 2: Convert file to base64 with enhanced error handling
+                const base64Content = await new Promise((resolve, reject) => {
+                    const reader = new FileReader();
+                    
+                    const timeout = setTimeout(() => {
+                        reader.abort();
+                        reject(new Error('File reading timeout (15 seconds)'));
+                    }, 15000);
+                    
+                    reader.onload = () => {
+                        clearTimeout(timeout);
+                        try {
+                            const result = reader.result;
+                            if (!result || typeof result !== 'string') {
+                                reject(new Error('Invalid file read result'));
+                                return;
+                            }
+                            
+                            const base64 = result.split(',')[1];
+                            if (!base64 || base64.length === 0) {
+                                reject(new Error('Empty base64 conversion'));
+                                return;
+                            }
+                            
+                            resolve(base64);
+                        } catch (error) {
+                            reject(new Error(`File processing error: ${error.message}`));
+                        }
+                    };
+                    
+                    reader.onerror = () => {
+                        clearTimeout(timeout);
+                        reject(new Error('File reading failed'));
+                    };
+                    
+                    reader.onabort = () => {
+                        clearTimeout(timeout);
+                        reject(new Error('File reading was aborted'));
+                    };
+                    
+                    try {
+                        reader.readAsDataURL(file);
+                    } catch (error) {
+                        clearTimeout(timeout);
+                        reject(new Error(`Failed to start file reading: ${error.message}`));
+                    }
                 });
-
-                // Check if response is JSON
-                const contentType = response.headers.get('content-type');
-                if (!contentType || !contentType.includes('application/json')) {
-                    console.error('Server returned non-JSON response:', response.status, response.statusText);
-                    
-                    // Try to read as text to see what we got
-                    const responseText = await response.text();
-                    console.error('Response body:', responseText.substring(0, 200));
-                    
-                    if (responseText.includes('<!DOCTYPE')) {
-                        throw new Error('Server authentication error - please logout and login again');
-                    } else {
-                        throw new Error(`Server error (${response.status}): ${response.statusText}`);
+                
+                showToast('Uploading image to server...', 'info');
+                
+                // Step 3: Upload with retry logic and better error handling
+                let uploadSuccess = false;
+                let lastError = null;
+                
+                for (let attempt = 1; attempt <= 3; attempt++) {
+                    try {
+                        console.log(`Upload attempt ${attempt} for ${filename}`);
+                        
+                        const uploadResponse = await fetch(`${API_BASE}/api/upload`, {
+                            method: 'POST',
+                            headers: { 
+                                'Content-Type': 'application/json',
+                                'Accept': 'application/json',
+                                'Cache-Control': 'no-cache',
+                                'X-Requested-With': 'XMLHttpRequest'
+                            },
+                            credentials: 'include',
+                            mode: 'cors',
+                            body: JSON.stringify({
+                                filename: filename,
+                                content: base64Content,
+                                path: 'backend/public'
+                            })
+                        });
+                        
+                        console.log(`Upload response status: ${uploadResponse.status}`);
+                        
+                        // Check response content type
+                        const contentType = uploadResponse.headers.get('content-type');
+                        console.log(`Response content-type: ${contentType}`);
+                        
+                        if (!contentType || !contentType.includes('application/json')) {
+                            const responseText = await uploadResponse.text();
+                            console.log(`Non-JSON response (first 200 chars): ${responseText.substring(0, 200)}`);
+                            
+                            if (responseText.includes('<!DOCTYPE') || responseText.includes('<html')) {
+                                throw new Error('UPLOAD_AUTH_ERROR');
+                            } else {
+                                throw new Error(`Invalid response format (attempt ${attempt})`);
+                            }
+                        }
+                        
+                        if (!uploadResponse.ok) {
+                            const errorData = await uploadResponse.json();
+                            
+                            if (uploadResponse.status === 401 || uploadResponse.status === 403) {
+                                throw new Error('UPLOAD_AUTH_ERROR');
+                            }
+                            
+                            throw new Error(errorData.error || `Upload failed with status ${uploadResponse.status}`);
+                        }
+                        
+                        const result = await uploadResponse.json();
+                        console.log('Upload successful:', result);
+                        
+                        uploadSuccess = true;
+                        break; // Success, exit retry loop
+                        
+                    } catch (error) {
+                        console.error(`Upload attempt ${attempt} failed:`, error);
+                        lastError = error;
+                        
+                        if (error.message === 'UPLOAD_AUTH_ERROR') {
+                            // Don't retry auth errors
+                            break;
+                        }
+                        
+                        if (attempt < 3) {
+                            showToast(`Upload attempt ${attempt} failed, retrying...`, 'info');
+                            await new Promise(resolve => setTimeout(resolve, 1000 * attempt)); // Progressive delay
+                        }
                     }
                 }
-
-                if (!response.ok) {
-                    const error = await response.json();
-                    throw new Error(error.error || `Upload failed (${response.status})`);
-                }
-
-                const result = await response.json();
                 
+                if (!uploadSuccess) {
+                    if (lastError.message === 'UPLOAD_AUTH_ERROR') {
+                        showToast('Authentication error during upload. Please logout and login again.', 'error');
+                        
+                        setTimeout(async () => {
+                            try {
+                                await fetch(`${API_BASE}/api/logout`, {
+                                    method: 'POST',
+                                    credentials: 'include'
+                                });
+                            } catch (e) {
+                                console.log('Logout request failed');
+                            }
+                            
+                            localStorage.setItem('returnToAdmin', 'true');
+                            window.location.href = 'login.html';
+                        }, 2000);
+                        
+                        return;
+                    } else {
+                        throw lastError;
+                    }
+                }
+                
+                // Step 4: Update UI on success
                 const backendPath = `/public/${filename}`;
                 const jsonPath = `/images/${filename}`;
                 
@@ -1293,13 +1583,13 @@
                 
                 let errorMessage = error.message;
                 
-                // Provide more specific error messages
-                if (error.message.includes('Authentication check failed')) {
-                    errorMessage = 'Unable to verify login status. Please check your connection and try again.';
-                } else if (error.message.includes('HTML page instead of JSON')) {
-                    errorMessage = 'Server authentication error. Please logout and login again.';
-                } else if (error.message.includes('Failed to fetch')) {
-                    errorMessage = 'Network error. Please check your internet connection.';
+                // Handle specific error types
+                if (errorMessage.includes('Network') || errorMessage.includes('Failed to fetch')) {
+                    errorMessage = 'Network error. Please check your internet connection and try again.';
+                } else if (errorMessage.includes('timeout')) {
+                    errorMessage = 'Upload timeout. The file might be too large or your connection is slow.';
+                } else if (errorMessage.includes('File reading')) {
+                    errorMessage = 'Failed to read the selected file. Please try selecting it again.';
                 }
                 
                 showToast(`Upload failed: ${errorMessage}`, 'error');
@@ -1852,6 +2142,7 @@
                 showToast('Authentication verified. Processing files...', 'info');
                 
             } catch (error) {
+               
                 let errorMessage = 'Authentication failed. ';
                 
                 if (error.message === 'AUTH_EXPIRED') {
@@ -1967,6 +2258,7 @@
                                 return;
                             }
                             
+                            
                             resolve(base64);
                         } catch (error) {
                             reject(new Error('File processing error'));
@@ -2004,9 +2296,11 @@
                             headers: {
                                 'Content-Type': 'application/json',
                                 'Accept': 'application/json',
-                                'Cache-Control': 'no-cache'
+                                'Cache-Control': 'no-cache',
+                                'X-Requested-With': 'XMLHttpRequest'
                             },
                             credentials: 'include',
+                            mode: 'cors',
                             body: JSON.stringify({
                                 filename: file.name,
                                 content: base64Content,
@@ -2222,6 +2516,54 @@
             console.error('Failed to update faculty.json:', error);
           }
           return false;
+        }
+
+        // Add this function if it's missing or replace the existing one:
+        function fileToBase64(file) {
+            return new Promise((resolve, reject) => {
+                if (file.size > 5 * 1024 * 1024) {
+                    reject(new Error('File too large (max 5MB)'));
+                    return;
+                }
+                
+                const reader = new FileReader();
+                
+                const timeout = setTimeout(() => {
+                    reader.abort();
+                    reject(new Error('File reading timeout'));
+                }, 15000);
+                
+                reader.onload = () => {
+                    clearTimeout(timeout);
+                    try {
+                        const base64 = reader.result.split(',')[1];
+                        if (!base64) {
+                            reject(new Error('Failed to convert file to base64'));
+                            return;
+                        }
+                        resolve(base64);
+                    } catch (error) {
+                        reject(new Error('File conversion error'));
+                    }
+                };
+                
+                reader.onerror = () => {
+                    clearTimeout(timeout);
+                    reject(new Error('File reading failed'));
+                };
+                
+                reader.onabort = () => {
+                    clearTimeout(timeout);
+                    reject(new Error('File reading was aborted'));
+                };
+                
+                try {
+                    reader.readAsDataURL(file);
+                } catch (error) {
+                    clearTimeout(timeout);
+                    reject(new Error('Failed to start file reading'));
+                }
+            });
         }
     </script>
 </body>

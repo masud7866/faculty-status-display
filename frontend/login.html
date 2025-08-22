@@ -385,6 +385,28 @@
       }
     });
 
+    document.addEventListener('DOMContentLoaded', function() {
+      // Check for mobile-specific parameters
+      const urlParams = new URLSearchParams(window.location.search);
+      const isMobileLogin = urlParams.get('mobile') === 'true';
+      
+      if (isMobileLogin) {
+          console.log('Mobile login detected - applying mobile optimizations');
+          
+          // Add mobile-specific optimizations
+          document.body.style.fontSize = '16px'; // Prevent zoom
+          
+          // Show mobile-specific message
+          showToast('Mobile device detected. Optimizing login process...', 'info');
+      }
+      
+      // Check if user was redirected from admin panel
+      if (localStorage.getItem('returnToAdmin') === 'true') {
+          localStorage.removeItem('returnToAdmin');
+          showToast('Please login again to continue', 'info');
+      }
+    });
+
     function setLoading(state) {
       if (state) {
         loginBtn.disabled = true;
@@ -456,6 +478,72 @@
         .catch(() => showError("Network error. Try again."))
         .finally(() => setLoading(false));
     });
+
+    // Enhanced login function for mobile compatibility
+    async function login(event) {
+      event.preventDefault();
+      
+      const username = document.getElementById('username').value;
+      const password = document.getElementById('password').value;
+      
+      if (!username || !password) {
+          showToast('Please enter both username and password', 'error');
+          return;
+      }
+      
+      try {
+          showToast('Logging in...', 'info');
+          
+          // Mobile-optimized login request
+          const response = await fetch(`${API_BASE}/api/login`, {
+              method: 'POST',
+              headers: {
+                  'Content-Type': 'application/json',
+                  'Accept': 'application/json',
+                  'X-Requested-With': 'XMLHttpRequest',
+                  'Cache-Control': 'no-cache'
+              },
+              credentials: 'include',
+              mode: 'cors',
+              body: JSON.stringify({ username, password })
+          });
+          
+          console.log('Login response status:', response.status);
+          console.log('Login response headers:', response.headers.get('content-type'));
+          
+          // Check response format
+          const contentType = response.headers.get('content-type');
+          if (!contentType || !contentType.includes('application/json')) {
+              throw new Error('Invalid server response format');
+          }
+          
+          const result = await response.json();
+          console.log('Login result:', result);
+          
+          if (response.ok && result.success) {
+              showToast('Login successful! Redirecting...', 'success');
+              
+              // Wait a moment for session to be established
+              await new Promise(resolve => setTimeout(resolve, 1000));
+              
+              // Check redirect parameter
+              const urlParams = new URLSearchParams(window.location.search);
+              const redirectTo = urlParams.get('redirect');
+              
+              if (redirectTo === 'admin') {
+                  window.location.href = 'admin.html';
+              } else {
+                  window.location.href = 'control.html';
+              }
+          } else {
+              throw new Error(result.error || 'Login failed');
+          }
+          
+      } catch (error) {
+          console.error('Login error:', error);
+          showToast(`Login failed: ${error.message}`, 'error');
+      }
+    }
   </script>
 </body>
 
