@@ -918,13 +918,29 @@
             }
         }
 
+        // Add this function to detect and handle mobile-specific issues:
+        function isMobileDevice() {
+            return /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+        }
+
         function initializeAdminPanel() {
             generateScheduleForms();
             loadFaculty();
             loadMarquee();
-            checkMarqueeStatus(); // Add this line
+            checkMarqueeStatus();
             loadAds();
             setupFileUpload();
+            
+            // Mobile-specific optimizations
+            if (isMobileDevice()) {
+                const fileInput = document.getElementById('fileInput');
+                
+                // Add mobile-specific attributes
+                fileInput.setAttribute('capture', 'camera');
+                fileInput.style.fontSize = '16px'; // Prevents zoom on iOS
+                
+                console.log('Mobile device detected - optimized file upload');
+            }
         }
 
         function showToast(message, type = 'success') {
@@ -1794,7 +1810,7 @@
             });
         }
 
-        // Replace the existing handleFiles function with this enhanced version:
+        // Replace the existing handleFiles function with this completely enhanced version:
         async function handleFiles(files) {
             if (files.length === 0) return;
             
@@ -1805,26 +1821,55 @@
             statusDiv.innerHTML = '';
             progressDiv.classList.remove('hidden');
 
-            // First, check authentication
+            // Enhanced authentication check with explicit session validation
             try {
+                showToast('Verifying authentication...', 'info');
+                
                 const authResponse = await fetch(`${API_BASE}/api/check-login`, { 
+                    method: 'GET',
                     credentials: 'include',
-                    timeout: 10000
+                    headers: {
+                        'Accept': 'application/json',
+                        'Cache-Control': 'no-cache'
+                    }
                 });
                 
                 if (!authResponse.ok) {
-                    throw new Error('Authentication check failed');
+                    throw new Error('AUTH_FAILED');
                 }
                 
-                const authData = await authResponse.json();
-                if (!authData.loggedIn) {
-                    showToast('Session expired. Redirecting to login...', 'error');
-                    setTimeout(() => redirectToLogin(), 2000);
-                    return;
+                let authData;
+                try {
+                    authData = await authResponse.json();
+                } catch (e) {
+                    throw new Error('AUTH_INVALID_RESPONSE');
                 }
+                
+                if (!authData.loggedIn) {
+                    throw new Error('AUTH_EXPIRED');
+                }
+                
+                showToast('Authentication verified. Processing files...', 'info');
+                
             } catch (error) {
-                showToast('Authentication failed. Please login again.', 'error');
+                let errorMessage = 'Authentication failed. ';
+                
+                if (error.message === 'AUTH_EXPIRED') {
+                    errorMessage += 'Session expired. Please logout and login again.';
+                } else if (error.message === 'AUTH_INVALID_RESPONSE') {
+                    errorMessage += 'Invalid server response. Please logout and login again.';
+                } else {
+                    errorMessage += 'Please logout and login again.';
+                }
+                
+                showToast(errorMessage, 'error');
                 progressDiv.classList.add('hidden');
+                
+                // Store return intent and redirect to login
+                localStorage.setItem('returnToAdmin', 'true');
+                setTimeout(() => {
+                    window.location.href = 'login.html';
+                }, 3000);
                 return;
             }
 
@@ -1859,7 +1904,8 @@
                 }
                 
                 try {
-                    await uploadFileToGitHub(file, 'ads');
+                    showToast(`Uploading ${file.name}...`, 'info');
+                    await uploadFileToGitHubEnhanced(file, 'ads');
                     uploadedCount++;
                     
                     const progress = (i + 1) / totalFiles * 100;
@@ -1893,60 +1939,143 @@
             document.getElementById('fileInput').value = '';
         }
 
-        // Replace the existing uploadFileToGitHub function with this enhanced version:
-        async function uploadFileToGitHub(file, uploadType) {
+        // Replace the existing uploadFileToGitHub function with this completely rewritten version:
+        async function uploadFileToGitHubEnhanced(file, uploadType) {
             const path = uploadType === 'ads' ? 'backend/public/ads' : 'backend/public';
             
             try {
-                // Convert file to base64 with error handling
-                const base64Content = await fileToBase64Enhanced(file);
-                
-                const response = await fetch(`${API_BASE}/api/upload`, {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'Accept': 'application/json'
-                    },
-                    credentials: 'include',
-                    body: JSON.stringify({
-                        filename: file.name,
-                        content: base64Content,
-                        path: path
-                    })
+                // Convert file to base64 with enhanced error handling
+                const base64Content = await new Promise((resolve, reject) => {
+                    if (file.size > 25 * 1024 * 1024) {
+                        reject(new Error('File too large (max 25MB)'));
+                        return;
+                    }
+                    
+                    const reader = new FileReader();
+                    
+                    reader.onload = () => {
+                        try {
+                            const result = reader.result;
+                            if (!result || typeof result !== 'string') {
+                                reject(new Error('File reading failed'));
+                                return;
+                            }
+                            
+                            const base64 = result.split(',')[1];
+                            if (!base64 || base64.length === 0) {
+                                reject(new Error('File conversion failed'));
+                                return;
+                            }
+                            
+                            resolve(base64);
+                        } catch (error) {
+                            reject(new Error('File processing error'));
+                        }
+                    };
+                    
+                    reader.onerror = () => reject(new Error('File reading error'));
+                    reader.onabort = () => reject(new Error('File reading aborted'));
+                    
+                    // Set timeout for large files
+                    const timeout = setTimeout(() => {
+                        reader.abort();
+                        reject(new Error('File reading timeout'));
+                    }, 30000);
+                    
+                    reader.onloadend = () => clearTimeout(timeout);
+                    
+                    try {
+                        reader.readAsDataURL(file);
+                    } catch (error) {
+                        clearTimeout(timeout);
+                        reject(new Error('Failed to start file reading'));
+                    }
                 });
-
-                // Check if response is JSON
-                const contentType = response.headers.get('content-type');
-                if (!contentType || !contentType.includes('application/json')) {
-                    console.error('Server returned non-JSON response:', response.status, response.statusText);
-                    
-                    // Try to read as text to see what we got
-                    const responseText = await response.text();
-                    console.error('Response body:', responseText.substring(0, 200));
-                    
-                    if (responseText.includes('<!DOCTYPE')) {
-                        throw new Error('Server authentication error - please logout and login again');
-                    } else {
-                        throw new Error(`Server error (${response.status}): ${response.statusText}`);
+                
+                // Upload with enhanced error handling and retry logic
+                let uploadResponse;
+                let attempt = 1;
+                const maxAttempts = 3;
+                
+                while (attempt <= maxAttempts) {
+                    try {
+                        uploadResponse = await fetch(`${API_BASE}/api/upload`, {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json',
+                                'Accept': 'application/json',
+                                'Cache-Control': 'no-cache'
+                            },
+                            credentials: 'include',
+                            body: JSON.stringify({
+                                filename: file.name,
+                                content: base64Content,
+                                path: path
+                            })
+                        });
+                        
+                        // Check if we got HTML instead of JSON (authentication issue)
+                        const contentType = uploadResponse.headers.get('content-type');
+                        if (!contentType || !contentType.includes('application/json')) {
+                            const responseText = await uploadResponse.text();
+                            
+                            if (responseText.includes('<!DOCTYPE') || responseText.includes('<html')) {
+                                throw new Error('AUTH_ERROR');
+                            } else {
+                                throw new Error(`Server returned invalid response (attempt ${attempt})`);
+                            }
+                        }
+                        
+                        // Success - break out of retry loop
+                        break;
+                        
+                    } catch (error) {
+                        if (error.message === 'AUTH_ERROR') {
+                            throw new Error('Authentication error - please logout and login again');
+                        }
+                        
+                        if (attempt === maxAttempts) {
+                            throw error;
+                        }
+                        
+                        console.log(`Upload attempt ${attempt} failed for ${file.name}, retrying...`);
+                        attempt++;
+                        
+                        // Wait before retry
+                        await new Promise(resolve => setTimeout(resolve, 1000));
                     }
                 }
-
-                if (!response.ok) {
-                    const error = await response.json();
-                    throw new Error(error.error || `Upload failed (${response.status})`);
+                
+                if (!uploadResponse.ok) {
+                    const errorText = await uploadResponse.text();
+                    
+                    if (uploadResponse.status === 401 || uploadResponse.status === 403) {
+                        throw new Error('Authentication error - please logout and login again');
+                    }
+                    
+                    try {
+                        const errorData = JSON.parse(errorText);
+                        throw new Error(errorData.error || `Upload failed (${uploadResponse.status})`);
+                    } catch (e) {
+                        throw new Error(`Upload failed (${uploadResponse.status}): ${errorText.substring(0, 100)}`);
+                    }
                 }
-
-                return await response.json();
+                
+                return await uploadResponse.json();
                 
             } catch (error) {
+                // Handle specific authentication errors
+                if (error.message.includes('Authentication') || error.message.includes('logout')) {
+                    localStorage.setItem('returnToAdmin', 'true');
+                    setTimeout(() => {
+                        window.location.href = 'login.html';
+                    }, 2000);
+                }
+                
                 // Provide more specific error messages
                 let errorMessage = error.message;
                 
-                if (error.message.includes('Authentication check failed')) {
-                    errorMessage = 'Unable to verify login status. Please check your connection.';
-                } else if (error.message.includes('HTML page instead of JSON')) {
-                    errorMessage = 'Server authentication error. Please logout and login again.';
-                } else if (error.message.includes('Failed to fetch')) {
+                if (error.message.includes('Failed to fetch')) {
                     errorMessage = 'Network error. Please check your internet connection.';
                 } else if (error.message.includes('File too large')) {
                     errorMessage = 'File exceeds size limit (25MB)';
@@ -1954,57 +2083,6 @@
                 
                 throw new Error(errorMessage);
             }
-        }
-
-        // Enhanced file to base64 function
-        function fileToBase64Enhanced(file) {
-            return new Promise((resolve, reject) => {
-                // Check file size again
-                if (file.size > 25 * 1024 * 1024) {
-                    reject(new Error('File too large (max 25MB)'));
-                    return;
-                }
-                
-                const reader = new FileReader();
-                
-                reader.onload = () => {
-                    try {
-                        const base64 = reader.result.split(',')[1];
-                        if (!base64) {
-                            reject(new Error('Failed to convert file to base64'));
-                            return;
-                        }
-                        resolve(base64);
-                    } catch (error) {
-                        reject(new Error('File conversion error'));
-                    }
-                };
-                
-                reader.onerror = () => {
-                    reject(new Error('File reading failed'));
-                };
-                
-                reader.onabort = () => {
-                    reject(new Error('File reading was aborted'));
-                };
-                
-                // Add timeout for large files
-                const timeout = setTimeout(() => {
-                    reader.abort();
-                    reject(new Error('File reading timeout (file too large?)'));
-                }, 30000); // 30 second timeout
-                
-                reader.onloadend = () => {
-                    clearTimeout(timeout);
-                };
-                
-                try {
-                    reader.readAsDataURL(file);
-                } catch (error) {
-                    clearTimeout(timeout);
-                    reject(new Error('Failed to start file reading'));
-                }
-            });
         }
 
         function logout() {
