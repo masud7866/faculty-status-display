@@ -16,8 +16,8 @@ app.use(cors({
   origin: ["https://faculty-status-display.vercel.app", "http://localhost:3000"],
   credentials: true
 }));
-app.use(express.json());
-app.use(express.urlencoded({ extended: true }));
+app.use(express.json({ limit: '10mb' })); // Increase from default 1mb
+app.use(express.urlencoded({ limit: '10mb', extended: true }));
 
 // Sessions
 app.set("trust proxy", 1);
