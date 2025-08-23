@@ -4,6 +4,7 @@ const cors = require("cors");
 const path = require("path");
 const fs = require("fs");
 const FacultyDB = require("./db/faculty");
+const compression = require('compression');
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -16,8 +17,15 @@ app.use(cors({
   origin: ["https://faculty-status-display.vercel.app", "http://localhost:3000"],
   credentials: true
 }));
-app.use(express.json({ limit: '10mb' })); // Increase from default 1mb
+app.use(express.json({ 
+  limit: '50mb',
+  verify: (req, res, buf, encoding) => {
+    // Add request size logging
+    console.log(`Request size: ${buf.length} bytes`);
+  }
+}));
 app.use(express.urlencoded({ limit: '10mb', extended: true }));
+app.use(compression());
 
 // Sessions
 app.set("trust proxy", 1);
@@ -430,11 +438,19 @@ app.post("/api/admin/marquee", requireAuth, async (req, res) => {
 // GitHub file upload route
 app.post("/api/upload", requireAuth, async (req, res) => {
   const { filename, content, path } = req.body;
-  
-  if (!process.env.GITHUB_TOKEN) {
+    if (!process.env.GITHUB_TOKEN) {
     return res.status(500).json({ error: "GitHub token not configured. Upload manually to GitHub." });
   }
-
+  // Log payload size
+  const payloadSize = Buffer.byteLength(JSON.stringify(req.body), 'utf8');
+  console.log(`Upload payload size: ${payloadSize} bytes`);
+  
+  if (payloadSize > 45 * 1024 * 1024) { // 45MB safety margin
+    return res.status(413).json({ 
+      error: "File too large. Maximum size is 45MB after base64 encoding." 
+    });
+  }
+  
   try {
     const githubOwner = 'masud7866';
     const githubRepo = 'faculty-status-display';
