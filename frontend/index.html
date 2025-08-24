@@ -744,7 +744,7 @@
 
       if (totalAdDuration > 120000) {       // > 2 minutes of ads
         breakDurationMs = 240000;           // 4 minutes break
-      } else if (totalAdDuration > 30000 && totalAdDuration < 60000) { // 30 seconds to 1 minute of ads
+      } else if (totalAdDuration > 30000 && totalAdDuration <= 60000) { // 30 seconds to 1 minute of ads
         breakDurationMs = 120000;           // 2 minutes break
       } else if (totalAdDuration > 60000) { // > 1 minute of ads
         breakDurationMs = 180000;            // 3 minutes break
@@ -1094,12 +1094,23 @@
       return `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
     }
 
-    // Replace your existing updateBreakCountdown function with this accurate version:
+    // Replace your existing updateBreakCountdown function with this debug version:
     function updateBreakCountdown() {
       const now = Date.now();
       const countdownText = document.getElementById("adCountdownText");
       const progressBar = document.getElementById("adProgressBar");
       const adProgress = document.getElementById("adProgress");
+
+      // Debug logging
+      if (inBreakPeriod) {
+        console.log("Break Debug:", {
+          inBreakPeriod,
+          breakStartTime: new Date(breakStartTime).toLocaleTimeString(),
+          breakEndsAt: new Date(breakEndsAt).toLocaleTimeString(),
+          now: new Date(now).toLocaleTimeString(),
+          remainingMs: breakEndsAt - now
+        });
+      }
 
       if (inBreakPeriod && breakEndsAt > now && breakStartTime > 0) {
         // Show break countdown with accurate progress
@@ -1110,6 +1121,13 @@
         const totalBreakMs = breakEndsAt - breakStartTime;
         const elapsedMs = now - breakStartTime;
         const progress = Math.min(100, Math.max(0, (elapsedMs / totalBreakMs) * 100));
+
+        // Debug the progress calculation
+        console.log("Progress Calculation:", {
+          totalBreakMs,
+          elapsedMs,
+          progress: progress.toFixed(1) + "%"
+        });
 
         progressBar.style.width = progress + "%";
         countdownText.textContent = `Notice in: ${formatTime(remainingSeconds)}`;
@@ -1129,7 +1147,6 @@
         // During ads - hide countdown text, show normal progress
         countdownText.classList.remove("show");
         adProgress.className = "";
-        // Don't hide the progress bar during ads
 
       } else {
         // No ads available - hide everything
