@@ -348,13 +348,14 @@
       transition: width 0.1s ease-out;
       will-change: width;
       box-shadow: 0 0 4px rgba(59, 130, 246, 0.5);
-      position: relative;
+      position: relative; /* Ensure this is present for text positioning */
     }
 
     #adCountdownText {
       position: absolute;
       top: 50%;
       left: 50%;
+      right: 0;
       transform: translate(-50%, -50%);
       color: #fff;
       font-size: 11px;
@@ -366,10 +367,7 @@
       opacity: 0;
       transition: opacity 0.3s ease;
       white-space: nowrap;
-      background: rgba(0, 0, 0, 0.5);
-      padding: 1px 6px;
-      border-radius: 2px;
-      line-height: 1;
+      height: auto;
     }
 
     #adCountdownText.show {
@@ -385,14 +383,6 @@
     #adProgress.waiting-countdown #adProgressBar {
       background: linear-gradient(90deg, #dc2626, #ef4444);
       box-shadow: 0 0 4px rgba(239, 68, 68, 0.5);
-    }
-
-    #adProgress.break-countdown #adCountdownText {
-      background: rgba(5, 150, 105, 0.7);
-    }
-
-    #adProgress.waiting-countdown #adCountdownText {
-      background: rgba(220, 38, 38, 0.7);
     }
 
     /* 7-segment digit SVG component */
