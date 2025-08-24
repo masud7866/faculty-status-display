@@ -331,13 +331,14 @@
     }
 
     #adProgress {
-      position: absolute;
+      position: fixed;
       left: 0;
-      bottom: 0;
+      bottom: 2em;
       width: 100%;
-      height: 6px;
+      height: 8px;
       background: #1e3a8a;
       z-index: 10001;
+      border-top: 1px solid #374151;
     }
 
     #adProgressBar {
@@ -346,39 +347,53 @@
       width: 0;
       transition: width 0.1s ease-out;
       will-change: width;
+      box-shadow: 0 0 4px rgba(59, 130, 246, 0.5);
     }
 
     #adCountdownText {
       position: absolute;
-      top: 0;
+      top: -25px;
       left: 0;
       right: 0;
-      bottom: 0;
+      height: 20px;
       display: flex;
       align-items: center;
       justify-content: center;
       color: #fff;
-      font-size: 12px;
+      font-size: 13px;
       font-weight: 600;
-      text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.8);
+      text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.9);
       font-family: 'Orbitron', 'Inter', Arial, sans-serif;
       pointer-events: none;
       z-index: 10002;
       opacity: 0;
       transition: opacity 0.3s ease;
+      background: rgba(0, 0, 0, 0.7);
+      border-radius: 4px;
+      padding: 0 8px;
     }
 
     #adCountdownText.show {
       opacity: 1;
     }
 
-    /* Different colors for break vs waiting */
+    /* Enhanced colors for break vs waiting */
     #adProgress.break-countdown #adProgressBar {
       background: linear-gradient(90deg, #059669, #10b981);
+      box-shadow: 0 0 4px rgba(16, 185, 129, 0.5);
     }
 
     #adProgress.waiting-countdown #adProgressBar {
       background: linear-gradient(90deg, #dc2626, #ef4444);
+      box-shadow: 0 0 4px rgba(239, 68, 68, 0.5);
+    }
+
+    #adProgress.break-countdown #adCountdownText {
+      background: rgba(5, 150, 105, 0.8);
+    }
+
+    #adProgress.waiting-countdown #adCountdownText {
+      background: rgba(220, 38, 38, 0.8);
     }
 
     /* 7-segment digit SVG component */
@@ -444,10 +459,11 @@
   <div id="adOverlay">
     <img id="adImage" src="" />
     <video id="adVideo" autoplay muted playsinline webkit-playsinline preload="auto" crossorigin="anonymous"></video>
-    <div id="adProgress">
-      <div id="adProgressBar"></div>
-      <div id="adCountdownText">Notice in: 00:00</div>
-    </div>
+  </div>
+
+  <div id="adProgress">
+    <div id="adProgressBar"></div>
+    <div id="adCountdownText">Notice in: 00:00</div>
   </div>
 
   <!-- Marquee Footer -->
@@ -1094,23 +1110,12 @@
       return `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
     }
 
-    // Replace your existing updateBreakCountdown function with this debug version:
+    // Replace your existing updateBreakCountdown function with this clean version:
     function updateBreakCountdown() {
       const now = Date.now();
       const countdownText = document.getElementById("adCountdownText");
       const progressBar = document.getElementById("adProgressBar");
       const adProgress = document.getElementById("adProgress");
-
-      // Debug logging
-      if (inBreakPeriod) {
-        console.log("Break Debug:", {
-          inBreakPeriod,
-          breakStartTime: new Date(breakStartTime).toLocaleTimeString(),
-          breakEndsAt: new Date(breakEndsAt).toLocaleTimeString(),
-          now: new Date(now).toLocaleTimeString(),
-          remainingMs: breakEndsAt - now
-        });
-      }
 
       if (inBreakPeriod && breakEndsAt > now && breakStartTime > 0) {
         // Show break countdown with accurate progress
@@ -1121,13 +1126,6 @@
         const totalBreakMs = breakEndsAt - breakStartTime;
         const elapsedMs = now - breakStartTime;
         const progress = Math.min(100, Math.max(0, (elapsedMs / totalBreakMs) * 100));
-
-        // Debug the progress calculation
-        console.log("Progress Calculation:", {
-          totalBreakMs,
-          elapsedMs,
-          progress: progress.toFixed(1) + "%"
-        });
 
         progressBar.style.width = progress + "%";
         countdownText.textContent = `Notice in: ${formatTime(remainingSeconds)}`;
