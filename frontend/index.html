@@ -278,19 +278,21 @@
       left: 0;
       bottom: 0;
       width: 100vw;
-      height: 2em;
+      height: 2.5em;
       background: #1e293b;
       color: #fff;
       font-size: 1em;
       z-index: 10000;
       overflow: hidden;
       font-family: 'Orbitron', 'Inter', Arial, sans-serif;
+      border-top: 2px solid #374151;
+      padding-top: 8px;
     }
 
     #dateDisplay {
       position: absolute;
       left: 0;
-      top: 0;
+      top: 8px;
       bottom: 0;
       background: #2563eb;
       color: #fff;
@@ -313,7 +315,7 @@
     #marqueeText {
       position: absolute;
       left: 150px;
-      top: 0;
+      top: 8px;
       bottom: 0;
       right: 0;
       white-space: nowrap;
@@ -324,21 +326,21 @@
       display: flex;
       align-items: center;
       padding-left: 1em;
-      /* Performance optimizations */
       transform-style: preserve-3d;
       -webkit-font-smoothing: antialiased;
       -moz-osx-font-smoothing: grayscale;
+      z-index: 10001;
     }
 
     #adProgress {
-      position: fixed;
+      position: absolute;
       left: 0;
-      bottom: 2em;
+      top: 0;
       width: 100%;
       height: 8px;
-      background: #1e3a8a;
-      z-index: 10001;
-      border-top: 1px solid #374151;
+      background: #0f172a;
+      z-index: 10004;
+      border-top: 1px solid #475569;
     }
 
     #adProgressBar {
@@ -348,7 +350,7 @@
       transition: width 0.1s ease-out;
       will-change: width;
       box-shadow: 0 0 4px rgba(59, 130, 246, 0.5);
-      position: relative; /* Ensure this is present for text positioning */
+      position: relative;
     }
 
     #adCountdownText {
@@ -449,15 +451,14 @@
     <video id="adVideo" autoplay muted playsinline webkit-playsinline preload="auto" crossorigin="anonymous"></video>
   </div>
 
-  <div id="adProgress">
-    <div id="adProgressBar"></div>
-    <div id="adCountdownText">Notice in: 00:00</div>
-  </div>
-
   <!-- Marquee Footer -->
   <footer id="marqueeFooter">
     <div id="dateDisplay"></div>
     <div id="marqueeText"></div>
+    <div id="adProgress">
+      <div id="adProgressBar"></div>
+      <div id="adCountdownText">Notice in: 00:00</div>
+    </div>
   </footer>
 
   <script>
@@ -1152,7 +1153,7 @@
     // Add this new smooth animation function:
     function smoothCountdownAnimation() {
       updateBreakCountdown();
-      
+
       // Continue animation only if we're in break period or waiting
       if (inBreakPeriod || (!adCycleRunning && !inBreakPeriod && ads.length > 0)) {
         countdownAnimationId = requestAnimationFrame(smoothCountdownAnimation);
@@ -1195,7 +1196,7 @@
       setInterval(loadAds, 300000);
       setInterval(updateDate, 60000);
       setInterval(checkAndStartAds, 10000);
-      
+
       // START smooth countdown animation instead of interval
       startSmoothCountdown();
     });
