@@ -486,6 +486,7 @@
     let adCycleRunning = false;
     let inBreakPeriod = false;
     let breakEndsAt = 0;
+    let breakStartTime = 0;
     let marqueeAnimation = null;
     let clockContainer = null;
     let dateDisplay = null;
@@ -675,7 +676,7 @@
     function updateAdProgress(total, elapsed = 0) {
       const bar = document.getElementById("adProgressBar");
       const countdownText = document.getElementById("adCountdownText");
-      
+
       if (adCycleRunning) {
         // During ads: normal progress, hide countdown
         const percentage = Math.min(100, (elapsed / total) * 100);
@@ -751,7 +752,8 @@
 
       // Set break period flags
       inBreakPeriod = true;
-      breakEndsAt = Date.now() + breakDurationMs;
+      breakStartTime = Date.now(); // Add this line
+      breakEndsAt = breakStartTime + breakDurationMs; // Update this line
 
       console.log("🛑 STARTING BREAK PERIOD");
       console.log("📊 Total ad duration was:", Math.round(totalAdDuration / 1000), "seconds");
@@ -761,6 +763,7 @@
       // Schedule end of break
       nextAdTimeout = setTimeout(() => {
         inBreakPeriod = false;
+        breakStartTime = 0;
         nextAdTimeout = null;
         console.log("✅ Break period completed! Ready for next ad cycle.");
 
@@ -1091,21 +1094,22 @@
       return `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
     }
 
+    // Replace your existing updateBreakCountdown function with this accurate version:
     function updateBreakCountdown() {
       const now = Date.now();
       const countdownText = document.getElementById("adCountdownText");
       const progressBar = document.getElementById("adProgressBar");
       const adProgress = document.getElementById("adProgress");
 
-      if (inBreakPeriod && breakEndsAt > now) {
-        // Show break countdown
+      if (inBreakPeriod && breakEndsAt > now && breakStartTime > 0) {
+        // Show break countdown with accurate progress
         const remainingMs = breakEndsAt - now;
         const remainingSeconds = Math.max(0, Math.ceil(remainingMs / 1000));
 
-        // Calculate progress (how much of break has passed)
-        const breakDuration = breakEndsAt - (breakEndsAt - remainingMs);
-        const totalBreakDuration = remainingMs + (Date.now() - (breakEndsAt - remainingMs));
-        const progress = Math.min(100, ((Date.now() - (breakEndsAt - totalBreakDuration)) / totalBreakDuration) * 100);
+        // Calculate progress accurately
+        const totalBreakMs = breakEndsAt - breakStartTime;
+        const elapsedMs = now - breakStartTime;
+        const progress = Math.min(100, Math.max(0, (elapsedMs / totalBreakMs) * 100));
 
         progressBar.style.width = progress + "%";
         countdownText.textContent = `Notice in: ${formatTime(remainingSeconds)}`;
@@ -1114,7 +1118,7 @@
         adProgress.style.display = "block";
 
       } else if (!adCycleRunning && !inBreakPeriod && ads.length > 0) {
-        // Show "ready" state - no specific countdown needed
+        // Show "ready" state
         progressBar.style.width = "100%";
         countdownText.textContent = `Notice ready`;
         countdownText.classList.add("show");
@@ -1125,6 +1129,7 @@
         // During ads - hide countdown text, show normal progress
         countdownText.classList.remove("show");
         adProgress.className = "";
+        // Don't hide the progress bar during ads
 
       } else {
         // No ads available - hide everything
