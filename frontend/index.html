@@ -348,29 +348,28 @@
       transition: width 0.1s ease-out;
       will-change: width;
       box-shadow: 0 0 4px rgba(59, 130, 246, 0.5);
+      position: relative;
     }
 
     #adCountdownText {
       position: absolute;
-      top: -25px;
-      left: 0;
-      right: 0;
-      height: 20px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
       color: #fff;
-      font-size: 13px;
+      font-size: 11px;
       font-weight: 600;
-      text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.9);
+      text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.9);
       font-family: 'Orbitron', 'Inter', Arial, sans-serif;
       pointer-events: none;
-      z-index: 10002;
+      z-index: 10003;
       opacity: 0;
       transition: opacity 0.3s ease;
-      background: rgba(0, 0, 0, 0.7);
-      border-radius: 4px;
-      padding: 0 8px;
+      white-space: nowrap;
+      background: rgba(0, 0, 0, 0.5);
+      padding: 1px 6px;
+      border-radius: 2px;
+      line-height: 1;
     }
 
     #adCountdownText.show {
@@ -389,11 +388,11 @@
     }
 
     #adProgress.break-countdown #adCountdownText {
-      background: rgba(5, 150, 105, 0.8);
+      background: rgba(5, 150, 105, 0.7);
     }
 
     #adProgress.waiting-countdown #adCountdownText {
-      background: rgba(220, 38, 38, 0.8);
+      background: rgba(220, 38, 38, 0.7);
     }
 
     /* 7-segment digit SVG component */
@@ -508,6 +507,9 @@
     let dateDisplay = null;
     let currentMarqueeText = '';
     let marqueeCheckInterval = null;
+
+    // Global variables for smooth animation
+    let countdownAnimationId = null;
 
     // Ad configuration constants
     const IMAGE_AD_DURATION = 20000; // 20 seconds for images
@@ -754,6 +756,7 @@
       }
     }
 
+    // Update your existing startBreakPeriod function:
     function startBreakPeriod(totalAdDuration) {
       // Calculate break duration based on cumulative ad duration
       let breakDurationMs = 60000; // Default 1 minute
@@ -768,19 +771,23 @@
 
       // Set break period flags
       inBreakPeriod = true;
-      breakStartTime = Date.now(); // Add this line
-      breakEndsAt = breakStartTime + breakDurationMs; // Update this line
+      breakStartTime = Date.now();
+      breakEndsAt = breakStartTime + breakDurationMs;
 
       console.log("🛑 STARTING BREAK PERIOD");
       console.log("📊 Total ad duration was:", Math.round(totalAdDuration / 1000), "seconds");
       console.log("⏰ Break duration:", Math.round(breakDurationMs / 1000), "seconds");
       console.log("🔄 Next ads will start at:", new Date(breakEndsAt).toLocaleTimeString());
 
+      // Start smooth countdown animation
+      startSmoothCountdown();
+
       // Schedule end of break
       nextAdTimeout = setTimeout(() => {
         inBreakPeriod = false;
         breakStartTime = 0;
         nextAdTimeout = null;
+        stopSmoothCountdown(); // Stop smooth animation
         console.log("✅ Break period completed! Ready for next ad cycle.");
 
         // Try to start ads immediately after break ends
@@ -791,7 +798,6 @@
     }
 
     function runAdSequence() {
-      // Don't start if we're in break period or already running
       if (inBreakPeriod || adCycleRunning || !ads.length) {
         console.log("⚠️ Cannot start ads:", {
           inBreak: inBreakPeriod,
@@ -802,6 +808,7 @@
       }
 
       adCycleRunning = true;
+      stopSmoothCountdown(); // Stop countdown animation during ads
       showOverlay();
       console.log("🎬 STARTING AD SEQUENCE - " + ads.length + " ads");
 
@@ -1110,7 +1117,7 @@
       return `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
     }
 
-    // Replace your existing updateBreakCountdown function with this clean version:
+    // Replace your existing updateBreakCountdown function with this smooth version:
     function updateBreakCountdown() {
       const now = Date.now();
       const countdownText = document.getElementById("adCountdownText");
@@ -1153,12 +1160,39 @@
       }
     }
 
+    // Add this new smooth animation function:
+    function smoothCountdownAnimation() {
+      updateBreakCountdown();
+      
+      // Continue animation only if we're in break period or waiting
+      if (inBreakPeriod || (!adCycleRunning && !inBreakPeriod && ads.length > 0)) {
+        countdownAnimationId = requestAnimationFrame(smoothCountdownAnimation);
+      } else {
+        countdownAnimationId = null;
+      }
+    }
+
+    // Add this function to start smooth countdown animation:
+    function startSmoothCountdown() {
+      if (!countdownAnimationId) {
+        countdownAnimationId = requestAnimationFrame(smoothCountdownAnimation);
+      }
+    }
+
+    // Add this function to stop smooth countdown animation:
+    function stopSmoothCountdown() {
+      if (countdownAnimationId) {
+        cancelAnimationFrame(countdownAnimationId);
+        countdownAnimationId = null;
+      }
+    }
+
     // Main initialization
     document.addEventListener("DOMContentLoaded", function () {
       updateClock();
       updateDate();
       loadFaculty();
-      loadMarquee(true); // Initial load with force update
+      loadMarquee(true);
       loadAds();
       adjustLayout();
 
@@ -1168,16 +1202,13 @@
 
       setInterval(updateClock, 1000);
       setInterval(loadFaculty, 3000);
-
-      // Replace the old 5-minute marquee interval with smart checking
-      startSmartMarqueeCheck(); // Check every 15 seconds
-
+      startSmartMarqueeCheck();
       setInterval(loadAds, 300000);
       setInterval(updateDate, 60000);
-
-      // Check for ad start every 10 seconds during break periods
       setInterval(checkAndStartAds, 10000);
-      setInterval(updateBreakCountdown, 1000);
+      
+      // START smooth countdown animation instead of interval
+      startSmoothCountdown();
     });
 
     window.addEventListener("resize", adjustLayout);
