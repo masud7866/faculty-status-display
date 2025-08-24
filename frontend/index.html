@@ -348,6 +348,39 @@
       will-change: width;
     }
 
+    #adCountdownText {
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #fff;
+      font-size: 12px;
+      font-weight: 600;
+      text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.8);
+      font-family: 'Orbitron', 'Inter', Arial, sans-serif;
+      pointer-events: none;
+      z-index: 10002;
+      opacity: 0;
+      transition: opacity 0.3s ease;
+    }
+
+    #adCountdownText.show {
+      opacity: 1;
+    }
+
+    /* Different colors for break vs waiting */
+    #adProgress.break-countdown #adProgressBar {
+      background: linear-gradient(90deg, #059669, #10b981);
+    }
+
+    #adProgress.waiting-countdown #adProgressBar {
+      background: linear-gradient(90deg, #dc2626, #ef4444);
+    }
+
     /* 7-segment digit SVG component */
     .seven-segment {
       width: 32px !important;
@@ -413,6 +446,7 @@
     <video id="adVideo" autoplay muted playsinline webkit-playsinline preload="auto" crossorigin="anonymous"></video>
     <div id="adProgress">
       <div id="adProgressBar"></div>
+      <div id="adCountdownText">Notice in: 00:00</div>
     </div>
   </div>
 
@@ -640,8 +674,16 @@
 
     function updateAdProgress(total, elapsed = 0) {
       const bar = document.getElementById("adProgressBar");
-      const percentage = Math.min(100, (elapsed / total) * 100);
-      bar.style.width = percentage + "%";
+      const countdownText = document.getElementById("adCountdownText");
+      
+      if (adCycleRunning) {
+        // During ads: normal progress, hide countdown
+        const percentage = Math.min(100, (elapsed / total) * 100);
+        bar.style.width = percentage + "%";
+        countdownText.classList.remove("show");
+        document.getElementById("adProgress").className = "";
+        document.getElementById("adProgress").style.display = "block";
+      }
     }
 
     function loadAds() {
@@ -1043,6 +1085,54 @@
       dateDisplay.innerHTML = `<div>${dayName}, ${day} ${month}</div><div>${year}</div>`;
     }
 
+    function formatTime(seconds) {
+      const mins = Math.floor(seconds / 60);
+      const secs = seconds % 60;
+      return `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
+    }
+
+    function updateBreakCountdown() {
+      const now = Date.now();
+      const countdownText = document.getElementById("adCountdownText");
+      const progressBar = document.getElementById("adProgressBar");
+      const adProgress = document.getElementById("adProgress");
+
+      if (inBreakPeriod && breakEndsAt > now) {
+        // Show break countdown
+        const remainingMs = breakEndsAt - now;
+        const remainingSeconds = Math.max(0, Math.ceil(remainingMs / 1000));
+
+        // Calculate progress (how much of break has passed)
+        const breakDuration = breakEndsAt - (breakEndsAt - remainingMs);
+        const totalBreakDuration = remainingMs + (Date.now() - (breakEndsAt - remainingMs));
+        const progress = Math.min(100, ((Date.now() - (breakEndsAt - totalBreakDuration)) / totalBreakDuration) * 100);
+
+        progressBar.style.width = progress + "%";
+        countdownText.textContent = `Notice in: ${formatTime(remainingSeconds)}`;
+        countdownText.classList.add("show");
+        adProgress.className = "break-countdown";
+        adProgress.style.display = "block";
+
+      } else if (!adCycleRunning && !inBreakPeriod && ads.length > 0) {
+        // Show "ready" state - no specific countdown needed
+        progressBar.style.width = "100%";
+        countdownText.textContent = `Notice ready`;
+        countdownText.classList.add("show");
+        adProgress.className = "waiting-countdown";
+        adProgress.style.display = "block";
+
+      } else if (adCycleRunning) {
+        // During ads - hide countdown text, show normal progress
+        countdownText.classList.remove("show");
+        adProgress.className = "";
+
+      } else {
+        // No ads available - hide everything
+        countdownText.classList.remove("show");
+        adProgress.style.display = "none";
+      }
+    }
+
     // Main initialization
     document.addEventListener("DOMContentLoaded", function () {
       updateClock();
@@ -1058,15 +1148,16 @@
 
       setInterval(updateClock, 1000);
       setInterval(loadFaculty, 3000);
-      
+
       // Replace the old 5-minute marquee interval with smart checking
       startSmartMarqueeCheck(); // Check every 15 seconds
-      
+
       setInterval(loadAds, 300000);
       setInterval(updateDate, 60000);
-      
+
       // Check for ad start every 10 seconds during break periods
       setInterval(checkAndStartAds, 10000);
+      setInterval(updateBreakCountdown, 1000);
     });
 
     window.addEventListener("resize", adjustLayout);
