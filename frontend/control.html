@@ -1304,7 +1304,7 @@
       showMessage(`Setting all faculty to ${labels[status]}...`, false, true);
       const now = new Date();
       let expiry = new Date(now);
-      if (["in_class", "at_dept", "in_meeting", "postponed"].includes(status)) {
+      if (["in_class", "at_dept", "in_meeting"].includes(status)) {
         expiry.setUTCHours(expiry.getUTCHours() + 1);
       } else {
         expiry.setUTCHours(17, 59, 59, 999);
