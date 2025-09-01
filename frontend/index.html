@@ -78,115 +78,157 @@
       gap: 0.1em;
     }
 
-    .grid {
-      display: grid;
-      grid-template-columns: repeat(4, 1fr);
-      grid-template-rows: repeat(4, 1fr);
+    /* Replace existing grid and ad overlay CSS with this: */
+    #mainContainer {
+      display: flex;
+      height: 100%;
       gap: 1vh;
       padding: 1vh 2vw;
       box-sizing: border-box;
-      overflow: visible;
-      contain: layout style;
-      will-change: contents;
+    }
+
+    #facultySection {
+      flex: 0 0 65%;
+      /* Faculty takes 65% of width */
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+    }
+
+    #adSection {
+      flex: 0 0 35%;
+      /* Ads take 35% of width */
+      display: flex;
+      flex-direction: column;
+      background: #111827;
+      border-radius: 18px;
+      border: 2px solid #374151;
+      box-shadow: 0 8px 28px -6px rgba(16, 34, 74, .14);
+      overflow: hidden;
+      position: relative;
+    }
+
+    #adDisplay {
+      width: 100%;
+      height: 100%;
+      position: relative;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: #000;
+      border-radius: 16px;
+    }
+
+    #adDisplay img,
+    #adDisplay video {
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
+      display: none;
+      border-radius: 16px;
+    }
+
+    #adDisplay img.active,
+    #adDisplay video.active {
+      display: block;
+    }
+
+    #adPlaceholder {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      color: #6b7280;
+      font-size: 1.2em;
+      text-align: center;
+      padding: 2em;
+    }
+
+    #adPlaceholder i {
+      font-size: 3em;
+      margin-bottom: 0.5em;
+      opacity: 0.6;
+    }
+
+    #adPlaceholder p {
+      margin: 0;
+      opacity: 0.8;
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 1vh;
+      height: 100%;
+      overflow-y: auto;
+      overflow-x: hidden;
+      padding-right: 8px;
+      box-sizing: border-box;
     }
 
     .card {
       background: #fff;
-      border-radius: 18px;
-      box-shadow: 0 8px 28px -6px rgba(16, 34, 74, .14), 0 4px 12px -4px rgba(16, 34, 74, .12);
+      border-radius: 12px;
+      box-shadow: 0 4px 16px -4px rgba(16, 34, 74, .12);
       color: #1e3a8a;
       font-family: 'Inter', 'Segoe UI', Arial, sans-serif;
       display: flex;
       flex-direction: column;
       align-items: center;
-      justify-content: space-around;
-      font-size: 1.6vh;
+      justify-content: space-between;
+      font-size: 0.9em;
       overflow: hidden;
       word-break: break-word;
       box-sizing: border-box;
-      padding: 1vh 0.5vw;
-      contain: layout style;
+      padding: 1em 0.8em;
+      min-height: 180px;
+      transition: transform 0.2s ease, box-shadow 0.2s ease;
+    }
+
+    .card:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 24px -6px rgba(16, 34, 74, .18);
     }
 
     .card img {
-      border-radius: 12px;
+      border-radius: 8px;
       box-shadow: 0 2px 8px rgba(16, 34, 74, .10);
       border: 2px solid #2563eb;
-      width: 6vh;
-      height: 6vh;
+      width: 50px;
+      height: 50px;
       object-fit: cover;
-      margin-bottom: 0.5vh;
+      margin-bottom: 0.5em;
+      flex-shrink: 0;
     }
 
     .card h3 {
       color: #2563eb;
       font-weight: 600;
-      margin-bottom: 0.1em;
-    }
-
-    .card div,
-    .card i,
-    .status {
-      color: #374151;
-      font-weight: 500;
-    }
-
-    .status {
-      border-radius: 8px;
-      padding: 0.2em 0.7em;
+      margin: 0 0 0.3em 0;
       font-size: 1em;
+      text-align: center;
+      line-height: 1.2;
+    }
+
+    .card div {
+      color: #374151;
+      font-weight: 400;
+      margin: 0.1em 0;
+      font-size: 0.85em;
+      text-align: center;
+      line-height: 1.3;
+    }
+
+    .status {
+      border-radius: 6px;
+      padding: 0.3em 0.6em;
+      font-size: 0.8em;
+      font-weight: 600;
       box-shadow: 0 2px 8px rgba(16, 34, 74, .08);
       display: inline-block;
-    }
-
-    .status.in_class {
-      background: #e0e7ff;
-      color: #2563eb;
-      border-radius: 8px;
-      font-weight: 600;
-    }
-
-    .status.at_dept {
-      background: #d1fae5;
-      color: #059669;
-      border-radius: 8px;
-      font-weight: 600;
-    }
-
-    .status.in_meeting,
-    .status.exam_duty {
-      background: #fef3c7;
-      color: #b45309;
-      border-radius: 8px;
-      font-weight: 600;
-    }
-
-    .status.on_leave {
-      background: #fee2e2;
-      color: #dc2626;
-      border-radius: 8px;
-      font-weight: 600;
-    }
-
-    .status.off_duty {
-      background: #e5e7eb;
-      color: #374151;
-      border-radius: 8px;
-      font-weight: 600;
-    }
-
-    .status.on_weekend {
-      background: #ffe4e6;
-      color: #be123c;
-      border-radius: 8px;
-      font-weight: 600;
-    }
-
-    .status.postponed {
-      background: #fecaca;
-      color: #991b1b;
-      border-radius: 8px;
-      font-weight: 600;
+      margin-top: 0.3em;
+      text-align: center;
+      min-width: 80px;
     }
 
     ::-webkit-scrollbar {
@@ -337,12 +379,13 @@
     #adProgress {
       position: absolute;
       left: 0;
-      top: 0;
+      bottom: 0;
       width: 100%;
-      height: 8px;
+      height: 6px;
       background: #0f172a;
       z-index: 10004;
-      border-top: 1px solid #475569;
+      border-bottom-left-radius: 16px;
+      border-bottom-right-radius: 16px;
     }
 
     #adProgressBar {
@@ -353,28 +396,28 @@
       will-change: width;
       box-shadow: 0 0 4px rgba(59, 130, 246, 0.5);
       position: relative;
+      border-bottom-left-radius: 15px;
+      border-bottom-right-radius: 15px;
     }
 
     #adCountdownText {
       position: absolute;
-      top: 50%;
+      top: -20px;
       left: 50%;
-      transform: translate(-50%, -50%);
+      transform: translateX(-50%);
       color: #fff;
-      font-size: 11px;
+      font-size: 10px;
       font-weight: 600;
       text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.9);
       font-family: 'Orbitron', 'Inter', Arial, sans-serif;
       pointer-events: none;
-      z-index: 10003;
+      z-index: 10005;
       opacity: 0;
       transition: opacity 0.3s ease;
       white-space: nowrap;
-      height: auto;
-    }
-
-    #adCountdownText.show {
-      opacity: 1;
+      background: rgba(0, 0, 0, 0.7);
+      padding: 2px 6px;
+      border-radius: 3px;
     }
 
     /* Enhanced colors for break vs waiting */
@@ -431,6 +474,94 @@
       vertical-align: middle;
       font-family: 'Orbitron', 'Inter', 'Segoe UI', monospace, Arial, sans-serif;
     }
+
+    /* --- New Layout Styles --- */
+    #mainContainer {
+      display: flex;
+      flex: 1;
+      overflow: hidden;
+      position: relative;
+    }
+
+    #facultySection {
+      flex: 3;
+      padding: 1em;
+      overflow-y: auto;
+      overflow-x: hidden;
+      display: flex;
+      flex-direction: column;
+    }
+
+    #adSection {
+      flex: 2;
+      padding: 1em;
+      background: #f9fafb;
+      border-left: 2px solid #e5e7eb;
+      display: flex;
+      flex-direction: column;
+      position: relative;
+    }
+
+    #adDisplay {
+      flex: 1;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      position: relative;
+      overflow: hidden;
+      border-radius: 12px;
+      box-shadow: 0 4px 12px rgba(16, 34, 74, .1);
+      background: #fff;
+    }
+
+    #adImage,
+    #adVideo {
+      max-width: 100%;
+      max-height: 100%;
+      border-radius: 12px;
+      display: block;
+      margin: 0 auto;
+    }
+
+    #adPlaceholder {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      text-align: center;
+      color: #9ca3af;
+      font-size: 1.2em;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+    }
+
+    #adPlaceholder i {
+      font-size: 2em;
+      margin-bottom: 0.5em;
+    }
+
+    @media (max-width: 768px) {
+      #mainContainer {
+        flex-direction: column;
+      }
+
+      #facultySection {
+        order: 2;
+        flex: 1;
+      }
+
+      #adSection {
+        order: 1;
+        flex: 0 0 300px;
+        height: 300px;
+      }
+
+      #adDisplay {
+        height: 100%;
+      }
+    }
   </style>
 </head>
 
@@ -445,12 +576,24 @@
     <img src="images/cse_logo.png" alt="CSE Logo" class="logo">
   </header>
 
-  <div id="grid" class="grid"></div>
+  <!-- Replace the existing grid and ad overlay with this side-by-side layout: -->
+  <div id="mainContainer">
+    <!-- Faculty Section (Left) -->
+    <div id="facultySection">
+      <div id="grid" class="grid"></div>
+    </div>
 
-  <!-- Ad Overlay -->
-  <div id="adOverlay">
-    <img id="adImage" src="" />
-    <video id="adVideo" autoplay muted playsinline webkit-playsinline preload="auto" crossorigin="anonymous"></video>
+    <!-- Ad Section (Right) -->
+    <div id="adSection">
+      <div id="adDisplay">
+        <img id="adImage" src="" />
+        <video id="adVideo" autoplay muted playsinline webkit-playsinline preload="auto" crossorigin="anonymous"></video>
+        <div id="adPlaceholder">
+          <i class="fas fa-bullhorn"></i>
+          <p>Notices will appear here</p>
+        </div>
+      </div>
+    </div>
   </div>
 
   <!-- Marquee Footer -->
@@ -642,46 +785,35 @@
     function adjustLayout() {
       const header = document.querySelector("header");
       const footer = document.getElementById("marqueeFooter");
-      const grid = document.getElementById("grid");
-      const overlay = document.getElementById("adOverlay");
+      const mainContainer = document.getElementById("mainContainer");
       const headerHeight = header.offsetHeight;
       const footerHeight = footer.offsetHeight;
-      grid.style.height = `calc(100vh - ${headerHeight}px - ${footerHeight}px)`;
-      overlay.style.top = headerHeight + "px";
-      overlay.style.height = `calc(100vh - ${headerHeight}px - ${footerHeight}px)`;
+      
+      mainContainer.style.height = `calc(100vh - ${headerHeight}px - ${footerHeight}px)`;
     }
 
-    function showOverlay() {
-      const overlay = document.getElementById("adOverlay");
-      overlay.classList.add("active");
+    function showAd() {
+      const placeholder = document.getElementById("adPlaceholder");
+      placeholder.style.display = "none";
     }
 
-    function hideOverlay() {
-      const overlay = document.getElementById("adOverlay");
-      overlay.classList.remove("active", "stretch-horizontal", "stretch-vertical");
+    function hideAd() {
+      const adImage = document.getElementById("adImage");
+      const adVideo = document.getElementById("adVideo");
+      const placeholder = document.getElementById("adPlaceholder");
+      
+      adImage.classList.remove("active");
+      adVideo.classList.remove("active");
+      adImage.style.display = "none";
+      adVideo.style.display = "none";
+      placeholder.style.display = "flex";
     }
 
     function setAdStretch(mediaEl) {
-      const overlay = document.getElementById("adOverlay");
-      overlay.classList.remove("stretch-horizontal", "stretch-vertical");
-      const overlayRect = overlay.getBoundingClientRect();
-      let mediaWidth, mediaHeight;
-
-      if (mediaEl.tagName === "IMG") {
-        mediaWidth = mediaEl.naturalWidth;
-        mediaHeight = mediaEl.naturalHeight;
-      } else if (mediaEl.tagName === "VIDEO") {
-        mediaWidth = mediaEl.videoWidth;
-        mediaHeight = mediaEl.videoHeight;
-      }
-
-      if (mediaWidth && mediaHeight) {
-        if ((mediaWidth / mediaHeight) > (overlayRect.width / overlayRect.height)) {
-          overlay.classList.add("stretch-horizontal");
-        } else {
-          overlay.classList.add("stretch-vertical");
-        }
-      }
+      // Remove the overlay stretch logic since we're now in a fixed container
+      mediaEl.style.width = "100%";
+      mediaEl.style.height = "100%";
+      mediaEl.style.objectFit = "contain";
     }
 
     function updateAdProgress(total, elapsed = 0) {
@@ -791,9 +923,8 @@
     }
 
     function runAdSequence() {
-      if (inBreakPeriod || adCycleRunning || !ads.length) {
+      if (adCycleRunning || !ads.length) {
         console.log("⚠️ Cannot start ads:", {
-          inBreak: inBreakPeriod,
           running: adCycleRunning,
           hasAds: ads.length > 0
         });
@@ -801,44 +932,28 @@
       }
 
       adCycleRunning = true;
-      stopSmoothCountdown(); // Stop countdown animation during ads
-      showOverlay();
-      console.log("🎬 STARTING AD SEQUENCE - " + ads.length + " ads");
+      showAd(); // Show ad section
+      console.log("🎬 STARTING CONTINUOUS AD SEQUENCE - " + ads.length + " ads");
 
       const adImage = document.getElementById("adImage");
       const adVideo = document.getElementById("adVideo");
       let current = 0;
-      let totalAdTime = 0; // This accumulates the actual ad durations
-
-      function finishAdSequence() {
-        hideOverlay();
-        adCycleRunning = false;
-
-        console.log("🏁 AD SEQUENCE COMPLETE");
-        console.log("📺 Total ads shown:", ads.length);
-        console.log("⏱️ Total ad time:", Math.round(totalAdTime / 1000), "seconds");
-
-        // Start break period (no ads during break)
-        startBreakPeriod(totalAdTime);
-      }
 
       function nextAd() {
-        current++;
-        playNextAd();
+        current = (current + 1) % ads.length; // Loop back to start
+        playCurrentAd();
       }
 
-      function playNextAd() {
-        if (current >= ads.length) {
-          finishAdSequence();
-          return;
-        }
-
+      function playCurrentAd() {
         const ad = ads[current];
+        
+        // Hide previous ad
+        adImage.classList.remove("active");
+        adVideo.classList.remove("active");
         adImage.style.display = "none";
         adVideo.style.display = "none";
 
         if (ad.type === "image") {
-          // Images: fixed 20-second duration
           const duration = IMAGE_AD_DURATION;
           console.log(`📷 Image ${current + 1}/${ads.length}: ${ad.src} (${duration / 1000}s)`);
 
@@ -846,6 +961,7 @@
           adImage.src = "https://faculty-status-display.onrender.com" + ad.src;
           adImage.onload = () => {
             adImage.style.display = "block";
+            adImage.classList.add("active");
             setAdStretch(adImage);
           };
 
@@ -853,26 +969,23 @@
           let progressAnimationId = null;
 
           function updateImageProgress() {
+            if (!adCycleRunning) return; // Stop if ads are disabled
+            
             const elapsed = Date.now() - startTime;
-
             if (elapsed >= duration) {
-              // Ensure progress bar reaches 100% before finishing
               updateAdProgress(duration, duration);
               if (progressAnimationId) {
                 cancelAnimationFrame(progressAnimationId);
                 progressAnimationId = null;
               }
-
-              totalAdTime += duration; // Add the full 20 seconds
-              console.log(`✅ Image ${current + 1} complete. Total so far: ${Math.round(totalAdTime / 1000)}s`);
-              nextAd();
+              console.log(`✅ Image ${current + 1} complete`);
+              setTimeout(nextAd, 500); // Small gap between ads
             } else {
               updateAdProgress(duration, elapsed);
               progressAnimationId = requestAnimationFrame(updateImageProgress);
             }
           }
 
-          // Start smooth progress animation
           progressAnimationId = requestAnimationFrame(updateImageProgress);
 
         } else if (ad.type === "video") {
@@ -889,7 +1002,7 @@
           let startTime = 0;
           let progressAnimationId = null;
 
-          function cleanupVideo(actualDuration) {
+          function cleanupVideo() {
             if (finished) return;
             finished = true;
 
@@ -898,55 +1011,44 @@
               progressAnimationId = null;
             }
 
-            // Clear all event listeners
             adVideo.onended = null;
-            adVideo.onstalled = null;
             adVideo.onerror = null;
             adVideo.oncanplay = null;
             adVideo.onloadeddata = null;
-            adVideo.onloadstart = null;
-            adVideo.onabort = null;
-            adVideo.style.display = "none";
 
-            // Add the actual video duration to total
-            totalAdTime += actualDuration;
-            console.log(`✅ Video ${current + 1} complete: ${Math.round(actualDuration / 1000)}s. Total so far: ${Math.round(totalAdTime / 1000)}s`);
-            nextAd();
+            console.log(`✅ Video ${current + 1} complete`);
+            setTimeout(nextAd, 500); // Small gap between ads
           }
 
           function startVideo() {
-            if (started || finished) return;
+            if (started || finished || !adCycleRunning) return;
             started = true;
             startTime = Date.now();
 
             adVideo.style.display = "block";
+            adVideo.classList.add("active");
             setAdStretch(adVideo);
 
-            // Get duration (prefer metadata, fallback to cap)
             if (isFinite(adVideo.duration) && adVideo.duration > 0) {
               videoDuration = Math.min(adVideo.duration * 1000, MAX_VIDEO_CAP_MS);
-              console.log(`📏 Video duration: ${Math.round(videoDuration / 1000)}s (from metadata)`);
             } else {
               videoDuration = MAX_VIDEO_CAP_MS;
-              console.log(`📏 No metadata, using elapsed time tracking (max ${MAX_VIDEO_CAP_MS / 1000}s)`);
             }
 
             adVideo.play().catch(err => {
               console.warn("❌ Video play failed:", err);
-              cleanupVideo(0);
+              cleanupVideo();
               return;
             });
 
             updateAdProgress(videoDuration, 0);
 
-            // Smooth progress animation
             function updateProgress() {
-              if (finished) return;
+              if (finished || !adCycleRunning) return;
 
               const elapsed = Date.now() - startTime;
               if (elapsed >= videoDuration) {
-                console.log("⏰ Video reached duration limit");
-                cleanupVideo(elapsed);
+                cleanupVideo();
               } else {
                 updateAdProgress(videoDuration, elapsed);
                 progressAnimationId = requestAnimationFrame(updateProgress);
@@ -956,52 +1058,36 @@
             progressAnimationId = requestAnimationFrame(updateProgress);
           }
 
-          // Event handlers
           adVideo.onended = () => {
-            if (!finished) {
-              const elapsed = Date.now() - startTime;
-              console.log("🔚 Video ended naturally");
-              cleanupVideo(elapsed);
-            }
+            if (!finished) cleanupVideo();
           };
 
           adVideo.oncanplay = () => {
-            if (!started && !finished) startVideo();
+            if (!started && !finished && adCycleRunning) startVideo();
           };
 
           adVideo.onloadeddata = () => {
-            if (!started && !finished) startVideo();
+            if (!started && !finished && adCycleRunning) startVideo();
           };
 
           adVideo.onerror = (e) => {
             console.error("❌ Video error:", e);
-            if (!finished) cleanupVideo(0);
+            if (!finished) cleanupVideo();
           };
 
-          adVideo.onstalled = () => {
-            if (!started && !finished) {
-              console.warn("⚠️ Video stalled before start, skipping");
-              cleanupVideo(0);
-            }
-          };
-
-          // Safety fallback
           setTimeout(() => {
-            if (!started && !finished) {
-              console.log("🔧 Force starting video (timeout fallback)");
+            if (!started && !finished && adCycleRunning) {
               startVideo();
             }
           }, 3000);
 
           adVideo.src = src;
           adVideo.load();
-        } else {
-          console.warn("❓ Unknown ad type:", ad.type);
-          nextAd();
         }
       }
 
-      playNextAd();
+      // Start the continuous loop
+      playCurrentAd();
     }
 
     function loadMarquee(forceUpdate = false) {
@@ -1198,10 +1284,7 @@
       startSmartMarqueeCheck();
       setInterval(loadAds, 300000);
       setInterval(updateDate, 60000);
-      setInterval(checkAndStartAds, 10000);
-
-      // START smooth countdown animation instead of interval
-      startSmoothCountdown();
+      setInterval(checkAndStartAds, 5000); // Check more frequently
     });
 
     window.addEventListener("resize", adjustLayout);
