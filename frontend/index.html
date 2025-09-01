@@ -388,51 +388,32 @@
       box-shadow: 0 0 4px rgba(239, 68, 68, 0.5);
     }
 
-    /* Enhanced 7-segment digit styling */
+    /* 7-segment digit SVG component */
     .seven-segment {
       width: 32px !important;
       height: 56px !important;
       display: inline-block;
       vertical-align: middle;
-      filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.3));
     }
 
     .seven-segment .seg {
-      fill: #1a1a1a;
-      transition: all 0.15s ease;
-      opacity: 0.8;
+      fill: #333;
+      transition: fill 0.2s;
+      opacity: 0.25;
     }
 
     .seven-segment .seg.lit {
-      fill: url(#segmentGradient);
-      filter: drop-shadow(0 0 8px #38bdf8) drop-shadow(0 0 16px #38bdf8);
+      fill: #38bdf8;
+      filter: drop-shadow(0 0 6px #38bdf8);
       opacity: 1;
     }
 
     .digit-bg {
-      background: linear-gradient(145deg, #0a0a0a, #1a1a1a);
-      border-radius: 8px;
+      background: #222;
+      border-radius: 6px;
       margin: 0 1px;
       display: inline-block;
-      box-shadow:
-        inset 0 1px 2px rgba(255, 255, 255, 0.1),
-        0 2px 8px rgba(0, 0, 0, 0.5),
-        0 0 12px rgba(56, 189, 248, 0.1);
-      border: 1px solid #2a2a2a;
-      padding: 2px;
-      position: relative;
-    }
-
-    .digit-bg::before {
-      content: '';
-      position: absolute;
-      top: 0;
-      left: 0;
-      right: 0;
-      bottom: 0;
-      background: linear-gradient(135deg, rgba(255, 255, 255, 0.05) 0%, transparent 50%, rgba(0, 0, 0, 0.1) 100%);
-      border-radius: 6px;
-      pointer-events: none;
+      box-shadow: 0 0 8px #222;
     }
 
     .colon {
@@ -449,7 +430,6 @@
       letter-spacing: 0.2em;
       vertical-align: middle;
       font-family: 'Orbitron', 'Inter', 'Segoe UI', monospace, Arial, sans-serif;
-      text-shadow: 0 0 8px rgba(96, 165, 250, 0.5);
     }
   </style>
 </head>
@@ -590,48 +570,13 @@
       return `
         <span class="digit-bg">
           <svg width="32" height="56" viewBox="0 0 32 56" class="seven-segment">
-            <defs>
-              <linearGradient id="segmentGradient" x1="0%" y1="0%" x2="100%" y2="100%">
-                <stop offset="0%" style="stop-color:#60a5fa;stop-opacity:1" />
-                <stop offset="50%" style="stop-color:#38bdf8;stop-opacity:1" />
-                <stop offset="100%" style="stop-color:#0ea5e9;stop-opacity:1" />
-              </linearGradient>
-              <filter id="segmentGlow" x="-50%" y="-50%" width="200%" height="200%">
-                <feGaussianBlur stdDeviation="2" result="coloredBlur"/>
-                <feMerge>
-                  <feMergeNode in="coloredBlur"/>
-                  <feMergeNode in="SourceGraphic"/>
-                </feMerge>
-              </filter>
-            </defs>
-            
-            <!-- Segment A (top) -->
-            <path class="seg seg-a${segs.includes('a') ? ' lit' : ''}" 
-                  d="M6 4 L26 4 L24 8 L8 8 Z" />
-            
-            <!-- Segment B (top-right) -->
-            <path class="seg seg-b${segs.includes('b') ? ' lit' : ''}" 
-                  d="M24 6 L28 6 L26 24 L22 24 Z" />
-            
-            <!-- Segment C (bottom-right) -->
-            <path class="seg seg-c${segs.includes('c') ? ' lit' : ''}" 
-                  d="M24 32 L28 32 L26 50 L22 50 Z" />
-            
-            <!-- Segment D (bottom) -->
-            <path class="seg seg-d${segs.includes('d') ? ' lit' : ''}" 
-                  d="M6 52 L26 52 L24 48 L8 48 Z" />
-            
-            <!-- Segment E (bottom-left) -->
-            <path class="seg seg-e${segs.includes('e') ? ' lit' : ''}" 
-                  d="M4 32 L8 32 L6 50 L2 50 Z" />
-            
-            <!-- Segment F (top-left) -->
-            <path class="seg seg-f${segs.includes('f') ? ' lit' : ''}" 
-                  d="M4 6 L8 6 L6 24 L2 24 Z" />
-            
-            <!-- Segment G (middle) -->
-            <path class="seg seg-g${segs.includes('g') ? ' lit' : ''}" 
-                  d="M8 26 L24 26 L22 30 L10 30 Z" />
+            <rect class="seg seg-a${segs.includes('a') ? ' lit' : ''}" x="4" y="2" width="24" height="4" rx="2"/>
+            <rect class="seg seg-b${segs.includes('b') ? ' lit' : ''}" x="26" y="6" width="4" height="20" rx="2"/>
+            <rect class="seg seg-c${segs.includes('c') ? ' lit' : ''}" x="26" y="30" width="4" height="20" rx="2"/>
+            <rect class="seg seg-d${segs.includes('d') ? ' lit' : ''}" x="4" y="50" width="24" height="4" rx="2"/>
+            <rect class="seg seg-e${segs.includes('e') ? ' lit' : ''}" x="2" y="30" width="4" height="20" rx="2"/>
+            <rect class="seg seg-f${segs.includes('f') ? ' lit' : ''}" x="2" y="6" width="4" height="20" rx="2"/>
+            <rect class="seg seg-g${segs.includes('g') ? ' lit' : ''}" x="4" y="26" width="24" height="4" rx="2"/>
           </svg>
         </span>
       `;
@@ -639,21 +584,22 @@
 
     function renderColon() {
       return `
-    <span class="digit-bg colon">
-      <svg width="12" height="56" viewBox="0 0 12 56">
-        <defs>
-          <radialGradient id="dotGradient" cx="50%" cy="50%" r="50%">
-            <stop offset="0%" style="stop-color:#60a5fa;stop-opacity:1" />
-            <stop offset="100%" style="stop-color:#38bdf8;stop-opacity:1" />
-          </radialGradient>
-        </defs>
-        <circle cx="6" cy="16" r="3" fill="url(#dotGradient)" 
-                filter="drop-shadow(0 0 6px #38bdf8)"/>
-        <circle cx="6" cy="40" r="3" fill="url(#dotGradient)" 
-                filter="drop-shadow(0 0 6px #38bdf8)"/>
-      </svg>
-    </span>
-  `;
+        <span class="digit-bg colon">
+          <svg width="12" height="56" viewBox="0 0 12 56">
+            <circle cx="6" cy="16" r="3" fill="#38bdf8" filter="url(#glow)"/>
+            <circle cx="6" cy="40" r="3" fill="#38bdf8" filter="url(#glow)"/>
+            <defs>
+              <filter id="glow" x="-5" y="-5" width="22" height="22">
+                <feGaussianBlur stdDeviation="2" result="coloredBlur"/>
+                <feMerge>
+                  <feMergeNode in="coloredBlur"/>
+                  <feMergeNode in="SourceGraphic"/>
+                </feMerge>
+              </filter>
+            </defs>
+          </svg>
+        </span>
+      `;
     }
 
     function renderClock(h, m, s, ampm) {
