@@ -78,7 +78,130 @@
       gap: 0.1em;
     }
 
-    /* Replace existing grid and ad overlay CSS with this: */
+    /* Custom layout for exactly 13 faculty members - no grid needed */
+    .faculty-container {
+      display: flex;
+      flex-direction: column;
+      height: 100%;
+      gap: 4px;
+      padding: 4px;
+      overflow: hidden;
+    }
+
+    .faculty-row {
+      display: flex;
+      justify-content: space-between;
+      gap: 4px;
+      flex: 1;
+    }
+
+    /* Row 1: 4 faculty cards */
+    .faculty-row.row-1 {
+      flex: 1;
+    }
+
+    .faculty-row.row-1 .card {
+      flex: 1;
+      max-width: calc(25% - 3px);
+    }
+
+    /* Row 2: 4 faculty cards */
+    .faculty-row.row-2 {
+      flex: 1;
+    }
+
+    .faculty-row.row-2 .card {
+      flex: 1;
+      max-width: calc(25% - 3px);
+    }
+
+    /* Row 3: 5 faculty cards (slightly smaller) */
+    .faculty-row.row-3 {
+      flex: 1;
+    }
+
+    .faculty-row.row-3 .card {
+      flex: 1;
+      max-width: calc(20% - 3.2px);
+    }
+
+    /* Compact card design for 13 faculty */
+    .card {
+      background: #fff;
+      border-radius: 8px;
+      box-shadow: 0 2px 8px -2px rgba(16, 34, 74, .12);
+      color: #1e3a8a;
+      font-family: 'Inter', 'Segoe UI', Arial, sans-serif;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: space-between;
+      font-size: 0.65em;
+      overflow: hidden;
+      word-break: break-word;
+      box-sizing: border-box;
+      padding: 0.4em 0.3em;
+      min-height: 120px;
+      transition: transform 0.2s ease, box-shadow 0.2s ease;
+    }
+
+    .card:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 4px 12px -3px rgba(16, 34, 74, .18);
+    }
+
+    .card img {
+      border-radius: 4px;
+      box-shadow: 0 1px 4px rgba(16, 34, 74, .10);
+      border: 1px solid #2563eb;
+      width: 28px;
+      height: 28px;
+      object-fit: cover;
+      margin-bottom: 0.2em;
+      flex-shrink: 0;
+    }
+
+    .card h3 {
+      color: #2563eb;
+      font-weight: 600;
+      margin: 0 0 0.1em 0;
+      font-size: 0.85em;
+      text-align: center;
+      line-height: 1.0;
+      max-height: 1.8em;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .card div {
+      color: #374151;
+      font-weight: 400;
+      margin: 0.02em 0;
+      font-size: 0.75em;
+      text-align: center;
+      line-height: 1.1;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+      max-width: 100%;
+    }
+
+    .status {
+      border-radius: 3px;
+      padding: 0.15em 0.3em;
+      font-size: 0.65em;
+      font-weight: 600;
+      box-shadow: 0 1px 4px rgba(16, 34, 74, .08);
+      display: inline-block;
+      margin-top: 0.1em;
+      text-align: center;
+      min-width: 45px;
+      max-width: 100%;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
     #mainContainer {
       display: flex;
       height: 100%;
@@ -153,92 +276,6 @@
     #adPlaceholder p {
       margin: 0;
       opacity: 0.8;
-    }
-
-    .grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-      gap: 1vh;
-      height: 100%;
-      overflow-y: auto;
-      overflow-x: hidden;
-      padding-right: 8px;
-      box-sizing: border-box;
-    }
-
-    .card {
-      background: #fff;
-      border-radius: 12px;
-      box-shadow: 0 4px 16px -4px rgba(16, 34, 74, .12);
-      color: #1e3a8a;
-      font-family: 'Inter', 'Segoe UI', Arial, sans-serif;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: space-between;
-      font-size: 0.9em;
-      overflow: hidden;
-      word-break: break-word;
-      box-sizing: border-box;
-      padding: 1em 0.8em;
-      min-height: 180px;
-      transition: transform 0.2s ease, box-shadow 0.2s ease;
-    }
-
-    .card:hover {
-      transform: translateY(-2px);
-      box-shadow: 0 8px 24px -6px rgba(16, 34, 74, .18);
-    }
-
-    .card img {
-      border-radius: 8px;
-      box-shadow: 0 2px 8px rgba(16, 34, 74, .10);
-      border: 2px solid #2563eb;
-      width: 50px;
-      height: 50px;
-      object-fit: cover;
-      margin-bottom: 0.5em;
-      flex-shrink: 0;
-    }
-
-    .card h3 {
-      color: #2563eb;
-      font-weight: 600;
-      margin: 0 0 0.3em 0;
-      font-size: 1em;
-      text-align: center;
-      line-height: 1.2;
-    }
-
-    .card div {
-      color: #374151;
-      font-weight: 400;
-      margin: 0.1em 0;
-      font-size: 0.85em;
-      text-align: center;
-      line-height: 1.3;
-    }
-
-    .status {
-      border-radius: 6px;
-      padding: 0.3em 0.6em;
-      font-size: 0.8em;
-      font-weight: 600;
-      box-shadow: 0 2px 8px rgba(16, 34, 74, .08);
-      display: inline-block;
-      margin-top: 0.3em;
-      text-align: center;
-      min-width: 80px;
-    }
-
-    ::-webkit-scrollbar {
-      width: 8px;
-      background: #dbe5f5;
-    }
-
-    ::-webkit-scrollbar-thumb {
-      background: #2563eb;
-      border-radius: 8px;
     }
 
     .icon-phone,
@@ -576,22 +613,23 @@
     <img src="images/cse_logo.png" alt="CSE Logo" class="logo">
   </header>
 
-  <!-- Replace the existing grid and ad overlay with this side-by-side layout: -->
-  <div id="mainContainer">
-    <!-- Faculty Section (Left) -->
-    <div id="facultySection">
-      <div id="grid" class="grid"></div>
+  <!-- Replace the existing grid div with this custom layout: -->
+  <div id="facultySection">
+    <div id="facultyContainer" class="faculty-container">
+      <div class="faculty-row row-1" id="row1"></div>
+      <div class="faculty-row row-2" id="row2"></div>
+      <div class="faculty-row row-3" id="row3"></div>
     </div>
+  </div>
 
-    <!-- Ad Section (Right) -->
-    <div id="adSection">
-      <div id="adDisplay">
-        <img id="adImage" src="" />
-        <video id="adVideo" autoplay muted playsinline webkit-playsinline preload="auto" crossorigin="anonymous"></video>
-        <div id="adPlaceholder">
-          <i class="fas fa-bullhorn"></i>
-          <p>Notices will appear here</p>
-        </div>
+  <!-- Ad Section (Right) -->
+  <div id="adSection">
+    <div id="adDisplay">
+      <img id="adImage" src="" />
+      <video id="adVideo" autoplay muted playsinline webkit-playsinline preload="auto" crossorigin="anonymous"></video>
+      <div id="adPlaceholder">
+        <i class="fas fa-bullhorn"></i>
+        <p>Notices will appear here</p>
       </div>
     </div>
   </div>
@@ -659,10 +697,17 @@
         })
           .then(res => res.json())
           .then(data => {
-            const grid = document.getElementById("grid");
-            const fragment = document.createDocumentFragment();
+            // Distribute 13 faculty across 3 rows: 4, 4, 5
+            const row1 = document.getElementById("row1");
+            const row2 = document.getElementById("row2");
+            const row3 = document.getElementById("row3");
+            
+            // Clear existing content
+            row1.innerHTML = '';
+            row2.innerHTML = '';
+            row3.innerHTML = '';
 
-            data.forEach(f => {
+            data.forEach((f, index) => {
               let statusObj = f.manualOverride ?? f.status;
               let statusStr, room, batch;
 
@@ -676,28 +721,36 @@
                 batch = statusObj.batch ?? null;
               }
 
+              // Compact extra info for small cards
               let extraInfo = "";
               if (statusStr === "in_class" && room && batch) {
-                extraInfo = `<small class="text-gray">with ${batch} at ${room}</small>`;
+                extraInfo = `<small style="font-size: 0.6em; color: #6b7280;">${batch}</small>`;
               }
 
               const cardDiv = document.createElement('div');
               cardDiv.className = 'card';
               cardDiv.innerHTML = `
                 <img src="https://faculty-status-display.onrender.com${f.image}" alt="${f.name}">
-                <h3>${f.name}</h3>
-                <div>${f.designation || ""}</div>
-                <div>${f.contact ? `<svg class="icon-phone" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/></svg> ${f.contact}` : ""}</div>
-                <div>${f.email ? `<svg class="icon-email" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg> ${f.email}` : ""}</div>
-                <div class="status ${statusStr}">
+                <h3 title="${f.name}">${f.name}</h3>
+                <div title="${f.designation || ''}">${f.designation || ""}</div>
+                <div title="${f.contact || ''}">${f.contact ? `<svg class="icon-phone" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/></svg> ${f.contact}` : ""}</div>
+                <div title="${f.email || ''}">${f.email ? `<svg class="icon-email" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg> ${f.email}` : ""}</div>
+                <div class="status ${statusStr}" title="${STATUS_MAP[statusStr] || statusStr}">
                   ${STATUS_MAP[statusStr] || statusStr} ${extraInfo}
                 </div>
               `;
-              fragment.appendChild(cardDiv);
+
+              // Distribute faculty across rows
+              if (index < 4) {
+                row1.appendChild(cardDiv);
+              } else if (index < 8) {
+                row2.appendChild(cardDiv);
+              } else {
+                row3.appendChild(cardDiv);
+              }
             });
 
-            grid.innerHTML = '';
-            grid.appendChild(fragment);
+            console.log(`📊 Loaded ${data.length} faculty members distributed across 3 rows`);
           })
           .catch(err => {
             console.error("Failed to load faculty:", err);
