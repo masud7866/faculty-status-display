@@ -408,7 +408,6 @@
       }
 
       .bulk-status {
-        max-width: 400px;
         margin: 0.75rem auto;
         flex-direction: row;
         align-items: center;
@@ -484,19 +483,6 @@
       visibility: visible;
     }
 
-    .empty-rooms-content {
-      background: white;
-      border-radius: 16px;
-      padding: 20px;
-      max-width: 900px;
-      width: 100%;
-      max-height: 90vh;
-      overflow-y: auto;
-      box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
-      transform: scale(0.9);
-      transition: transform 0.3s ease;
-    }
-
     .empty-rooms-overlay.active .empty-rooms-content {
       transform: scale(1);
     }
@@ -530,14 +516,6 @@
 
     .close-overlay-btn:hover {
       background: #dc2626;
-    }
-
-    .time-slot {
-      margin-bottom: 20px;
-      background: #f8fafc;
-      border-radius: 12px;
-      padding: 15px;
-      border-left: 4px solid #059669;
     }
 
     .time-slot-header {
@@ -624,12 +602,6 @@
       background: #ef4444;
     }
 
-    .current-time-indicator {
-      background: #fffaec !important;
-      border: 2px solid #f59e0b;
-      animation: pulse 2s infinite;
-    }
-
     /* Add this to your existing CSS */
     .empty-rooms-content {
       background: white;
@@ -712,53 +684,6 @@
       }
     }
 
-    @media (min-width: 600px) {
-      .faculty-card {
-        flex-direction: row;
-        align-items: center;
-        justify-content: space-between;
-        padding: 0.75rem;
-      }
-
-      .bulk-status {
-        max-width: 400px;
-        margin: 0.75rem auto;
-        flex-direction: row;
-        align-items: center;
-      }
-
-      .bulk-status label {
-        flex: 1;
-      }
-
-      .bulk-status select {
-        flex: 2;
-      }
-
-      .bulk-status button {
-        flex: 1;
-        max-width: 200px;
-      }
-
-      .faculty-card label {
-        flex: 1;
-      }
-
-      .faculty-card select {
-        flex: 2;
-      }
-
-      .faculty-card button {
-        flex: 1;
-        max-width: 200px;
-      }
-
-      .faculty-card .custom-expiry-btn-small {
-        flex: 0 0 auto;
-        margin: 0 0.5rem;
-      }
-    }
-
     /* Mobile responsiveness */
     @media (max-width: 600px) {
       .header {
@@ -778,11 +703,6 @@
       .logout-btn {
         width: 100%;
         font-size: 1rem;
-      }
-
-      .empty-rooms-content {
-        margin: 10px;
-        padding: 15px;
       }
 
       .empty-rooms-title {
