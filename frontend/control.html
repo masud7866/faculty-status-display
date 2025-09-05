@@ -41,6 +41,23 @@
         gap: 0.7rem;
       }
 
+      .bulk-status label {
+        order: 1;
+      }
+
+      .bulk-status .custom-expiry-btn-small {
+        order: 2;
+        align-self: center;
+      }
+
+      .bulk-status button:not(.custom-expiry-btn-small) {
+        order: 3;
+      }
+
+      .bulk-status select {
+        order: 4;
+      }
+
       .faculty-card {
         flex-direction: column;
         gap: 0.7rem;
@@ -1412,7 +1429,7 @@
         const customExpiryBtn = document.createElement("button");
         customExpiryBtn.id = `custom-expiry-btn-${f.name}`;
         customExpiryBtn.className = "custom-expiry-btn-small";
-        customExpiryBtn.textContent = "⏰";
+        customExpiryBtn.textContent = "⏰ Custom Expiry";
         customExpiryBtn.title = "Set custom expiry time";
         customExpiryBtn.disabled = !hasValidManualOverride(f);
         if (hasValidManualOverride(f)) {
@@ -1525,7 +1542,14 @@
           bulkTimerBtn.style.border = "1px solid #d1d5db";
           bulkTimerBtn.style.background = "#f3f4f6";
           bulkTimerBtn.style.fontSize = "0.85rem";
-          document.querySelector(".bulk-status").appendChild(bulkTimerBtn);
+          // Insert after the custom expiry button
+          const bulkStatusContainer = document.querySelector(".bulk-status");
+          const customExpiryBtn = document.getElementById("bulk-custom-expiry-btn");
+          if (customExpiryBtn) {
+            bulkStatusContainer.insertBefore(bulkTimerBtn, customExpiryBtn.nextSibling);
+          } else {
+            bulkStatusContainer.appendChild(bulkTimerBtn);
+          }
         }
         bulkTimerBtn.disabled = !allManual;
 
@@ -1535,13 +1559,16 @@
           bulkCustomExpiryBtn = document.createElement("button");
           bulkCustomExpiryBtn.id = "bulk-custom-expiry-btn";
           bulkCustomExpiryBtn.className = "custom-expiry-btn-small";
-          bulkCustomExpiryBtn.textContent = "⏰";
+          bulkCustomExpiryBtn.textContent = "⏰ Custom Expiry";
           bulkCustomExpiryBtn.title = "Set custom expiry time for all";
           bulkCustomExpiryBtn.disabled = !allManual;
           if (allManual) {
             bulkCustomExpiryBtn.classList.add('active');
           }
-          document.querySelector(".bulk-status").appendChild(bulkCustomExpiryBtn);
+          // Insert before the select element
+          const bulkStatusContainer = document.querySelector(".bulk-status");
+          const selectElement = document.getElementById("bulkStatus");
+          bulkStatusContainer.insertBefore(bulkCustomExpiryBtn, selectElement);
         }
         bulkCustomExpiryBtn.disabled = !allManual;
         if (allManual) {
