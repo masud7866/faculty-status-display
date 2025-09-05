@@ -2298,6 +2298,8 @@
           });
       } else if (currentExpiryTarget) {
         console.log('Executing individual expiry branch for:', currentExpiryTarget);
+        // Store the target before async operations in case modal is closed
+        const targetFaculty = currentExpiryTarget;
         // Update single faculty
         const facultyIndex = facultyData.findIndex(f => f.name === currentExpiryTarget);
         if (facultyIndex !== -1) {
@@ -2311,7 +2313,7 @@
               if (freshData) {
                 facultyData = freshData;
                 render(facultyIndex);
-                showMessage(`Custom expiry set for ${currentExpiryTarget}.`);
+                showMessage(`Custom expiry set for ${targetFaculty}.`);
               }
             })
             .catch(err => {
