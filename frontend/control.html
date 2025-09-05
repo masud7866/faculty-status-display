@@ -1500,7 +1500,12 @@
         }
 
         customExpiryBtn.onclick = () => {
-          openCustomExpiryModal(f.name, false);
+          if (f.name) {
+            openCustomExpiryModal(f.name, false);
+          } else {
+            console.error('Faculty name is null or undefined', f);
+            showMessage("Error: Faculty name is missing.", true);
+          }
         };
 
         const timerBtn = document.createElement("button");
@@ -2169,6 +2174,7 @@
     function openCustomExpiryModal(target, isBulk = false) {
       currentExpiryTarget = target;
       isBulkExpiry = isBulk;
+      console.log(`Opening custom expiry modal: target=${target}, isBulk=${isBulk}`);
 
       const modal = document.getElementById('customExpiryModal');
       const title = modal.querySelector('.custom-expiry-title');
@@ -2227,6 +2233,8 @@
     function saveCustomExpiry() {
       if (isUpdating) return;
 
+      console.log(`Saving custom expiry: isBulkExpiry=${isBulkExpiry}, currentExpiryTarget=${currentExpiryTarget}`);
+
       const activeMode = document.querySelector('.expiry-mode-btn.active').dataset.mode;
       let expiryDate;
 
@@ -2264,6 +2272,7 @@
       showMessage("Setting custom expiry...", false, true);
 
       if (isBulkExpiry) {
+        console.log('Executing bulk expiry branch');
         // Update all faculty
         const updates = facultyData.map(f => ({
           name: f.name,
@@ -2287,7 +2296,8 @@
           .finally(() => {
             isUpdating = false;
           });
-      } else {
+      } else if (currentExpiryTarget) {
+        console.log('Executing individual expiry branch for:', currentExpiryTarget);
         // Update single faculty
         const facultyIndex = facultyData.findIndex(f => f.name === currentExpiryTarget);
         if (facultyIndex !== -1) {
@@ -2311,7 +2321,15 @@
             .finally(() => {
               isUpdating = false;
             });
+        } else {
+          console.error('Faculty not found:', currentExpiryTarget);
+          showMessage("Faculty not found.", true);
+          isUpdating = false;
         }
+      } else {
+        console.error('Invalid state: neither bulk nor valid individual target');
+        showMessage("Error: Invalid expiry target.", true);
+        isUpdating = false;
       }
 
       closeCustomExpiryModal();
