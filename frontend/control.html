@@ -63,6 +63,29 @@
         padding: 0.5rem 0.2rem 1rem;
         gap: 1rem;
       }
+
+      /* Mobile layout for faculty cards with custom expiry button */
+      .faculty-card {
+        flex-direction: column;
+        gap: 0.7rem;
+      }
+
+      .faculty-card > div:first-child {
+        width: 100%;
+      }
+
+      .faculty-card select {
+        width: 100%;
+      }
+
+      .faculty-card .custom-expiry-btn-small {
+        align-self: center;
+        margin: 0.25rem 0;
+      }
+
+      .faculty-card button:last-child {
+        width: 100%;
+      }
     }
 
     @media (max-width: 430px) {
@@ -729,6 +752,11 @@
         flex: 1;
         max-width: 200px;
       }
+
+      .faculty-card .custom-expiry-btn-small {
+        flex: 0 0 auto;
+        margin: 0 0.5rem;
+      }
     }
 
     /* Mobile responsiveness */
@@ -787,6 +815,282 @@
         width: 100%;
       }
     }
+
+    /* Custom Expiry Modal Styles */
+    .custom-expiry-modal {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: rgba(0, 0, 0, 0.7);
+      z-index: 2000;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      padding: 20px;
+      opacity: 0;
+      visibility: hidden;
+      transition: all 0.3s ease;
+    }
+
+    .custom-expiry-modal.active {
+      opacity: 1;
+      visibility: visible;
+    }
+
+    .custom-expiry-content {
+      background: white;
+      border-radius: 16px;
+      padding: 24px;
+      max-width: 500px;
+      width: 100%;
+      max-height: 90vh;
+      overflow-y: auto;
+      box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+      transform: scale(0.9);
+      transition: transform 0.3s ease;
+    }
+
+    .custom-expiry-modal.active .custom-expiry-content {
+      transform: scale(1);
+    }
+
+    .custom-expiry-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 20px;
+      padding-bottom: 15px;
+      border-bottom: 2px solid #e5e7eb;
+    }
+
+    .custom-expiry-title {
+      color: #1e3a8a;
+      font-size: 1.3rem;
+      font-weight: 600;
+      margin: 0;
+    }
+
+    .custom-expiry-close {
+      background: #ef4444;
+      color: white;
+      border: none;
+      border-radius: 8px;
+      padding: 8px 12px;
+      cursor: pointer;
+      font-size: 14px;
+      font-weight: 500;
+    }
+
+    .custom-expiry-close:hover {
+      background: #dc2626;
+    }
+
+    .expiry-mode-selector {
+      display: flex;
+      gap: 10px;
+      margin-bottom: 20px;
+      flex-wrap: wrap;
+    }
+
+    .expiry-mode-btn {
+      padding: 8px 16px;
+      border: 2px solid #d1d5db;
+      background: white;
+      border-radius: 8px;
+      cursor: pointer;
+      font-size: 0.9rem;
+      font-weight: 500;
+      transition: all 0.2s ease;
+    }
+
+    .expiry-mode-btn.active {
+      border-color: #2563eb;
+      background: #eff6ff;
+      color: #1d4ed8;
+    }
+
+    .expiry-mode-btn:hover {
+      border-color: #9ca3af;
+    }
+
+    .duration-section,
+    .datetime-section {
+      margin-bottom: 20px;
+    }
+
+    .duration-section.hidden,
+    .datetime-section.hidden {
+      display: none;
+    }
+
+    .duration-inputs {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(80px, 1fr));
+      gap: 10px;
+      margin-bottom: 15px;
+    }
+
+    .duration-input {
+      display: flex;
+      flex-direction: column;
+      gap: 5px;
+    }
+
+    .duration-input label {
+      font-size: 0.8rem;
+      font-weight: 500;
+      color: #374151;
+    }
+
+    .duration-input input {
+      padding: 8px;
+      border: 1px solid #d1d5db;
+      border-radius: 6px;
+      font-size: 0.9rem;
+      text-align: center;
+    }
+
+    .duration-input input:focus {
+      outline: none;
+      border-color: #2563eb;
+      box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+    }
+
+    .datetime-inputs {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 15px;
+      margin-bottom: 15px;
+    }
+
+    .datetime-input {
+      display: flex;
+      flex-direction: column;
+      gap: 5px;
+    }
+
+    .datetime-input label {
+      font-size: 0.8rem;
+      font-weight: 500;
+      color: #374151;
+    }
+
+    .datetime-input input {
+      padding: 8px;
+      border: 1px solid #d1d5db;
+      border-radius: 6px;
+      font-size: 0.9rem;
+    }
+
+    .datetime-input input:focus {
+      outline: none;
+      border-color: #2563eb;
+      box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+    }
+
+    .custom-expiry-actions {
+      display: flex;
+      gap: 10px;
+      justify-content: flex-end;
+      padding-top: 15px;
+      border-top: 1px solid #e5e7eb;
+    }
+
+    .custom-expiry-btn {
+      padding: 10px 20px;
+      border: none;
+      border-radius: 8px;
+      font-size: 0.9rem;
+      font-weight: 500;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+
+    .custom-expiry-btn.cancel {
+      background: #f3f4f6;
+      color: #374151;
+    }
+
+    .custom-expiry-btn.cancel:hover {
+      background: #e5e7eb;
+    }
+
+    .custom-expiry-btn.save {
+      background: #2563eb;
+      color: white;
+    }
+
+    .custom-expiry-btn.save:hover {
+      background: #1d4ed8;
+    }
+
+    .custom-expiry-btn:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
+
+    /* Custom Expiry Button Styles */
+    .custom-expiry-btn-small {
+      padding: 0.3rem 0.6rem;
+      border: 1px solid #d1d5db;
+      background: #f9fafb;
+      color: #6b7280;
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: 0.75rem;
+      font-weight: 500;
+      transition: all 0.2s ease;
+      margin: 0 0.25rem;
+    }
+
+    .custom-expiry-btn-small:hover:not(:disabled) {
+      background: #f3f4f6;
+      border-color: #9ca3af;
+    }
+
+    .custom-expiry-btn-small:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
+
+    .custom-expiry-btn-small.active {
+      background: #dbeafe;
+      border-color: #93c5fd;
+      color: #1e40af;
+    }
+
+    /* Mobile responsiveness for modal */
+    @media (max-width: 600px) {
+      .custom-expiry-content {
+        margin: 10px;
+        padding: 20px;
+        max-height: 85vh;
+      }
+
+      .custom-expiry-title {
+        font-size: 1.1rem;
+      }
+
+      .datetime-inputs {
+        grid-template-columns: 1fr;
+        gap: 10px;
+      }
+
+      .duration-inputs {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 8px;
+      }
+
+      .custom-expiry-actions {
+        flex-direction: column;
+      }
+
+      .custom-expiry-btn {
+        width: 100%;
+      }
+    }
   </style>
 </head>
 
@@ -818,6 +1122,56 @@
       </div>
       <div class="empty-rooms-body">
         <!-- Content will be populated by JavaScript -->
+      </div>
+    </div>
+  </div>
+
+  <!-- Custom Expiry Modal -->
+  <div class="custom-expiry-modal" id="customExpiryModal">
+    <div class="custom-expiry-content">
+      <div class="custom-expiry-header">
+        <h3 class="custom-expiry-title">Set Custom Expiry Time</h3>
+        <button class="custom-expiry-close" onclick="closeCustomExpiryModal()">✕</button>
+      </div>
+
+      <div class="expiry-mode-selector">
+        <button class="expiry-mode-btn active" data-mode="duration">Duration</button>
+        <button class="expiry-mode-btn" data-mode="datetime">Date & Time</button>
+      </div>
+
+      <div class="duration-section">
+        <div class="duration-inputs">
+          <div class="duration-input">
+            <label for="durationDays">Days</label>
+            <input type="number" id="durationDays" min="0" max="30" value="0">
+          </div>
+          <div class="duration-input">
+            <label for="durationHours">Hours</label>
+            <input type="number" id="durationHours" min="0" max="23" value="1">
+          </div>
+          <div class="duration-input">
+            <label for="durationMinutes">Minutes</label>
+            <input type="number" id="durationMinutes" min="0" max="59" value="0">
+          </div>
+        </div>
+      </div>
+
+      <div class="datetime-section hidden">
+        <div class="datetime-inputs">
+          <div class="datetime-input">
+            <label for="expiryDate">Date</label>
+            <input type="date" id="expiryDate">
+          </div>
+          <div class="datetime-input">
+            <label for="expiryTime">Time</label>
+            <input type="time" id="expiryTime">
+          </div>
+        </div>
+      </div>
+
+      <div class="custom-expiry-actions">
+        <button class="custom-expiry-btn cancel" onclick="closeCustomExpiryModal()">Cancel</button>
+        <button class="custom-expiry-btn save" onclick="saveCustomExpiry()">Set Expiry</button>
       </div>
     </div>
   </div>
@@ -1030,6 +1384,18 @@
               timerBtn.classList.remove('expiring');
             }
           }
+
+          // Update custom expiry button state
+          const customExpiryBtn = document.getElementById(`custom-expiry-btn-${f.name}`);
+          if (customExpiryBtn) {
+            customExpiryBtn.disabled = !hasValidManualOverride(f);
+            if (hasValidManualOverride(f)) {
+              customExpiryBtn.classList.add('active');
+            } else {
+              customExpiryBtn.classList.remove('active');
+            }
+          }
+
           return;
         }
 
@@ -1122,6 +1488,21 @@
           }
         });
 
+        // Custom Expiry Button
+        const customExpiryBtn = document.createElement("button");
+        customExpiryBtn.id = `custom-expiry-btn-${f.name}`;
+        customExpiryBtn.className = "custom-expiry-btn-small";
+        customExpiryBtn.textContent = "⏰";
+        customExpiryBtn.title = "Set custom expiry time";
+        customExpiryBtn.disabled = !hasValidManualOverride(f);
+        if (hasValidManualOverride(f)) {
+          customExpiryBtn.classList.add('active');
+        }
+
+        customExpiryBtn.onclick = () => {
+          openCustomExpiryModal(f.name, false);
+        };
+
         const timerBtn = document.createElement("button");
         timerBtn.id = `timer-btn-${f.name}`;
         timerBtn.style.marginLeft = "0";
@@ -1178,6 +1559,7 @@
 
         div.appendChild(label);
         div.appendChild(selectElement);
+        div.appendChild(customExpiryBtn);
         div.appendChild(timerBtn);
 
         if (hasValidManualOverride(f)) {
@@ -1221,6 +1603,31 @@
           document.querySelector(".bulk-status").appendChild(bulkTimerBtn);
         }
         bulkTimerBtn.disabled = !allManual;
+
+        // Bulk Custom Expiry Button
+        let bulkCustomExpiryBtn = document.getElementById("bulk-custom-expiry-btn");
+        if (!bulkCustomExpiryBtn) {
+          bulkCustomExpiryBtn = document.createElement("button");
+          bulkCustomExpiryBtn.id = "bulk-custom-expiry-btn";
+          bulkCustomExpiryBtn.className = "custom-expiry-btn-small";
+          bulkCustomExpiryBtn.textContent = "⏰";
+          bulkCustomExpiryBtn.title = "Set custom expiry time for all";
+          bulkCustomExpiryBtn.disabled = !allManual;
+          if (allManual) {
+            bulkCustomExpiryBtn.classList.add('active');
+          }
+          document.querySelector(".bulk-status").appendChild(bulkCustomExpiryBtn);
+        }
+        bulkCustomExpiryBtn.disabled = !allManual;
+        if (allManual) {
+          bulkCustomExpiryBtn.classList.add('active');
+        } else {
+          bulkCustomExpiryBtn.classList.remove('active');
+        }
+
+        bulkCustomExpiryBtn.onclick = () => {
+          openCustomExpiryModal(null, true);
+        };
 
         if (allManual) {
           const times = facultyData.map(f => getRemainingTime(f.overrideExpiry)).filter(t => t !== "Expired");
@@ -1754,6 +2161,185 @@
         }
       }, 60000);
     }
+
+    // Custom Expiry Modal Functions
+    let currentExpiryTarget = null; // null for bulk, faculty name for individual
+    let isBulkExpiry = false;
+
+    function openCustomExpiryModal(target, isBulk = false) {
+      currentExpiryTarget = target;
+      isBulkExpiry = isBulk;
+
+      const modal = document.getElementById('customExpiryModal');
+      const title = modal.querySelector('.custom-expiry-title');
+
+      if (isBulk) {
+        title.textContent = 'Set Custom Expiry Time for All Faculty';
+      } else {
+        title.textContent = `Set Custom Expiry Time for ${target}`;
+      }
+
+      // Set default date to today
+      const today = new Date();
+      const dateStr = today.toISOString().split('T')[0];
+      document.getElementById('expiryDate').value = dateStr;
+
+      // Set default time to 1 hour from now
+      const oneHourFromNow = new Date(today.getTime() + 60 * 60 * 1000);
+      const timeStr = oneHourFromNow.toTimeString().slice(0, 5);
+      document.getElementById('expiryTime').value = timeStr;
+
+      // Reset to duration mode
+      switchExpiryMode('duration');
+
+      modal.classList.add('active');
+    }
+
+    function closeCustomExpiryModal() {
+      const modal = document.getElementById('customExpiryModal');
+      modal.classList.remove('active');
+      currentExpiryTarget = null;
+      isBulkExpiry = false;
+    }
+
+    function switchExpiryMode(mode) {
+      const durationSection = document.querySelector('.duration-section');
+      const datetimeSection = document.querySelector('.datetime-section');
+      const modeBtns = document.querySelectorAll('.expiry-mode-btn');
+
+      modeBtns.forEach(btn => {
+        if (btn.dataset.mode === mode) {
+          btn.classList.add('active');
+        } else {
+          btn.classList.remove('active');
+        }
+      });
+
+      if (mode === 'duration') {
+        durationSection.classList.remove('hidden');
+        datetimeSection.classList.add('hidden');
+      } else {
+        durationSection.classList.add('hidden');
+        datetimeSection.classList.remove('hidden');
+      }
+    }
+
+    function saveCustomExpiry() {
+      if (isUpdating) return;
+
+      const activeMode = document.querySelector('.expiry-mode-btn.active').dataset.mode;
+      let expiryDate;
+
+      if (activeMode === 'duration') {
+        const days = parseInt(document.getElementById('durationDays').value) || 0;
+        const hours = parseInt(document.getElementById('durationHours').value) || 0;
+        const minutes = parseInt(document.getElementById('durationMinutes').value) || 0;
+
+        if (days === 0 && hours === 0 && minutes === 0) {
+          showMessage("Please set a duration greater than 0.", true);
+          return;
+        }
+
+        const now = new Date();
+        expiryDate = new Date(now.getTime() + (days * 24 * 60 * 60 * 1000) + (hours * 60 * 60 * 1000) + (minutes * 60 * 1000));
+      } else {
+        const dateStr = document.getElementById('expiryDate').value;
+        const timeStr = document.getElementById('expiryTime').value;
+
+        if (!dateStr || !timeStr) {
+          showMessage("Please select both date and time.", true);
+          return;
+        }
+
+        expiryDate = new Date(`${dateStr}T${timeStr}`);
+        const now = new Date();
+
+        if (expiryDate <= now) {
+          showMessage("Please select a future date and time.", true);
+          return;
+        }
+      }
+
+      isUpdating = true;
+      showMessage("Setting custom expiry...", false, true);
+
+      if (isBulkExpiry) {
+        // Update all faculty
+        const updates = facultyData.map(f => ({
+          name: f.name,
+          manualOverride: f.manualOverride,
+          overrideExpiry: expiryDate.toISOString()
+        }));
+
+        updateFaculty(updates)
+          .then(async () => {
+            const freshData = await fetchFacultyData();
+            if (freshData) {
+              facultyData = freshData;
+              render();
+              showMessage("Custom expiry set for all faculty.");
+            }
+          })
+          .catch(err => {
+            showMessage("Failed to set custom expiry.", true);
+            console.error(err);
+          })
+          .finally(() => {
+            isUpdating = false;
+          });
+      } else {
+        // Update single faculty
+        const facultyIndex = facultyData.findIndex(f => f.name === currentExpiryTarget);
+        if (facultyIndex !== -1) {
+          updateFaculty([{
+            name: currentExpiryTarget,
+            manualOverride: facultyData[facultyIndex].manualOverride,
+            overrideExpiry: expiryDate.toISOString()
+          }])
+            .then(async () => {
+              const freshData = await fetchFacultyData();
+              if (freshData) {
+                facultyData = freshData;
+                render(facultyIndex);
+                showMessage(`Custom expiry set for ${currentExpiryTarget}.`);
+              }
+            })
+            .catch(err => {
+              showMessage("Failed to set custom expiry.", true);
+              console.error(err);
+            })
+            .finally(() => {
+              isUpdating = false;
+            });
+        }
+      }
+
+      closeCustomExpiryModal();
+    }
+
+    // Add event listeners for modal
+    document.addEventListener('DOMContentLoaded', () => {
+      // Mode switching
+      document.querySelectorAll('.expiry-mode-btn').forEach(btn => {
+        btn.addEventListener('click', () => {
+          switchExpiryMode(btn.dataset.mode);
+        });
+      });
+
+      // Close modal when clicking outside
+      document.getElementById('customExpiryModal').addEventListener('click', (e) => {
+        if (e.target.id === 'customExpiryModal') {
+          closeCustomExpiryModal();
+        }
+      });
+
+      // Handle escape key
+      document.addEventListener('keydown', (e) => {
+        if (e.key === 'Escape' && document.getElementById('customExpiryModal').classList.contains('active')) {
+          closeCustomExpiryModal();
+        }
+      });
+    });
 
     // Your existing initialization code:
     fetchFacultyData()
