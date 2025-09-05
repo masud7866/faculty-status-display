@@ -1565,10 +1565,10 @@
           if (allManual) {
             bulkCustomExpiryBtn.classList.add('active');
           }
-          // Insert before the select element
+          // Insert after the select element
           const bulkStatusContainer = document.querySelector(".bulk-status");
           const selectElement = document.getElementById("bulkStatus");
-          bulkStatusContainer.insertBefore(bulkCustomExpiryBtn, selectElement);
+          bulkStatusContainer.insertBefore(bulkCustomExpiryBtn, selectElement.nextSibling);
         }
         bulkCustomExpiryBtn.disabled = !allManual;
         if (allManual) {
