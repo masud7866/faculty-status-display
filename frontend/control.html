@@ -436,27 +436,6 @@
       }
     }
 
-    @media (min-width: 900px) {
-      .faculty-card {
-        padding: 1.2rem;
-      }
-
-      .faculty-card label {
-        flex: 2.5;
-        max-width: 35%;
-      }
-
-      .faculty-card select {
-        flex: 1.8;
-        max-width: 220px;
-      }
-
-      .faculty-card button:last-child {
-        flex: 1.5;
-        max-width: 200px;
-      }
-    }
-
     @media (min-width: 600px) {
       .faculty-card {
         flex-direction: row;
@@ -493,8 +472,8 @@
 
       .faculty-card select {
         flex: 1.5;
-        min-width: 150px;
-        max-width: 150px;
+        min-width: 180px; /* Increase from 150px */
+        max-width: 200px; /* Increase from 150px */
       }
 
       .faculty-card button {
@@ -525,6 +504,27 @@
         /* Room/batch info container */
         width: 100%;
         flex-wrap: wrap;
+      }
+    }
+
+    @media (min-width: 900px) {
+      .faculty-card {
+        padding: 1.2rem;
+      }
+
+      .faculty-card label {
+        flex: 2.5;
+        max-width: 35%;
+      }
+
+      .faculty-card select {
+        flex: 1.8;
+        max-width: 260px; /* Increase from 220px */
+      }
+
+      .faculty-card button:last-child {
+        flex: 1.5;
+        max-width: 200px;
       }
     }
 
