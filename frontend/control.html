@@ -416,289 +416,90 @@
       }
     }
 
+    /* Improved PC layout for faculty cards */
     @media (min-width: 600px) {
       .faculty-card {
         flex-direction: row;
-        align-items: center;
+        align-items: flex-start;
         justify-content: space-between;
-        padding: 0.75rem;
-      }
-
-      .bulk-status {
-        margin: 0.75rem auto;
-        flex-direction: row;
-        align-items: center;
-      }
-
-      .bulk-status label {
-        flex: 1;
-      }
-
-      .bulk-status select {
-        flex: 2;
-      }
-
-      .bulk-status button {
-        flex: 1;
-        max-width: 200px;
+        padding: 1rem;
+        gap: 1rem;
       }
 
       .faculty-card label {
-        flex: 1;
+        flex: 2;
+        min-width: 0;
+        max-width: 40%;
       }
 
       .faculty-card select {
-        flex: 2;
+        flex: 1.5;
+        min-width: 150px;
+        max-width: 200px;
       }
 
-      .faculty-card button {
-        flex: 1;
+      .faculty-card .custom-expiry-btn-small {
+        flex: 0 0 auto;
+        min-width: 120px;
+        margin: 0 0.5rem;
+      }
+
+      .faculty-card button:last-child {
+        flex: 1.2;
+        min-width: 150px;
+        max-width: 180px;
+      }
+
+      /* Ensure faculty info doesn't break */
+      .faculty-card label div:first-child {
+        /* Main info container */
+        width: 100%;
+        min-width: 0;
+      }
+
+      .faculty-card label div:last-child {
+        /* Room/batch info container */
+        width: 100%;
+        flex-wrap: wrap;
+      }
+    }
+
+    /* Additional improvements for larger screens */
+    @media (min-width: 900px) {
+      .faculty-card {
+        padding: 1.2rem;
+      }
+
+      .faculty-card label {
+        flex: 2.5;
+        max-width: 35%;
+      }
+
+      .faculty-card select {
+        flex: 1.8;
+        max-width: 220px;
+      }
+
+      .faculty-card button:last-child {
+        flex: 1.5;
         max-width: 200px;
       }
     }
 
-    /* Add these styles to your existing CSS section */
-
-    .empty-rooms-btn {
-      padding: 0.7rem 1.3rem;
-      background: #059669;
-      color: #fff;
-      border: none;
-      border-radius: 10px;
-      cursor: pointer;
-      font-size: 1rem;
-      font-weight: 600;
-      letter-spacing: .5px;
-      box-shadow: 0 2px 8px rgba(16, 34, 74, .08);
-      transition: background-color 0.18s, transform 0.1s;
+    /* Ensure text doesn't break in smaller containers */
+    .faculty-card label > div:first-child > div {
+      /* Faculty name */
+      max-width: 100%;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
     }
 
-    .empty-rooms-btn:hover {
-      background: #047857;
-      transform: translateY(-1px);
-    }
-
-    .empty-rooms-overlay {
-      position: fixed;
-      top: 0;
-      left: 0;
-      right: 0;
-      bottom: 0;
-      background: rgba(0, 0, 0, 0.7);
-      z-index: 1000;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      padding: 20px;
-      opacity: 0;
-      visibility: hidden;
-      transition: all 0.3s ease;
-    }
-
-    .empty-rooms-overlay.active {
-      opacity: 1;
-      visibility: visible;
-    }
-
-    .empty-rooms-overlay.active .empty-rooms-content {
-      transform: scale(1);
-    }
-
-    .empty-rooms-header {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      margin-bottom: 20px;
-      padding-bottom: 15px;
-      border-bottom: 2px solid #e5e7eb;
-    }
-
-    .empty-rooms-title {
-      color: #1e3a8a;
-      font-size: 1.5rem;
-      font-weight: 600;
-      margin: 0;
-    }
-
-    .close-overlay-btn {
-      background: #ef4444;
-      color: white;
-      border: none;
-      border-radius: 8px;
-      padding: 8px 12px;
-      cursor: pointer;
-      font-size: 14px;
+    /* Style the room/batch badges */
+    .faculty-card label > div:last-child span {
+      white-space: nowrap;
       font-weight: 500;
-    }
-
-    .close-overlay-btn:hover {
-      background: #dc2626;
-    }
-
-    .time-slot-header {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      margin-bottom: 10px;
-    }
-
-    .time-slot-title {
-      font-size: 1.1rem;
-      font-weight: 600;
-      color: #1e3a8a;
-      margin: 0;
-    }
-
-    .time-slot-count {
-      background: #059669;
-      color: white;
-      padding: 4px 8px;
-      border-radius: 6px;
-      font-size: 0.8rem;
-      font-weight: 500;
-    }
-
-    .empty-rooms-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(80px, 1fr));
-      gap: 8px;
-      margin-top: 10px;
-    }
-
-    .room-item {
-      background: #10b981;
-      color: white;
-      padding: 8px 12px;
-      border-radius: 6px;
-      text-align: center;
-      font-weight: 500;
-      font-size: 0.9rem;
-    }
-
-    .room-item.occupied {
-      background: #ef4444;
-      opacity: 0.6;
-    }
-
-    .no-empty-rooms {
-      color: #6b7280;
-      font-style: italic;
-      text-align: center;
-      padding: 20px;
-      background: #fef3c7;
-      border-radius: 8px;
-      border: 1px solid #f59e0b;
-    }
-
-    .legend {
-      display: flex;
-      gap: 15px;
-      justify-content: center;
-      margin-bottom: 20px;
-      flex-wrap: wrap;
-    }
-
-    .legend-item {
-      display: flex;
-      align-items: center;
-      gap: 6px;
-      font-size: 0.9rem;
-    }
-
-    .legend-color {
-      width: 16px;
-      height: 16px;
-      border-radius: 4px;
-    }
-
-    .legend-available {
-      background: #10b981;
-    }
-
-    .legend-occupied {
-      background: #ef4444;
-    }
-
-    /* Add this to your existing CSS */
-    .empty-rooms-content {
-      background: white;
-      border-radius: 16px;
-      padding: 20px;
-      max-width: 900px;
-      width: 100%;
-      max-height: 90vh;
-      overflow-y: auto;
-      box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
-      transform: scale(0.9);
-      transition: transform 0.3s ease;
-      scroll-behavior: smooth;
-      /* Add smooth scrolling */
-    }
-
-    .current-time-indicator {
-      background: #fffaec !important;
-      border: 2px solid #f59e0b;
-      animation: pulse 2s infinite;
-      transition: transform 0.3s ease;
-      /* Add transition for scale animation */
-      scroll-margin-top: 20px;
-      /* Add scroll margin for better positioning */
-    }
-
-    .time-slot {
-      margin-bottom: 20px;
-      background: #f8fafc;
-      border-radius: 12px;
-      padding: 15px;
-      border-left: 4px solid #059669;
-      scroll-margin-top: 20px;
-      /* Add scroll margin for all time slots */
-    }
-
-    @keyframes pulse {
-
-      0%,
-      100% {
-        border-color: #fd7e14;
-      }
-
-      50% {
-        border-color: #f97316;
-      }
-    }
-
-    @keyframes fadeIn {
-      from {
-        opacity: 0;
-        transform: translate(-50%, -20px);
-      }
-
-      to {
-        opacity: 1;
-        transform: translate(-50%, 0);
-      }
-    }
-
-    @keyframes fadeOut {
-      from {
-        opacity: 1;
-        transform: translate(-50%, 0);
-      }
-
-      to {
-        opacity: 0;
-        transform: translate(-50%, -20px);
-      }
-    }
-
-    @keyframes progress {
-      from {
-        width: 100%;
-      }
-
-      to {
-        width: 0;
-      }
+      font-size: 0.7em;
     }
 
     /* Mobile responsiveness */
@@ -1375,13 +1176,39 @@
         img.style.objectFit = "cover";
 
         const label = document.createElement("label");
-        label.textContent = f.name;
         label.style.display = "flex";
-        label.style.alignItems = "center";
-        label.style.gap = "0.5rem";
-        label.prepend(img);
+        label.style.flexDirection = "column"; // Stack vertically
+        label.style.alignItems = "flex-start"; // Align to left
+        label.style.gap = "0.3rem";
+        label.style.flex = "1";
+        label.style.minWidth = "0"; // Allow shrinking
 
-        // --- Add this block to extract and show room/batch info ---
+        // Main faculty info container
+        const mainInfo = document.createElement("div");
+        mainInfo.style.display = "flex";
+        mainInfo.style.alignItems = "center";
+        mainInfo.style.gap = "0.5rem";
+        mainInfo.style.width = "100%";
+        mainInfo.style.minWidth = "0"; // Allow shrinking
+
+        // Faculty name
+        const nameDiv = document.createElement("div");
+        nameDiv.textContent = f.name;
+        nameDiv.style.fontWeight = "600";
+        nameDiv.style.color = "#1e3a8a";
+        nameDiv.style.fontSize = "1.05rem";
+        nameDiv.style.overflow = "hidden";
+        nameDiv.style.textOverflow = "ellipsis";
+        nameDiv.style.whiteSpace = "nowrap";
+        nameDiv.style.flex = "1";
+        nameDiv.style.minWidth = "0";
+
+        mainInfo.appendChild(img);
+        mainInfo.appendChild(nameDiv);
+
+        label.appendChild(mainInfo);
+
+        // Extract and show room/batch info
         let room = null,
           batch = null;
         let statusObj = hasValidManualOverride(f) ? f.manualOverride : f.status;
@@ -1395,20 +1222,35 @@
           const infoDiv = document.createElement("div");
           infoDiv.style.fontSize = "0.75em";
           infoDiv.style.color = "#6b7280";
-          infoDiv.style.marginLeft = "2.5em";
-          infoDiv.style.marginTop = "0.2em";
-          infoDiv.style.lineHeight = "1.3"; // Add line height for better spacing
+          infoDiv.style.display = "flex";
+          infoDiv.style.gap = "1rem";
+          infoDiv.style.flexWrap = "wrap";
+          infoDiv.style.marginTop = "0.1rem";
+          infoDiv.style.width = "100%";
 
-          let infoText = "";
-          if (room) infoText += `Room: ${room}`;
-          if (room && batch) infoText += "\n"; // Line break instead of " | "
-          if (batch) infoText += `Batch: ${batch}`;
+          if (room) {
+            const roomSpan = document.createElement("span");
+            roomSpan.textContent = `Room: ${room}`;
+            roomSpan.style.backgroundColor = "#f3f4f6";
+            roomSpan.style.padding = "2px 6px";
+            roomSpan.style.borderRadius = "4px";
+            roomSpan.style.border = "1px solid #e5e7eb";
+            infoDiv.appendChild(roomSpan);
+          }
 
-          infoDiv.style.whiteSpace = "pre-line"; // This allows line breaks to render
-          infoDiv.textContent = infoText;
+          if (batch) {
+            const batchSpan = document.createElement("span");
+            batchSpan.textContent = `Batch: ${batch}`;
+            batchSpan.style.backgroundColor = "#eff6ff";
+            batchSpan.style.padding = "2px 6px";
+            batchSpan.style.borderRadius = "4px";
+            batchSpan.style.border = "1px solid #dbeafe";
+            batchSpan.style.color = "#1e40af";
+            infoDiv.appendChild(batchSpan);
+          }
+
           label.appendChild(infoDiv);
         }
-        // --- End block ---
 
         const selectElement = document.createElement("select");
         selectElement.id = `status-${f.name}`;
@@ -2222,7 +2064,7 @@
         if (days === 0 && hours === 0 && minutes === 0) {
           showMessage("Please set a duration greater than 0.", true);
           return;
-        }
+               }
 
         const now = new Date();
         expiryDate = new Date(now.getTime() + (days * 24 * 60 * 60 * 1000) + (hours * 60 * 60 * 1000) + (minutes * 60 * 1000));
