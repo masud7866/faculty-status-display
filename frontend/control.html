@@ -1474,10 +1474,12 @@
           infoDiv.style.fontSize = "0.85em"; // Increased from 0.75em
           infoDiv.style.color = "#6b7280";
           infoDiv.style.display = "flex";
-          infoDiv.style.gap = "1rem";
-          infoDiv.style.flexWrap = "wrap";
+          infoDiv.style.flexDirection = "row";
+          infoDiv.style.gap = "0.5rem";
+          infoDiv.style.flexWrap = "nowrap";
           infoDiv.style.marginTop = "0.2rem"; // Increased margin
           infoDiv.style.width = "100%";
+          infoDiv.style.alignItems = "center";
 
           if (room) {
             const roomSpan = document.createElement("span");
@@ -1488,6 +1490,8 @@
             roomSpan.style.border = "1px solid #e5e7eb";
             roomSpan.style.fontSize = "0.9em"; // Added explicit font size
             roomSpan.style.fontWeight = "500"; // Added font weight
+            roomSpan.style.whiteSpace = "nowrap";
+            roomSpan.style.flexShrink = "0";
             infoDiv.appendChild(roomSpan);
           }
 
@@ -1501,6 +1505,8 @@
             batchSpan.style.color = "#1e40af";
             batchSpan.style.fontSize = "0.9em"; // Added explicit font size
             batchSpan.style.fontWeight = "500"; // Added font weight
+            roomSpan.style.whiteSpace = "nowrap";
+            roomSpan.style.flexShrink = "0";
             infoDiv.appendChild(batchSpan);
           }
 
