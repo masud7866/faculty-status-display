@@ -87,7 +87,7 @@
         gap: 0.7rem;
       }
 
-      .faculty-card > div:first-child {
+      .faculty-card>div:first-child {
         width: 100%;
       }
 
@@ -277,6 +277,26 @@
       margin-bottom: 0.2rem;
     }
 
+    /* Ensure text doesn't break in smaller containers */
+    .faculty-card label>div:first-child>div {
+      /* Faculty name */
+      max-width: 100%;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    /* Style the room/batch badges */
+    .faculty-card label>div:last-child span {
+      white-space: nowrap;
+      font-weight: 500;
+      font-size: 0.9em;
+      padding: 4px 8px;
+      border-radius: 6px;
+      display: inline-block;
+      margin: 2px;
+    }
+
     .faculty-card img {
       width: 44px;
       height: 44px;
@@ -416,12 +436,34 @@
       }
     }
 
+    @media (min-width: 900px) {
+      .faculty-card {
+        padding: 1.2rem;
+      }
+
+      .faculty-card label {
+        flex: 2.5;
+        max-width: 35%;
+      }
+
+      .faculty-card select {
+        flex: 1.8;
+        max-width: 220px;
+      }
+
+      .faculty-card button:last-child {
+        flex: 1.5;
+        max-width: 200px;
+      }
+    }
+
     @media (min-width: 600px) {
       .faculty-card {
         flex-direction: row;
-        align-items: center;
+        align-items: flex-start;
         justify-content: space-between;
-        padding: 0.75rem;
+        padding: 1rem;
+        gap: 1rem;
       }
 
       .bulk-status {
@@ -444,16 +486,45 @@
       }
 
       .faculty-card label {
-        flex: 1;
+        flex: 2;
+        min-width: 0;
+        max-width: 40%;
       }
 
       .faculty-card select {
-        flex: 2;
+        flex: 1.5;
+        min-width: 150px;
+        max-width: 150px;
       }
 
       .faculty-card button {
         flex: 1;
         max-width: 200px;
+      }
+
+      .faculty-card .custom-expiry-btn-small {
+        flex: 0 0 auto;
+        min-width: 120px;
+        margin: 0 0.5rem;
+      }
+
+      .faculty-card button:last-child {
+        flex: 1.2;
+        min-width: 150px;
+        max-width: 180px;
+      }
+
+      /* Ensure faculty info doesn't break */
+      .faculty-card label div:first-child {
+        /* Main info container */
+        width: 100%;
+        min-width: 0;
+      }
+
+      .faculty-card label div:last-child {
+        /* Room/batch info container */
+        width: 100%;
+        flex-wrap: wrap;
       }
     }
 
@@ -1375,13 +1446,39 @@
         img.style.objectFit = "cover";
 
         const label = document.createElement("label");
-        label.textContent = f.name;
         label.style.display = "flex";
-        label.style.alignItems = "center";
-        label.style.gap = "0.5rem";
-        label.prepend(img);
+        label.style.flexDirection = "column"; // Stack vertically
+        label.style.alignItems = "flex-start"; // Align to left
+        label.style.gap = "0.3rem";
+        label.style.flex = "1";
+        label.style.minWidth = "0"; // Allow shrinking
 
-        // --- Add this block to extract and show room/batch info ---
+        // Main faculty info container
+        const mainInfo = document.createElement("div");
+        mainInfo.style.display = "flex";
+        mainInfo.style.alignItems = "center";
+        mainInfo.style.gap = "0.5rem";
+        mainInfo.style.width = "100%";
+        mainInfo.style.minWidth = "0"; // Allow shrinking
+
+        // Faculty name
+        const nameDiv = document.createElement("div");
+        nameDiv.textContent = f.name;
+        nameDiv.style.fontWeight = "600";
+        nameDiv.style.color = "#1e3a8a";
+        nameDiv.style.fontSize = "1.05rem";
+        nameDiv.style.overflow = "hidden";
+        nameDiv.style.textOverflow = "ellipsis";
+        nameDiv.style.whiteSpace = "nowrap";
+        nameDiv.style.flex = "1";
+        nameDiv.style.minWidth = "0";
+
+        mainInfo.appendChild(img);
+        mainInfo.appendChild(nameDiv);
+
+        label.appendChild(mainInfo);
+
+        // Extract and show room/batch info
         let room = null,
           batch = null;
         let statusObj = hasValidManualOverride(f) ? f.manualOverride : f.status;
@@ -1393,19 +1490,39 @@
         // Only show if room or batch exists
         if (room || batch) {
           const infoDiv = document.createElement("div");
-          infoDiv.style.fontSize = "0.75em";
+          infoDiv.style.fontSize = "0.85em"; // Increased from 0.75em
           infoDiv.style.color = "#6b7280";
-          infoDiv.style.marginLeft = "2.5em";
-          infoDiv.style.marginTop = "0.2em";
-          infoDiv.style.lineHeight = "1.3"; // Add line height for better spacing
+          infoDiv.style.display = "flex";
+          infoDiv.style.gap = "1rem";
+          infoDiv.style.flexWrap = "wrap";
+          infoDiv.style.marginTop = "0.2rem"; // Increased margin
+          infoDiv.style.width = "100%";
 
-          let infoText = "";
-          if (room) infoText += `Room: ${room}`;
-          if (room && batch) infoText += "\n"; // Line break instead of " | "
-          if (batch) infoText += `Batch: ${batch}`;
+          if (room) {
+            const roomSpan = document.createElement("span");
+            roomSpan.textContent = `Room: ${room}`;
+            roomSpan.style.backgroundColor = "#f3f4f6";
+            roomSpan.style.padding = "4px 8px"; // Increased padding
+            roomSpan.style.borderRadius = "6px"; // Increased border radius
+            roomSpan.style.border = "1px solid #e5e7eb";
+            roomSpan.style.fontSize = "0.9em"; // Added explicit font size
+            roomSpan.style.fontWeight = "500"; // Added font weight
+            infoDiv.appendChild(roomSpan);
+          }
 
-          infoDiv.style.whiteSpace = "pre-line"; // This allows line breaks to render
-          infoDiv.textContent = infoText;
+          if (batch) {
+            const batchSpan = document.createElement("span");
+            batchSpan.textContent = `Batch: ${batch}`;
+            batchSpan.style.backgroundColor = "#eff6ff";
+            batchSpan.style.padding = "4px 8px"; // Increased padding
+            batchSpan.style.borderRadius = "6px"; // Increased border radius
+            batchSpan.style.border = "1px solid #dbeafe";
+            batchSpan.style.color = "#1e40af";
+            batchSpan.style.fontSize = "0.9em"; // Added explicit font size
+            batchSpan.style.fontWeight = "500"; // Added font weight
+            infoDiv.appendChild(batchSpan);
+          }
+
           label.appendChild(infoDiv);
         }
         // --- End block ---
@@ -1776,10 +1893,10 @@
       const now = new Date();
       const hour = now.getHours();
       const minute = now.getMinutes();
-      
+
       // Convert current time to minutes from midnight for easier comparison
       const currentTimeInMinutes = hour * 60 + minute;
-      
+
       console.log(`Current time: ${hour}:${minute.toString().padStart(2, '0')} (${currentTimeInMinutes} minutes from midnight)`);
 
       for (let i = 0; i < TIME_SLOTS.length; i++) {
@@ -1797,7 +1914,7 @@
           return TIME_SLOTS[i];
         }
       }
-      
+
       console.log('No current time slot found - outside class hours');
       return null;
     }
@@ -2009,16 +2126,16 @@
       const currentHour = now.getHours();
       const currentMinute = now.getMinutes();
       const currentTime = currentHour * 60 + currentMinute; // Convert to minutes
-      
+
       // Convert 8 AM and 6 PM to minutes for comparison
       const classStartTime = 8 * 60; // 8:00 AM = 480 minutes
       const classEndTime = 18 * 60; // 6:00 PM = 1080 minutes
-      
+
       let targetIndex = 0;
-      
+
       console.log(`Current time: ${currentHour}:${currentMinute.toString().padStart(2, '0')} (${currentTime} minutes)`);
       console.log(`Class hours: ${classStartTime} - ${classEndTime} minutes`);
-      
+
       if (currentTime < classStartTime) {
         // Before 8 AM - scroll to first slot  
         targetIndex = 0;
@@ -2044,7 +2161,7 @@
       // Wait for DOM to be fully rendered
       setTimeout(() => {
         let scrollTarget;
-        
+
         if (currentTime < classStartTime) {
           // Before class hours - scroll to top
           scrollTarget = 0;
@@ -2066,7 +2183,7 @@
             const elementTop = targetElement.offsetTop;
             const elementHeight = targetElement.offsetHeight;
             const containerHeight = container.clientHeight;
-            
+
             // Center the element in the container
             scrollTarget = Math.max(0, elementTop - (containerHeight / 2) + (elementHeight / 2));
             console.log('Scrolling to center current slot during class hours', {
