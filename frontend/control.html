@@ -1227,7 +1227,8 @@
       "in_meeting",
       "on_weekend",
       "postponed",
-      "exam_duty"
+      "exam_duty",
+      "on_break"
     ];
 
     const labels = {
@@ -1238,7 +1239,8 @@
       in_meeting: "In Meeting",
       on_weekend: "On Weekend",
       postponed: "Postpone Class",
-      exam_duty: "Exam Duty"
+      exam_duty: "Exam Duty",
+      on_break: "On Break"
     };
 
     // ADD THESE MISSING CONSTANTS:
@@ -1548,7 +1550,7 @@
           facultyData[i].manualOverride = newValue;
           const now = new Date();
           let expiry = new Date(now);
-          if (["in_class", "at_dept", "in_meeting"].includes(newValue)) {
+          if (["in_class", "at_dept", "in_meeting", "on_break"].includes(newValue)) {
             expiry.setUTCHours(expiry.getUTCHours() + 1);
           } else {
             expiry.setUTCHours(17, 59, 59, 999);
