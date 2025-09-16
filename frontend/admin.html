@@ -440,16 +440,6 @@
             transition: width 0.3s ease;
         }
 
-        .mobile-hide {
-            display: none;
-        }
-
-        @media (min-width: 640px) {
-            .mobile-hide {
-                display: block;
-            }
-        }
-
         /* Mobile optimizations */
         @media (max-width: 639px) {
             body {
@@ -478,6 +468,7 @@
 
             .form-control {
                 padding: 6px;
+                font-size: 13px;
             }
 
             .tabs {
@@ -487,6 +478,37 @@
             .tab {
                 padding: 8px 12px;
                 font-size: 12px;
+            }
+
+            /* Make form labels smaller on mobile */
+            .form-group label {
+                font-size: 12px;
+            }
+
+            /* Adjust class input spacing on mobile */
+            .class-input {
+                gap: 6px;
+            }
+
+            .class-input .form-group label {
+                margin-bottom: 2px;
+            }
+        }
+
+        @media (max-width: 479px) {
+            .class-input {
+                grid-template-columns: 1fr;
+                /* Stack all fields vertically on very small screens */
+                gap: 8px;
+            }
+
+            .class-input .form-group {
+                margin-bottom: 8px;
+            }
+
+            .class-input button {
+                justify-self: center;
+                width: 100px;
             }
         }
 
@@ -568,6 +590,13 @@
         @keyframes spin {
             to {
                 transform: rotate(360deg);
+            }
+        }
+
+        @media (min-width: 480px) {
+            .class-input {
+                grid-template-columns: 1fr 1fr 1fr auto;
+                /* Small screens: Add Room */
             }
         }
 
@@ -1038,11 +1067,11 @@
                     <label>End</label>
                     <input type="time" class="form-control" id="class-${day}-${classIndex}-end">
                 </div>
-                <div class="form-group mobile-hide">
+                <div class="form-group">
                     <label>Room</label>
                     <input type="text" class="form-control" id="class-${day}-${classIndex}-room" placeholder="B2-103">
                 </div>
-                <div class="form-group mobile-hide">
+                <div class="form-group">
                     <label>Batch</label>
                     <input type="text" class="form-control" id="class-${day}-${classIndex}-batch" placeholder="1st-CSE-A">
                 </div>
