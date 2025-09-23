@@ -806,6 +806,12 @@
                     <div class="btn-group" style="margin-bottom: 15px;">
                         <button onclick="loadFaculty()" class="btn btn-primary">Refresh List</button>
                         <button onclick="exportFaculty()" class="btn btn-secondary">Export JSON</button>
+                        <button onclick="syncDatabaseToJSON()" class="btn btn-warning">Sync to JSON File</button>
+                    </div>
+                    <div class="file-info" style="margin-bottom: 15px;">
+                        <strong>Persistence:</strong> Faculty changes are now automatically saved to both database and JSON file.<br>
+                        <strong>Manual Sync:</strong> Use "Sync to JSON File" button if you suspect data is out of sync.<br>
+                        <strong>File Location:</strong> backend/faculty.json (updated automatically)
                     </div>
                     <div id="facultyList"></div>
                 </div>
@@ -1322,7 +1328,8 @@
                 image: document.getElementById('image').value || '/images/default.jpg',
                 weekend: [],
                 officeHours: {},
-                classTimes: {}
+                classTimes: {},
+                status: 'unknown' // Add default status
             };
 
             // Get weekend days
@@ -1390,9 +1397,42 @@
                     return;
                 }
 
-                showToast(`Faculty ${isEditMode ? 'updated' : 'added'} successfully!`);
+                // SUCCESS: Faculty added/updated in database
+                showToast(`Faculty ${isEditMode ? 'updated' : 'added'} successfully! Updating JSON file...`, 'success');
+
+                // Now update the JSON file to persist the change
+                try {
+                    // Get current faculty list
+                    const facultyResponse = await fetch(`${API_BASE}/api/faculty`, { credentials: 'include' });
+                    if (facultyResponse.ok) {
+                        const currentFaculty = await facultyResponse.json();
+
+                        // Update faculty.json file on GitHub
+                        const jsonUpdateResponse = await fetch(`${API_BASE}/api/upload`, {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json' },
+                            credentials: 'include',
+                            body: JSON.stringify({
+                                filename: 'faculty.json',
+                                content: btoa(JSON.stringify(currentFaculty, null, 2)),
+                                path: 'backend'
+                            })
+                        });
+
+                        if (jsonUpdateResponse.ok) {
+                            showToast('✅ Changes saved to JSON file - will persist after restart!', 'success');
+                        } else {
+                            showToast('⚠️ Faculty saved but JSON update failed - changes may not persist', 'warning');
+                        }
+                    }
+                } catch (jsonError) {
+                    console.error('JSON update error:', jsonError);
+                    showToast('⚠️ Faculty saved but JSON backup failed - changes may not persist', 'warning');
+                }
+
                 resetForm();
                 loadFaculty();
+
             } catch (error) {
                 showToast(`Error ${isEditMode ? 'updating' : 'adding'} faculty`, 'error');
                 console.error(error);
@@ -1477,7 +1517,37 @@
                     return;
                 }
 
-                showToast('Faculty deleted successfully!');
+                showToast('Faculty deleted successfully! Updating JSON file...', 'success');
+
+                // Update the JSON file to persist the deletion
+                try {
+                    // Get updated faculty list
+                    const facultyResponse = await fetch(`${API_BASE}/api/faculty`, { credentials: 'include' });
+                    if (facultyResponse.ok) {
+                        const currentFaculty = await facultyResponse.json();
+
+                        // Update faculty.json file on GitHub
+                        const jsonUpdateResponse = await fetch(`${API_BASE}/api/upload`, {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json' },
+                            credentials: 'include',
+                            body: JSON.stringify({
+                                filename: 'faculty.json',
+                                content: btoa(JSON.stringify(currentFaculty, null, 2)),
+                                path: 'backend'
+                            })
+                        });
+
+                        if (jsonUpdateResponse.ok) {
+                            showToast('✅ Deletion saved to JSON file - will persist after restart!', 'success');
+                        } else {
+                            showToast('⚠️ Faculty deleted but JSON update failed', 'warning');
+                        }
+                    }
+                } catch (jsonError) {
+                    console.error('JSON update error:', jsonError);
+                    showToast('⚠️ Faculty deleted but JSON backup failed', 'warning');
+                }
 
                 // Cancel edit if we're editing the deleted faculty
                 if (document.getElementById('editMode').value === 'true' &&
@@ -1486,13 +1556,14 @@
                 }
 
                 loadFaculty();
+
             } catch (error) {
                 showToast('Error deleting faculty', 'error');
                 console.error(error);
             }
         }
 
-        function exportFaculty() {
+        async function exportFaculty() {
             fetch(`${API_BASE}/api/faculty`, { credentials: 'include' })
                 .then(r => {
                     if (!r.ok) {
@@ -1519,6 +1590,43 @@
                     showToast('Export failed', 'error');
                     console.error(error);
                 });
+        }
+
+        // Add this new function after the existing functions
+        async function syncDatabaseToJSON() {
+            try {
+                showToast('Syncing database to JSON file...', 'info');
+
+                // Get current faculty from database
+                const facultyResponse = await fetch(`${API_BASE}/api/faculty`, { credentials: 'include' });
+                if (!facultyResponse.ok) {
+                    throw new Error('Failed to get faculty data');
+                }
+
+                const currentFaculty = await facultyResponse.json();
+
+                // Update faculty.json file on GitHub
+                const jsonUpdateResponse = await fetch(`${API_BASE}/api/upload`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    credentials: 'include',
+                    body: JSON.stringify({
+                        filename: 'faculty.json',
+                        content: btoa(JSON.stringify(currentFaculty, null, 2)),
+                        path: 'backend'
+                    })
+                });
+
+                if (!jsonUpdateResponse.ok) {
+                    throw new Error('Failed to update JSON file');
+                }
+
+                showToast('✅ Database successfully synced to JSON file!', 'success');
+
+            } catch (error) {
+                showToast(`Sync failed: ${error.message}`, 'error');
+                console.error('Sync error:', error);
+            }
         }
 
         // Marquee Management
