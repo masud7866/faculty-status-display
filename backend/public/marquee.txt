@@ -1,1 +1,6 @@
-Welcome to Faculty Status Display System
+Marquee Summary:
+📢 Recovery Midterm Exam (Summer-2025) starts Oct 21 (Tue).
+Apply online at examcontrol.ugv.edu.bd by Oct 18 (Sat) and collect Admit Card by Oct 19 (Sun) from Accounts.
+No admit card → No exam.
+Must attend Midterm to sit for Final.
+Less than 60% attendance → same semester.
