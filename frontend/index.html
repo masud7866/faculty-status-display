@@ -261,7 +261,7 @@
       left: 0;
       bottom: 0;
       width: 100vw;
-      height: 1.8em;
+      height: 1.5em;
       background: #1e293b;
       color: #fff;
       font-size: 1em;
@@ -269,7 +269,7 @@
       overflow: hidden;
       font-family: 'Orbitron', 'Inter', Arial, sans-serif;
       border-top: 2px solid #374151;
-      padding-top: 4px;
+      padding-top: 2px;
       display: flex;
       align-items: center;
     }
@@ -277,20 +277,20 @@
     #dateTimeDisplay {
       position: absolute;
       left: 0;
-      top: 4px;
+      top: 2px;
       bottom: 0;
       background: #2563eb;
       color: #fff;
-      padding: 0.15em 0.4em;
+      padding: 0.1em 0.3em;
       font-weight: 600;
       white-space: nowrap;
       border-right: 2px solid #38bdf8;
-      min-width: 160px;
-      max-width: 180px;
+      min-width: 140px;
+      max-width: 160px;
       text-align: center;
       box-shadow: 0 0 8px #2563eb44;
-      font-size: 0.7em;
-      line-height: 1;
+      font-size: 0.65em;
+      line-height: 0.9;
       display: flex;
       flex-direction: column;
       justify-content: center;
@@ -299,27 +299,27 @@
 
     .clock-section {
       font-size: 1em;
-      margin-bottom: 2px;
+      margin-bottom: 1px;
       color: #fff;
     }
 
     .date-section {
-      font-size: 0.85em;
+      font-size: 0.8em;
       color: #fff;
     }
 
     .time-separator {
-      width: 80%;
+      width: 70%;
       height: 1px;
       background: #38bdf8;
-      margin: 2px auto;
+      margin: 1px auto;
       opacity: 0.6;
     }
 
     #marqueeText {
       position: absolute;
-      left: 180px;
-      top: 4px;
+      left: 160px;
+      top: 2px;
       bottom: 0;
       right: 0;
       white-space: nowrap;
@@ -341,7 +341,7 @@
       left: 0;
       top: 0;
       width: 100%;
-      height: 4px;
+      height: 2px;
       background: #0f172a;
       z-index: 10004;
       border-top: 1px solid #475569;
@@ -943,7 +943,7 @@
       }
 
       const container = marquee.parentElement;
-      const containerWidth = container.offsetWidth - 180; // Account for smaller date-time display
+      const containerWidth = container.offsetWidth - 160; // Account for smaller date-time display
       const textWidth = marquee.scrollWidth;
 
       // If text fits in container, no need to scroll
