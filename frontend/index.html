@@ -298,18 +298,19 @@
       gap: 0.5em;
     }
 
+    .clock-section {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      font-size: 0.9em;
+      color: #60a5fa;
+    }
+
     .date-section {
       display: flex;
       flex-direction: column;
       align-items: center;
       font-size: 0.9em;
-    }
-
-    .clock-section {
-      display: flex;
-      align-items: center;
-      gap: 0.1em;
-      font-size: 0.8em;
     }
 
     #marqueeText {
@@ -385,50 +386,6 @@
       background: linear-gradient(90deg, #dc2626, #ef4444);
       box-shadow: 0 0 4px rgba(239, 68, 68, 0.5);
     }
-
-    /* 7-segment digit SVG component */
-    .seven-segment {
-      width: 16px !important;
-      height: 28px !important;
-      display: inline-block;
-      vertical-align: middle;
-    }
-
-    .seven-segment .seg {
-      fill: #333;
-      transition: fill 0.2s;
-      opacity: 0.25;
-    }
-
-    .seven-segment .seg.lit {
-      fill: #38bdf8;
-      filter: drop-shadow(0 0 3px #38bdf8);
-      opacity: 1;
-    }
-
-    .digit-bg {
-      background: #222;
-      border-radius: 3px;
-      margin: 0 0.5px;
-      display: inline-block;
-      box-shadow: 0 0 4px #222;
-    }
-
-    .colon {
-      margin: 0 0.5px;
-    }
-
-    .ampm {
-      display: inline-block;
-      width: 1.5em;
-      text-align: left;
-      font-size: 0.7em;
-      margin-left: 0.2em;
-      color: #60a5fa;
-      letter-spacing: 0.1em;
-      vertical-align: middle;
-      font-family: 'Orbitron', 'Inter', 'Segoe UI', monospace, Arial, sans-serif;
-    }
   </style>
 </head>
 
@@ -453,8 +410,8 @@
   <!-- Marquee Footer -->
   <footer id="marqueeFooter">
     <div id="dateTimeDisplay">
-      <div class="date-section" id="dateDisplay"></div>
       <div class="clock-section" id="clock"></div>
+      <div class="date-section" id="dateDisplay"></div>
     </div>
     <div id="marqueeText"></div>
     <div id="adProgress">
@@ -474,19 +431,6 @@
       postponed: "Class Postponed",
       exam_duty: "On Exam Invigilation",
       on_break: "On Break"
-    };
-
-    const SEGMENTS = {
-      "0": ["a", "b", "c", "d", "e", "f"],
-      "1": ["b", "c"],
-      "2": ["a", "b", "g", "e", "d"],
-      "3": ["a", "b", "g", "c", "d"],
-      "4": ["f", "g", "b", "c"],
-      "5": ["a", "f", "g", "c", "d"],
-      "6": ["a", "f", "g", "e", "c", "d"],
-      "7": ["a", "b", "c"],
-      "8": ["a", "b", "c", "d", "e", "f", "g"],
-      "9": ["a", "b", "c", "d", "f", "g"]
     };
 
     // Global variables with proper state management
@@ -566,70 +510,11 @@
       }
     }
 
-    function renderDigit(digit) {
-      const segs = SEGMENTS[digit] || [];
-      return `
-        <span class="digit-bg">
-          <svg width="16" height="28" viewBox="0 0 32 56" class="seven-segment">
-            <rect class="seg seg-a${segs.includes('a') ? ' lit' : ''}" x="4" y="2" width="24" height="4" rx="2"/>
-            <rect class="seg seg-b${segs.includes('b') ? ' lit' : ''}" x="26" y="6" width="4" height="20" rx="2"/>
-            <rect class="seg seg-c${segs.includes('c') ? ' lit' : ''}" x="26" y="30" width="4" height="20" rx="2"/>
-            <rect class="seg seg-d${segs.includes('d') ? ' lit' : ''}" x="4" y="50" width="24" height="4" rx="2"/>
-            <rect class="seg seg-e${segs.includes('e') ? ' lit' : ''}" x="2" y="30" width="4" height="20" rx="2"/>
-            <rect class="seg seg-f${segs.includes('f') ? ' lit' : ''}" x="2" y="6" width="4" height="20" rx="2"/>
-            <rect class="seg seg-g${segs.includes('g') ? ' lit' : ''}" x="4" y="26" width="24" height="4" rx="2"/>
-          </svg>
-        </span>
-      `;
-    }
-
-    function renderColon() {
-      return `
-        <span class="digit-bg colon">
-          <svg width="6" height="28" viewBox="0 0 12 56">
-            <circle cx="6" cy="16" r="2" fill="#38bdf8" filter="url(#glow)"/>
-            <circle cx="6" cy="40" r="2" fill="#38bdf8" filter="url(#glow)"/>
-            <defs>
-              <filter id="glow" x="-3" y="-3" width="18" height="18">
-                <feGaussianBlur stdDeviation="1" result="coloredBlur"/>
-                <feMerge>
-                  <feMergeNode in="coloredBlur"/>
-                  <feMergeNode in="SourceGraphic"/>
-                </feMerge>
-              </filter>
-            </defs>
-          </svg>
-        </span>
-      `;
-    }
-
-    function renderClock(h, m, s, ampm) {
+    function updateClock() {
       if (!clockContainer) {
         clockContainer = document.getElementById("clock");
       }
 
-      const digits = [
-        ...String(h).padStart(2, '0'),
-        ...String(m).padStart(2, '0'),
-        ...String(s).padStart(2, '0')
-      ];
-
-      const html = `
-        ${renderDigit(digits[0])}
-        ${renderDigit(digits[1])}
-        ${renderColon()}
-        ${renderDigit(digits[2])}
-        ${renderDigit(digits[3])}
-        ${renderColon()}
-        ${renderDigit(digits[4])}
-        ${renderDigit(digits[5])}
-        <span class="ampm">${ampm}</span>
-      `;
-
-      clockContainer.innerHTML = html;
-    }
-
-    function updateClock() {
       const now = new Date();
       let h = now.getHours();
       let m = now.getMinutes();
@@ -637,7 +522,10 @@
       const ampm = h >= 12 ? 'PM' : 'AM';
       h = h % 12;
       h = h ? h : 12;
-      renderClock(h, m, s, ampm);
+
+      const timeString = `${h.toString().padStart(2, '0')}:${m.toString().padStart(2, '0')}:${s.toString().padStart(2, '0')}`;
+      
+      clockContainer.innerHTML = `<div>${timeString}</div><div>${ampm}</div>`;
     }
 
     function adjustLayout() {
