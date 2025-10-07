@@ -1647,7 +1647,7 @@
     "designation": "Lab Instructor",
     "contact": "01896287005",
     "email": "sakibzaman.ugv@gmail.com",
-    "image": "/images/default.jpg",
+    "image": "/images/md.sakibuzzaman.jpg",
     "weekend": [
       "Friday"
     ],
@@ -1737,7 +1737,11 @@
         }
       ]
     },
-    "status": "off_duty",
+    "status": {
+      "status": "in_class",
+      "room": "B1-402",
+      "batch": "8th-Eng"
+    },
     "manualOverride": null,
     "overrideExpiry": null
   }
