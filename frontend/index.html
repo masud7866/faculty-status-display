@@ -261,7 +261,7 @@
       left: 0;
       bottom: 0;
       width: 100vw;
-      height: 2.5em;
+      height: 1.8em;
       background: #1e293b;
       color: #fff;
       font-size: 1em;
@@ -269,7 +269,7 @@
       overflow: hidden;
       font-family: 'Orbitron', 'Inter', Arial, sans-serif;
       border-top: 2px solid #374151;
-      padding-top: 8px;
+      padding-top: 4px;
       display: flex;
       align-items: center;
     }
@@ -277,46 +277,49 @@
     #dateTimeDisplay {
       position: absolute;
       left: 0;
-      top: 8px;
+      top: 4px;
       bottom: 0;
       background: #2563eb;
       color: #fff;
-      padding: 0.2em 0.6em;
+      padding: 0.15em 0.4em;
       font-weight: 600;
       white-space: nowrap;
       border-right: 2px solid #38bdf8;
-      min-width: 280px;
-      max-width: 300px;
+      min-width: 160px;
+      max-width: 180px;
       text-align: center;
       box-shadow: 0 0 8px #2563eb44;
-      font-size: 0.85em;
-      line-height: 1.1;
+      font-size: 0.7em;
+      line-height: 1;
       display: flex;
-      align-items: center;
-      justify-content: space-between;
+      flex-direction: column;
+      justify-content: center;
       z-index: 10002;
-      gap: 0.5em;
     }
 
     .clock-section {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      font-size: 0.9em;
-      color: #60a5fa;
+      font-size: 1em;
+      margin-bottom: 2px;
+      color: #fff;
     }
 
     .date-section {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      font-size: 0.9em;
+      font-size: 0.85em;
+      color: #fff;
+    }
+
+    .time-separator {
+      width: 80%;
+      height: 1px;
+      background: #38bdf8;
+      margin: 2px auto;
+      opacity: 0.6;
     }
 
     #marqueeText {
       position: absolute;
-      left: 300px;
-      top: 8px;
+      left: 180px;
+      top: 4px;
       bottom: 0;
       right: 0;
       white-space: nowrap;
@@ -338,7 +341,7 @@
       left: 0;
       top: 0;
       width: 100%;
-      height: 8px;
+      height: 4px;
       background: #0f172a;
       z-index: 10004;
       border-top: 1px solid #475569;
@@ -360,7 +363,7 @@
       left: 50%;
       transform: translate(-50%, -50%);
       color: #fff;
-      font-size: 11px;
+      font-size: 9px;
       font-weight: 600;
       text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.9);
       font-family: 'Orbitron', 'Inter', Arial, sans-serif;
@@ -411,6 +414,7 @@
   <footer id="marqueeFooter">
     <div id="dateTimeDisplay">
       <div class="clock-section" id="clock"></div>
+      <div class="time-separator"></div>
       <div class="date-section" id="dateDisplay"></div>
     </div>
     <div id="marqueeText"></div>
@@ -523,9 +527,9 @@
       h = h % 12;
       h = h ? h : 12;
 
-      const timeString = `${h.toString().padStart(2, '0')}:${m.toString().padStart(2, '0')}:${s.toString().padStart(2, '0')}`;
+      const timeString = `${h.toString().padStart(2, '0')}:${m.toString().padStart(2, '0')}:${s.toString().padStart(2, '0')} ${ampm}`;
       
-      clockContainer.innerHTML = `<div>${timeString}</div><div>${ampm}</div>`;
+      clockContainer.textContent = timeString;
     }
 
     function adjustLayout() {
@@ -939,7 +943,7 @@
       }
 
       const container = marquee.parentElement;
-      const containerWidth = container.offsetWidth - 300; // Account for date-time display
+      const containerWidth = container.offsetWidth - 180; // Account for smaller date-time display
       const textWidth = marquee.scrollWidth;
 
       // If text fits in container, no need to scroll
@@ -990,7 +994,7 @@
       const month = months[now.getMonth()];
       const year = now.getFullYear();
 
-      dateDisplay.innerHTML = `<div>${dayName}, ${day} ${month}</div><div>${year}</div>`;
+      dateDisplay.textContent = `${dayName}, ${day} ${month} ${year}`;
     }
 
     function formatTime(seconds) {
