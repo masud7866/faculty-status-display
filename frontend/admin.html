@@ -806,6 +806,7 @@
                         <button onclick="loadFaculty()" class="btn btn-primary">Refresh List</button>
                         <button onclick="exportFaculty()" class="btn btn-secondary">Export JSON</button>
                         <button onclick="syncDatabaseToJSON()" class="btn btn-warning">Sync to JSON File</button>
+                        <button onclick="showPriorityManager()" class="btn btn-success">🔢 Set Display Order</button>
                     </div>
                     <div class="file-info" style="margin-bottom: 15px;">
                         <strong>Persistence:</strong> Faculty changes are now automatically saved to both database and JSON file.<br>
@@ -1468,15 +1469,26 @@
                 const faculty = await response.json();
                 facultyData = faculty; // Store for editing
 
+                // Sort faculty by precedence (lower numbers first), then by name
+                const sortedFaculty = faculty.sort((a, b) => {
+                    const precedenceA = a.precedence || 50;
+                    const precedenceB = b.precedence || 50;
+                    
+                    if (precedenceA !== precedenceB) {
+                        return precedenceA - precedenceB; // Lower numbers first
+                    }
+                    return a.name.localeCompare(b.name); // Alphabetical as secondary sort
+                });
+
                 const container = document.getElementById('facultyList');
                 container.innerHTML = '';
 
-                if (faculty.length === 0) {
+                if (sortedFaculty.length === 0) {
                     container.innerHTML = '<p>No faculty found. Add some faculty members using the form above.</p>';
                     return;
                 }
 
-                faculty.forEach(f => {
+                sortedFaculty.forEach((f, index) => {
                     let displayImagePath = f.image;
                     if (f.image && f.image.startsWith('/images/')) {
                         displayImagePath = f.image;
@@ -1484,17 +1496,23 @@
                         displayImagePath = f.image;
                     }
 
+                    const precedenceDisplay = f.precedence || 50;
+
                     const facultyCard = document.createElement('div');
                     facultyCard.className = 'faculty-card';
                     facultyCard.innerHTML = `
                         <div class="faculty-header">
-                            <div class="faculty-name">${f.name}</div>
+                            <div class="faculty-name">
+                                <span style="background: #2563eb; color: white; padding: 2px 6px; border-radius: 4px; font-size: 11px; margin-right: 8px;">#${index + 1}</span>
+                                ${f.name}
+                            </div>
                             <div class="faculty-actions">
                                 <button class="btn btn-primary" onclick="editFaculty('${f.name.replace(/'/g, "\\'")}')">Edit</button>
                                 <button class="btn btn-danger" onclick="deleteFaculty('${f.name.replace(/'/g, "\\'")}')">Delete</button>
                             </div>
                         </div>
                         <div class="faculty-info"><strong>Designation:</strong> ${f.designation || 'N/A'}</div>
+                        <div class="faculty-info"><strong>Display Order:</strong> #${index + 1} <small style="color: #6b7280;">(Priority: ${precedenceDisplay})</small></div>
                         <div class="faculty-info"><strong>Contact:</strong> ${f.contact || 'N/A'}</div>
                         <div class="faculty-info"><strong>Email:</strong> ${f.email || 'N/A'}</div>
                         <div class="faculty-info"><strong>Image Path:</strong> ${displayImagePath || 'N/A'}</div>
@@ -1504,7 +1522,7 @@
                     container.appendChild(facultyCard);
                 });
 
-                showToast(`Loaded ${faculty.length} faculty members`, 'info');
+                showToast(`Loaded ${sortedFaculty.length} faculty members (sorted by display order)`, 'info');
             } catch (error) {
                 showToast('Failed to load faculty', 'error');
                 console.error(error);
@@ -2256,6 +2274,170 @@
                 console.error('Failed to update faculty.json:', error);
             }
             return false;
+        }
+
+        async function showPriorityManager() {
+            if (facultyData.length === 0) {
+                showToast('No faculty data loaded. Please refresh first.', 'error');
+                return;
+            }
+
+            const modal = document.createElement('div');
+            modal.className = 'modal';
+            modal.innerHTML = `
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h3 class="modal-title">Faculty Display Order</h3>
+                        <button class="close-btn" onclick="this.closest('.modal').remove()">&times;</button>
+                    </div>
+                    <div style="margin-bottom: 15px;">
+                        <small style="color: #6b7280;">
+                            <strong>Instructions:</strong> Drag and drop faculty names to reorder them. 
+                            Faculty at the top will appear first on the display.
+                        </small>
+                    </div>
+                    <div id="priorityList" style="max-height: 400px; overflow-y: auto;"></div>
+                    <div style="margin-top: 15px; text-align: right;">
+                        <button class="btn btn-secondary" onclick="this.closest('.modal').remove()">Cancel</button>
+                        <button class="btn btn-primary" onclick="savePriorities()">Save Order</button>
+                    </div>
+                </div>
+            `;
+
+            // Sort by current precedence for editing (or alphabetically if no precedence)
+            const sortedFaculty = [...facultyData].sort((a, b) => {
+                const precedenceA = a.precedence || 50;
+                const precedenceB = b.precedence || 50;
+                if (precedenceA !== precedenceB) {
+                    return precedenceA - precedenceB;
+                }
+                return a.name.localeCompare(b.name);
+            });
+
+            const priorityList = modal.querySelector('#priorityList');
+            sortedFaculty.forEach((faculty, index) => {
+                const priorityItem = document.createElement('div');
+                priorityItem.className = 'priority-item';
+                priorityItem.draggable = true;
+                priorityItem.dataset.facultyName = faculty.name;
+                priorityItem.style.cssText = `
+                    display: flex; 
+                    align-items: center; 
+                    gap: 10px; 
+                    padding: 12px; 
+                    border: 1px solid #e5e7eb; 
+                    border-radius: 6px; 
+                    margin-bottom: 8px; 
+                    background: #f9fafb;
+                    cursor: move;
+                    transition: all 0.2s;
+                `;
+                
+                priorityItem.innerHTML = `
+                    <span style="background: #2563eb; color: white; padding: 4px 8px; border-radius: 4px; font-size: 12px; min-width: 40px; text-align: center;">#${index + 1}</span>
+                    <span style="flex: 1; font-weight: 500;">${faculty.name}</span>
+                    <span style="font-size: 12px; color: #6b7280;">${faculty.designation || ''}</span>
+                    <span style="color: #9ca3af; cursor: grab;">⋮⋮</span>
+                `;
+
+                // Add drag and drop functionality
+                priorityItem.addEventListener('dragstart', (e) => {
+                    e.dataTransfer.setData('text/plain', faculty.name);
+                    priorityItem.style.opacity = '0.5';
+                });
+
+                priorityItem.addEventListener('dragend', () => {
+                    priorityItem.style.opacity = '1';
+                });
+
+                priorityItem.addEventListener('dragover', (e) => {
+                    e.preventDefault();
+                    priorityItem.style.background = '#dbeafe';
+                });
+
+                priorityItem.addEventListener('dragleave', () => {
+                    priorityItem.style.background = '#f9fafb';
+                });
+
+                priorityItem.addEventListener('drop', (e) => {
+                    e.preventDefault();
+                    priorityItem.style.background = '#f9fafb';
+                    
+                    const draggedName = e.dataTransfer.getData('text/plain');
+                    const draggedElement = priorityList.querySelector(`[data-faculty-name="${draggedName}"]`);
+                    
+                    if (draggedElement && draggedElement !== priorityItem) {
+                        const rect = priorityItem.getBoundingClientRect();
+                        const midpoint = rect.top + rect.height / 2;
+                        
+                        if (e.clientY < midpoint) {
+                            priorityList.insertBefore(draggedElement, priorityItem);
+                        } else {
+                            priorityList.insertBefore(draggedElement, priorityItem.nextSibling);
+                        }
+                        
+                        updatePriorityNumbers();
+                    }
+                });
+
+                priorityList.appendChild(priorityItem);
+            });
+
+            document.body.appendChild(modal);
+        }
+
+        function updatePriorityNumbers() {
+            const items = document.querySelectorAll('.priority-item');
+            items.forEach((item, index) => {
+                const numberSpan = item.querySelector('span');
+                numberSpan.textContent = `#${index + 1}`;
+            });
+        }
+
+        async function savePriorities() {
+            const modal = document.querySelector('.modal');
+            const items = modal.querySelectorAll('.priority-item');
+            const updates = [];
+
+            items.forEach((item, index) => {
+                const facultyName = item.dataset.facultyName;
+                const newPrecedence = index + 1; // Start from 1
+                updates.push({ name: facultyName, precedence: newPrecedence });
+            });
+
+            try {
+                showToast('Updating display order...', 'info');
+
+                // Update each faculty member's precedence
+                for (const update of updates) {
+                    const faculty = facultyData.find(f => f.name === update.name);
+                    if (faculty) {
+                        faculty.precedence = update.precedence;
+
+                        const response = await fetch(`${API_BASE}/api/admin/faculty/${encodeURIComponent(update.name)}`, {
+                            method: 'PUT',
+                            headers: { 'Content-Type': 'application/json' },
+                            credentials: 'include',
+                            body: JSON.stringify({ precedence: update.precedence })
+                        });
+
+                        if (!response.ok) {
+                            throw new Error(`Failed to update ${update.name}`);
+                        }
+                    }
+                }
+
+                // Sync to JSON file
+                await syncDatabaseToJSON();
+
+                modal.remove();
+                loadFaculty(); // Refresh with new order
+                showToast('Display order updated successfully!', 'success');
+
+            } catch (error) {
+                showToast(`Failed to update order: ${error.message}`, 'error');
+                console.error('Priority update error:', error);
+            }
         }
     </script>
 </body>

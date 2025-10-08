@@ -465,10 +465,21 @@
         })
           .then(res => res.json())
           .then(data => {
+            // Sort faculty by precedence (lower numbers first), then by name
+            const sortedData = data.sort((a, b) => {
+              const precedenceA = a.precedence || 50;
+              const precedenceB = b.precedence || 50;
+              
+              if (precedenceA !== precedenceB) {
+                return precedenceA - precedenceB;
+              }
+              return a.name.localeCompare(b.name);
+            });
+
             const grid = document.getElementById("grid");
             const fragment = document.createDocumentFragment();
 
-            data.forEach(f => {
+            sortedData.forEach(f => {
               let statusObj = f.manualOverride ?? f.status;
               let statusStr, room, batch;
 

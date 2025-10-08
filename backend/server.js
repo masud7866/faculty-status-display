@@ -346,7 +346,7 @@ app.put("/api/admin/faculty/:name", requireAuth, async (req, res) => {
       return res.status(404).json({ error: "Faculty not found" });
     }
     
-    console.log(`✅ Updated faculty: ${originalName} -> ${updateData.name || originalName}`);
+    console.log(`✅ Updated faculty: ${originalName}`);
     res.json({ message: "Faculty updated successfully" });
   } catch (error) {
     console.error("Error updating faculty:", error);
