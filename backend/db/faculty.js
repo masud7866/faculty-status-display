@@ -29,7 +29,8 @@ class FacultyDB {
       classTimes: f.classTimes || {},
       status: f.status || "off_duty",
       manualOverride: f.manualOverride,
-      overrideExpiry: f.overrideExpiry
+      overrideExpiry: f.overrideExpiry,
+      precedence: f.precedence || 50  // ADD THIS LINE - this was missing!
     }));
   }
 
