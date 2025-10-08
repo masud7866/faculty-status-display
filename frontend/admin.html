@@ -1496,8 +1496,6 @@
                         displayImagePath = f.image;
                     }
 
-                    const precedenceDisplay = f.precedence || 50;
-
                     const facultyCard = document.createElement('div');
                     facultyCard.className = 'faculty-card';
                     facultyCard.innerHTML = `
@@ -1512,7 +1510,7 @@
                             </div>
                         </div>
                         <div class="faculty-info"><strong>Designation:</strong> ${f.designation || 'N/A'}</div>
-                        <div class="faculty-info"><strong>Display Order:</strong> #${index + 1} <small style="color: #6b7280;">(Priority: ${precedenceDisplay})</small></div>
+                        <div class="faculty-info"><strong>Display Order:</strong> #${index + 1}</div>
                         <div class="faculty-info"><strong>Contact:</strong> ${f.contact || 'N/A'}</div>
                         <div class="faculty-info"><strong>Email:</strong> ${f.email || 'N/A'}</div>
                         <div class="faculty-info"><strong>Image Path:</strong> ${displayImagePath || 'N/A'}</div>
@@ -2287,13 +2285,13 @@
             modal.innerHTML = `
                 <div class="modal-content">
                     <div class="modal-header">
-                        <h3 class="modal-title">Faculty Display Order</h3>
+                        <h3 class="modal-title">Set Faculty Display Order</h3>
                         <button class="close-btn" onclick="this.closest('.modal').remove()">&times;</button>
                     </div>
                     <div style="margin-bottom: 15px;">
                         <small style="color: #6b7280;">
                             <strong>Instructions:</strong> Drag and drop faculty names to reorder them. 
-                            Faculty at the top will appear first on the display.
+                            Faculty at the top will appear first on all pages.
                         </small>
                     </div>
                     <div id="priorityList" style="max-height: 400px; overflow-y: auto;"></div>
@@ -2304,7 +2302,7 @@
                 </div>
             `;
 
-            // Sort by current precedence for editing (or alphabetically if no precedence)
+            // Sort by current precedence for editing
             const sortedFaculty = [...facultyData].sort((a, b) => {
                 const precedenceA = a.precedence || 50;
                 const precedenceB = b.precedence || 50;

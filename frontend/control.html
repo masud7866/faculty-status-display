@@ -277,26 +277,6 @@
       margin-bottom: 0.2rem;
     }
 
-    /* Ensure text doesn't break in smaller containers */
-    .faculty-card label>div:first-child>div {
-      /* Faculty name */
-      max-width: 100%;
-      overflow: hidden;
-      text-overflow: ellipsis;
-      white-space: nowrap;
-    }
-
-    /* Style the room/batch badges */
-    .faculty-card label>div:last-child span {
-      white-space: nowrap;
-      font-weight: 500;
-      font-size: 0.9em;
-      padding: 4px 8px;
-      border-radius: 6px;
-      display: inline-block;
-      margin: 2px;
-    }
-
     .faculty-card img {
       width: 44px;
       height: 44px;
@@ -439,10 +419,9 @@
     @media (min-width: 600px) {
       .faculty-card {
         flex-direction: row;
-        align-items: flex-start;
+        align-items: center;
         justify-content: space-between;
-        padding: 1rem;
-        gap: 1rem;
+        padding: 0.75rem;
       }
 
       .bulk-status {
@@ -465,49 +444,20 @@
       }
 
       .faculty-card label {
-        flex: 2;
-        min-width: 0;
-        max-width: 40%;
+        flex: 1;
       }
 
       .faculty-card select {
-        flex: 1.5;
-        min-width: 180px; /* Increase from 150px */
-        max-width: 200px; /* Increase from 150px */
+        flex: 2;
       }
 
       .faculty-card button {
         flex: 1;
         max-width: 200px;
       }
-
-      .faculty-card .custom-expiry-btn-small {
-        flex: 0 0 auto;
-        min-width: 120px;
-        margin: 0 0.5rem;
-      }
-
-      .faculty-card button:last-child {
-        flex: 1.2;
-        min-width: 150px;
-        max-width: 180px;
-      }
-
-      /* Ensure faculty info doesn't break */
-      .faculty-card label div:first-child {
-        /* Main info container */
-        width: 100%;
-        min-width: 0;
-      }
-
-      .faculty-card label div:last-child {
-        /* Room/batch info container */
-        width: 100%;
-        flex-wrap: wrap;
-      }
     }
 
-   /* Add these styles to your existing CSS section */
+    /* Add these styles to your existing CSS section */
 
     .empty-rooms-btn {
       padding: 0.7rem 1.3rem;
@@ -1206,8 +1156,7 @@
       "in_meeting",
       "on_weekend",
       "postponed",
-      "exam_duty",
-      "on_break"
+      "exam_duty"
     ];
 
     const labels = {
@@ -1218,8 +1167,7 @@
       in_meeting: "In Meeting",
       on_weekend: "On Weekend",
       postponed: "Postpone Class",
-      exam_duty: "Exam Duty",
-      on_break: "On Break"
+      exam_duty: "Exam Duty"
     };
 
     // ADD THESE MISSING CONSTANTS:
@@ -1338,8 +1286,20 @@
           credentials: "include"
         });
         const data = await res.json();
-        console.log("Fetched facultyData:", data);
-        return data;
+
+        // Sort faculty by precedence (lower numbers first), then by name
+        const sortedData = data.sort((a, b) => {
+          const precedenceA = a.precedence || 50;
+          const precedenceB = b.precedence || 50;
+
+          if (precedenceA !== precedenceB) {
+            return precedenceA - precedenceB;
+          }
+          return a.name.localeCompare(b.name);
+        });
+
+        console.log("Fetched and sorted facultyData:", sortedData);
+        return sortedData;
       } catch (err) {
         if (err.message !== "Session expired") {
           showMessage("Failed to fetch faculty data.", true);
@@ -1427,39 +1387,13 @@
         img.style.objectFit = "cover";
 
         const label = document.createElement("label");
+        label.textContent = f.name;
         label.style.display = "flex";
-        label.style.flexDirection = "column"; // Stack vertically
-        label.style.alignItems = "flex-start"; // Align to left
-        label.style.gap = "0.3rem";
-        label.style.flex = "1";
-        label.style.minWidth = "0"; // Allow shrinking
+        label.style.alignItems = "center";
+        label.style.gap = "0.5rem";
+        label.prepend(img);
 
-        // Main faculty info container
-        const mainInfo = document.createElement("div");
-        mainInfo.style.display = "flex";
-        mainInfo.style.alignItems = "center";
-        mainInfo.style.gap = "0.5rem";
-        mainInfo.style.width = "100%";
-        mainInfo.style.minWidth = "0"; // Allow shrinking
-
-        // Faculty name
-        const nameDiv = document.createElement("div");
-        nameDiv.textContent = f.name;
-        nameDiv.style.fontWeight = "600";
-        nameDiv.style.color = "#1e3a8a";
-        nameDiv.style.fontSize = "1.05rem";
-        nameDiv.style.overflow = "hidden";
-        nameDiv.style.textOverflow = "ellipsis";
-        nameDiv.style.whiteSpace = "nowrap";
-        nameDiv.style.flex = "1";
-        nameDiv.style.minWidth = "0";
-
-        mainInfo.appendChild(img);
-        mainInfo.appendChild(nameDiv);
-
-        label.appendChild(mainInfo);
-
-        // Extract and show room/batch info
+        // --- Add this block to extract and show room/batch info ---
         let room = null,
           batch = null;
         let statusObj = hasValidManualOverride(f) ? f.manualOverride : f.status;
@@ -1471,45 +1405,19 @@
         // Only show if room or batch exists
         if (room || batch) {
           const infoDiv = document.createElement("div");
-          infoDiv.style.fontSize = "0.85em"; // Increased from 0.75em
+          infoDiv.style.fontSize = "0.75em";
           infoDiv.style.color = "#6b7280";
-          infoDiv.style.display = "flex";
-          infoDiv.style.flexDirection = "row";
-          infoDiv.style.gap = "0.5rem";
-          infoDiv.style.flexWrap = "nowrap";
-          infoDiv.style.marginTop = "0.2rem"; // Increased margin
-          infoDiv.style.width = "100%";
-          infoDiv.style.alignItems = "center";
+          infoDiv.style.marginLeft = "2.5em";
+          infoDiv.style.marginTop = "0.2em";
+          infoDiv.style.lineHeight = "1.3"; // Add line height for better spacing
 
-          if (room) {
-            const roomSpan = document.createElement("span");
-            roomSpan.textContent = `Room: ${room}`;
-            roomSpan.style.backgroundColor = "#f3f4f6";
-            roomSpan.style.padding = "4px 8px"; // Increased padding
-            roomSpan.style.borderRadius = "6px"; // Increased border radius
-            roomSpan.style.border = "1px solid #e5e7eb";
-            roomSpan.style.fontSize = "0.9em"; // Added explicit font size
-            roomSpan.style.fontWeight = "500"; // Added font weight
-            roomSpan.style.whiteSpace = "nowrap";
-            roomSpan.style.flexShrink = "0";
-            infoDiv.appendChild(roomSpan);
-          }
+          let infoText = "";
+          if (room) infoText += `Room: ${room}`;
+          if (room && batch) infoText += "\n"; // Line break instead of " | "
+          if (batch) infoText += `Batch: ${batch}`;
 
-          if (batch) {
-            const batchSpan = document.createElement("span");
-            batchSpan.textContent = `Batch: ${batch}`;
-            batchSpan.style.backgroundColor = "#eff6ff";
-            batchSpan.style.padding = "4px 8px"; // Increased padding
-            batchSpan.style.borderRadius = "6px"; // Increased border radius
-            batchSpan.style.border = "1px solid #dbeafe";
-            batchSpan.style.color = "#1e40af";
-            batchSpan.style.fontSize = "0.9em"; // Added explicit font size
-            batchSpan.style.fontWeight = "500"; // Added font weight
-            batchSpan.style.whiteSpace = "nowrap";
-            batchSpan.style.flexShrink = "0";
-            infoDiv.appendChild(batchSpan);
-          }
-
+          infoDiv.style.whiteSpace = "pre-line"; // This allows line breaks to render
+          infoDiv.textContent = infoText;
           label.appendChild(infoDiv);
         }
         // --- End block ---
@@ -1535,7 +1443,7 @@
           facultyData[i].manualOverride = newValue;
           const now = new Date();
           let expiry = new Date(now);
-          if (["in_class", "at_dept", "in_meeting", "on_break"].includes(newValue)) {
+          if (["in_class", "at_dept", "in_meeting"].includes(newValue)) {
             expiry.setUTCHours(expiry.getUTCHours() + 1);
           } else {
             expiry.setUTCHours(17, 59, 59, 999);

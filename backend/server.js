@@ -173,9 +173,21 @@ app.get("/api/faculty", async (req, res) => {
       }
     }
     
-    // Get faculty data from database
+    // Get faculty data from database and sort consistently
     const faculty = await facultyDB.getAllFaculty();
-    res.json(faculty);
+    
+    // Sort by precedence (lower numbers first), then by name
+    const sortedFaculty = faculty.sort((a, b) => {
+      const precedenceA = a.precedence || 50;
+      const precedenceB = b.precedence || 50;
+      
+      if (precedenceA !== precedenceB) {
+        return precedenceA - precedenceB;
+      }
+      return a.name.localeCompare(b.name);
+    });
+    
+    res.json(sortedFaculty);
   } catch (error) {
     console.error("❌ Error fetching faculty:", error);
     res.status(500).json({ error: "Failed to fetch faculty data" });
@@ -323,6 +335,7 @@ app.put("/api/admin/faculty/:name", requireAuth, async (req, res) => {
       updatedAt: new Date()
     };
     
+    // Allow updating precedence through this route
     // Don't allow updating status, manualOverride, or overrideExpiry through this route
     delete updateData.status;
     delete updateData.manualOverride;
@@ -346,7 +359,7 @@ app.put("/api/admin/faculty/:name", requireAuth, async (req, res) => {
       return res.status(404).json({ error: "Faculty not found" });
     }
     
-    console.log(`✅ Updated faculty: ${originalName}`);
+    console.log(`✅ Updated faculty: ${originalName}${updateData.precedence ? ` (precedence: ${updateData.precedence})` : ''}`);
     res.json({ message: "Faculty updated successfully" });
   } catch (error) {
     console.error("Error updating faculty:", error);
