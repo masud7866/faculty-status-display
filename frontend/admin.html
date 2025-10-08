@@ -2392,6 +2392,7 @@
             });
         }
 
+        // Fix the savePriorities function - the main issue is the PUT route might not be handling precedence properly
         async function savePriorities() {
             const modal = document.querySelector('.modal');
             const items = modal.querySelectorAll('.priority-item');
@@ -2410,26 +2411,70 @@
                 for (const update of updates) {
                     const faculty = facultyData.find(f => f.name === update.name);
                     if (faculty) {
+                        // Update local data
                         faculty.precedence = update.precedence;
 
+                        // Send update to server
                         const response = await fetch(`${API_BASE}/api/admin/faculty/${encodeURIComponent(update.name)}`, {
                             method: 'PUT',
                             headers: { 'Content-Type': 'application/json' },
                             credentials: 'include',
-                            body: JSON.stringify({ precedence: update.precedence })
+                            body: JSON.stringify({ 
+                                precedence: update.precedence,
+                                // Include other existing data to prevent overwrites
+                                name: faculty.name,
+                                designation: faculty.designation,
+                                contact: faculty.contact,
+                                email: faculty.email,
+                                image: faculty.image,
+                                weekend: faculty.weekend,
+                                officeHours: faculty.officeHours,
+                                classTimes: faculty.classTimes
+                            })
                         });
 
                         if (!response.ok) {
-                            throw new Error(`Failed to update ${update.name}`);
+                            const errorData = await response.json();
+                            console.error(`Failed to update ${update.name}:`, errorData);
+                            throw new Error(`Failed to update ${update.name}: ${errorData.error || 'Unknown error'}`);
                         }
+
+                        console.log(`✅ Updated ${update.name} precedence to ${update.precedence}`);
                     }
                 }
 
-                // Sync to JSON file
-                await syncDatabaseToJSON();
+                // Sync to JSON file to ensure persistence
+                try {
+                    const facultyResponse = await fetch(`${API_BASE}/api/faculty`, { credentials: 'include' });
+                    if (facultyResponse.ok) {
+                        const currentFaculty = await facultyResponse.json();
+
+                        const jsonUpdateResponse = await fetch(`${API_BASE}/api/upload`, {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json' },
+                            credentials: 'include',
+                            body: JSON.stringify({
+                                filename: 'faculty.json',
+                                content: btoa(JSON.stringify(currentFaculty, null, 2)),
+                                path: 'backend'
+                            })
+                        });
+
+                        if (jsonUpdateResponse.ok) {
+                            console.log('✅ JSON file updated with new order');
+                        } else {
+                            console.warn('⚠️ JSON file update failed');
+                        }
+                    }
+                } catch (jsonError) {
+                    console.error('JSON update error:', jsonError);
+                }
 
                 modal.remove();
-                loadFaculty(); // Refresh with new order
+                
+                // Refresh faculty data from server to ensure we have the latest
+                await loadFaculty();
+                
                 showToast('Display order updated successfully!', 'success');
 
             } catch (error) {

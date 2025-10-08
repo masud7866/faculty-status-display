@@ -187,6 +187,8 @@ app.get("/api/faculty", async (req, res) => {
       return a.name.localeCompare(b.name);
     });
     
+    console.log('Returning sorted faculty:', sortedFaculty.map(f => `${f.name} (precedence: ${f.precedence || 50})`));
+    
     res.json(sortedFaculty);
   } catch (error) {
     console.error("❌ Error fetching faculty:", error);
@@ -336,11 +338,16 @@ app.put("/api/admin/faculty/:name", requireAuth, async (req, res) => {
     };
     
     // Allow updating precedence through this route
-    // Don't allow updating status, manualOverride, or overrideExpiry through this route
+    // Don't allow updating status, manualOverride, or overrideExpiry through this route for safety
     delete updateData.status;
     delete updateData.manualOverride;
     delete updateData.overrideExpiry;
     delete updateData.createdAt;
+    
+    console.log(`Updating faculty ${originalName} with data:`, {
+      precedence: updateData.precedence,
+      name: updateData.name
+    });
     
     // If name is being changed, check for duplicates
     if (updateData.name && updateData.name !== originalName) {
