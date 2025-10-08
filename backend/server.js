@@ -337,8 +337,7 @@ app.put("/api/admin/faculty/:name", requireAuth, async (req, res) => {
       updatedAt: new Date()
     };
     
-    // Allow updating precedence through this route
-    // Don't allow updating status, manualOverride, or overrideExpiry through this route for safety
+    // Don't delete updatedAt and allow precedence updates
     delete updateData.status;
     delete updateData.manualOverride;
     delete updateData.overrideExpiry;
@@ -353,20 +352,29 @@ app.put("/api/admin/faculty/:name", requireAuth, async (req, res) => {
     if (updateData.name && updateData.name !== originalName) {
       const existing = await db.collection('faculty').findOne({ name: updateData.name });
       if (existing) {
-        return res.status(400).json({ error: "Faculty with this name already exists" });
+        return res.status(404).json({ error: "Faculty with this name already exists" });
       }
     }
     
+    // Use $set to update specific fields, ensuring precedence is updated
     const result = await db.collection('faculty').updateOne(
       { name: originalName },
-      { $set: updateData }
+      { 
+        $set: {
+          ...updateData,
+          precedence: updateData.precedence || 50 // Ensure precedence is set
+        }
+      }
     );
     
     if (result.matchedCount === 0) {
       return res.status(404).json({ error: "Faculty not found" });
     }
     
-    console.log(`✅ Updated faculty: ${originalName}${updateData.precedence ? ` (precedence: ${updateData.precedence})` : ''}`);
+    // Verify the update by fetching the updated document
+    const updatedDoc = await db.collection('faculty').findOne({ name: updateData.name || originalName });
+    console.log(`✅ Updated faculty: ${originalName} (precedence: ${updatedDoc?.precedence || 'not set'})`);
+    
     res.json({ message: "Faculty updated successfully" });
   } catch (error) {
     console.error("Error updating faculty:", error);

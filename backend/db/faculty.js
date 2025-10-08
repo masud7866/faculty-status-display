@@ -143,6 +143,27 @@ class FacultyDB {
     }
   }
 
+  async updateFacultyPrecedence(name, precedence) {
+    try {
+      const db = await this.connect();
+      const result = await db.collection('faculty').updateOne(
+        { name: name },
+        { 
+          $set: { 
+            precedence: precedence,
+            updatedAt: new Date()
+          }
+        }
+      );
+      
+      console.log(`Updated ${name} precedence to ${precedence}, matched: ${result.matchedCount}, modified: ${result.modifiedCount}`);
+      return result.modifiedCount > 0;
+    } catch (error) {
+      console.error('Error updating faculty precedence:', error);
+      throw error;
+    }
+  }
+
   async close() {
     if (this.client) {
       await this.client.close();
