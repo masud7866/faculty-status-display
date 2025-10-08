@@ -273,6 +273,7 @@ app.post("/api/admin/faculty", requireAuth, async (req, res) => {
 app.put("/api/admin/faculty/:name", requireAuth, async (req, res) => {
   try {
     const db = await facultyDB.connect();
+    const originalName = req.params.name;
     const updateData = {
       ...req.body,
       updatedAt: new Date()
@@ -284,8 +285,16 @@ app.put("/api/admin/faculty/:name", requireAuth, async (req, res) => {
     delete updateData.overrideExpiry;
     delete updateData.createdAt;
     
+    // If name is being changed, check for duplicates
+    if (updateData.name && updateData.name !== originalName) {
+      const existing = await db.collection('faculty').findOne({ name: updateData.name });
+      if (existing) {
+        return res.status(400).json({ error: "Faculty with this name already exists" });
+      }
+    }
+    
     const result = await db.collection('faculty').updateOne(
-      { name: req.params.name },
+      { name: originalName },
       { $set: updateData }
     );
     
@@ -293,7 +302,7 @@ app.put("/api/admin/faculty/:name", requireAuth, async (req, res) => {
       return res.status(404).json({ error: "Faculty not found" });
     }
     
-    console.log(`✅ Updated faculty: ${req.params.name}`);
+    console.log(`✅ Updated faculty: ${originalName} -> ${updateData.name || originalName}`);
     res.json({ message: "Faculty updated successfully" });
   } catch (error) {
     console.error("Error updating faculty:", error);

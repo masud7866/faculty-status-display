@@ -795,8 +795,7 @@
                         <div class="form-actions">
                             <button type="submit" class="btn btn-success" id="submitBtn">Add Faculty</button>
                             <button type="button" onclick="resetForm()" class="btn btn-secondary">Reset Form</button>
-                            <button type="button" onclick="cancelEdit()" class="btn btn-warning hidden"
-                                id="cancelEditBtn">Cancel Edit</button>
+                            <button type="button" onclick="cancelEdit()" class="btn btn-warning hidden" id="cancelEditBtn">Cancel Edit</button>
                         </div>
                     </form>
                 </div>
@@ -1319,9 +1318,25 @@
 
             const isEditMode = document.getElementById('editMode').value === 'true';
             const originalName = document.getElementById('originalName').value;
+            const newName = document.getElementById('name').value.trim();
+
+            // Validate that name is provided
+            if (!newName) {
+                showToast('Faculty name is required', 'error');
+                return;
+            }
+
+            // Check for duplicate names (only if adding new or changing name)
+            if (!isEditMode || (isEditMode && originalName !== newName)) {
+                const existingFaculty = facultyData.find(f => f.name === newName);
+                if (existingFaculty) {
+                    showToast(`Faculty with name "${newName}" already exists`, 'error');
+                    return;
+                }
+            }
 
             const newFacultyData = {
-                name: document.getElementById('name').value.trim(),
+                name: newName,
                 designation: document.getElementById('designation').value.trim(),
                 contact: document.getElementById('contact').value.trim(),
                 email: document.getElementById('email').value.trim(),
@@ -1329,7 +1344,7 @@
                 weekend: [],
                 officeHours: {},
                 classTimes: {},
-                status: 'unknown' // Add default status
+                status: 'off_duty' // Change from 'unknown' to 'off_duty'
             };
 
             // Get weekend days
@@ -1367,24 +1382,25 @@
 
             try {
                 let response;
+                let url;
+                let method;
 
                 if (isEditMode) {
                     // Update existing faculty
-                    response = await fetch(`${API_BASE}/api/admin/faculty/${encodeURIComponent(originalName)}`, {
-                        method: 'PUT',
-                        headers: { 'Content-Type': 'application/json' },
-                        credentials: 'include',
-                        body: JSON.stringify(newFacultyData)
-                    });
+                    url = `${API_BASE}/api/admin/faculty/${encodeURIComponent(originalName)}`;
+                    method = 'PUT';
                 } else {
                     // Add new faculty
-                    response = await fetch(`${API_BASE}/api/admin/faculty`, {
-                        method: 'POST',
-                        headers: { 'Content-Type': 'application/json' },
-                        credentials: 'include',
-                        body: JSON.stringify(newFacultyData)
-                    });
+                    url = `${API_BASE}/api/admin/faculty`;
+                    method = 'POST';
                 }
+
+                response = await fetch(url, {
+                    method: method,
+                    headers: { 'Content-Type': 'application/json' },
+                    credentials: 'include',
+                    body: JSON.stringify(newFacultyData)
+                });
 
                 if (!response.ok) {
                     if (response.status === 403) {
@@ -1400,14 +1416,12 @@
                 // SUCCESS: Faculty added/updated in database
                 showToast(`Faculty ${isEditMode ? 'updated' : 'added'} successfully! Updating JSON file...`, 'success');
 
-                // Now update the JSON file to persist the change
+                // Update the JSON file to persist the change
                 try {
-                    // Get current faculty list
                     const facultyResponse = await fetch(`${API_BASE}/api/faculty`, { credentials: 'include' });
                     if (facultyResponse.ok) {
                         const currentFaculty = await facultyResponse.json();
 
-                        // Update faculty.json file on GitHub
                         const jsonUpdateResponse = await fetch(`${API_BASE}/api/upload`, {
                             method: 'POST',
                             headers: { 'Content-Type': 'application/json' },
