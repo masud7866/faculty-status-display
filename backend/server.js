@@ -55,6 +55,8 @@ app.use("/public", express.static(path.join(__dirname, "public")));
 app.use("/ads", express.static(path.join(__dirname, "public/ads")));
 
 // === SYNC FUNCTION ===
+// Replace the existing syncFacultyFromJSON function with this:
+
 async function syncFacultyFromJSON() {
   const jsonPath = path.join(__dirname, "faculty.json");
   
@@ -67,10 +69,16 @@ async function syncFacultyFromJSON() {
     const db = await facultyDB.connect();
     const jsonData = JSON.parse(fs.readFileSync(jsonPath, 'utf8'));
     
+    console.log(`📄 Found ${jsonData.length} faculty records in JSON file`);
+    
     // Get existing faculty with their current overrides
     const existingFaculty = await db.collection('faculty').find({}).toArray();
+    const existingNames = new Set(existingFaculty.map(f => f.name));
     const overrideMap = new Map();
     
+    console.log(`💾 Found ${existingFaculty.length} existing faculty records in database`);
+    
+    // Preserve valid manual overrides
     existingFaculty.forEach(f => {
       if (f.manualOverride && f.overrideExpiry) {
         const expiry = new Date(f.overrideExpiry);
@@ -83,27 +91,63 @@ async function syncFacultyFromJSON() {
       }
     });
     
-    // Clear existing faculty data and replace with JSON data
-    await db.collection('faculty').deleteMany({});
+    let insertedCount = 0;
+    let updatedCount = 0;
+    let skippedCount = 0;
     
     for (const faculty of jsonData) {
+      if (!faculty.name) {
+        console.log('⚠️ Skipping faculty with no name');
+        skippedCount++;
+        continue;
+      }
+      
       const facultyData = {
         ...faculty,
-        createdAt: new Date(),
         updatedAt: new Date()
       };
       
-      // Preserve valid manual overrides
+      // Preserve valid manual overrides if they exist
       if (overrideMap.has(faculty.name)) {
         const override = overrideMap.get(faculty.name);
         facultyData.manualOverride = override.manualOverride;
         facultyData.overrideExpiry = override.overrideExpiry;
       }
       
-      await db.collection('faculty').insertOne(facultyData);
+      if (existingNames.has(faculty.name)) {
+        // Update existing faculty (preserve creation date)
+        const result = await db.collection('faculty').updateOne(
+          { name: faculty.name },
+          { 
+            $set: facultyData,
+            $setOnInsert: { createdAt: new Date() }
+          },
+          { upsert: false }
+        );
+        
+        if (result.modifiedCount > 0) {
+          updatedCount++;
+          console.log(`✅ Updated existing faculty: ${faculty.name}`);
+        } else {
+          skippedCount++;
+        }
+      } else {
+        // Insert new faculty
+        facultyData.createdAt = new Date();
+        facultyData.status = faculty.status || "off_duty";
+        
+        await db.collection('faculty').insertOne(facultyData);
+        insertedCount++;
+        console.log(`➕ Inserted new faculty: ${faculty.name}`);
+      }
     }
     
-    console.log(`✅ Synced ${jsonData.length} faculty records from faculty.json to database`);
+    console.log(`✅ Sync completed: ${insertedCount} inserted, ${updatedCount} updated, ${skippedCount} skipped`);
+    
+    // Final count check
+    const finalCount = await db.collection('faculty').countDocuments();
+    console.log(`📊 Total faculty in database: ${finalCount}`);
+    
   } catch (error) {
     console.error("❌ Error syncing from faculty.json:", error);
     throw error;
@@ -677,13 +721,39 @@ async function startup() {
       const db = await facultyDB.connect();
       const existingCount = await db.collection('faculty').countDocuments();
       
+      console.log(`💾 Current database has ${existingCount} faculty records`);
+      
       if (existingCount === 0) {
         console.log("📦 Database is empty, performing initial migration...");
         await facultyDB.migrateFromJSON();
-      } else {
-        console.log(`✅ Database has ${existingCount} faculty records`);
+      } else if (existingCount > 20) { // If we have way too many records
+        console.log(`⚠️ Database has ${existingCount} records - this seems like duplicates`);
+        console.log("🧹 Cleaning up duplicates...");
         
-        // Check if faculty.json exists and sync if needed
+        // Get all faculty and remove duplicates by name
+        const allFaculty = await db.collection('faculty').find({}).toArray();
+        const uniqueNames = new Set();
+        const duplicateIds = [];
+        
+        allFaculty.forEach(f => {
+          if (uniqueNames.has(f.name)) {
+            duplicateIds.push(f._id);
+          } else {
+            uniqueNames.add(f.name);
+          }
+        });
+        
+        if (duplicateIds.length > 0) {
+          const deleteResult = await db.collection('faculty').deleteMany({
+            _id: { $in: duplicateIds }
+          });
+          console.log(`🗑️ Removed ${deleteResult.deletedCount} duplicate records`);
+        }
+        
+        const cleanCount = await db.collection('faculty').countDocuments();
+        console.log(`✅ Database now has ${cleanCount} unique faculty records`);
+      } else {
+        // Normal sync check
         const jsonPath = path.join(__dirname, "faculty.json");
         if (fs.existsSync(jsonPath)) {
           const lastSync = await facultyDB.getSetting('last_faculty_sync');
