@@ -1,560 +1,5 @@
 [
   {
-    "name": "Abdul Aziz",
-    "designation": "Lab Instructor",
-    "contact": "01877774031",
-    "email": "aziz2022.abf@gmail.com",
-    "image": "/images/fac11.jpg",
-    "weekend": [
-      "Friday"
-    ],
-    "officeHours": {
-      "Saturday": [
-        "12:00",
-        "22:00"
-      ],
-      "Sunday": [
-        "09:00",
-        "17:00"
-      ],
-      "Monday": [
-        "09:00",
-        "17:00"
-      ],
-      "Tuesday": [
-        "09:00",
-        "17:00"
-      ],
-      "Wednesday": [
-        "08:00",
-        "18:00"
-      ],
-      "Thursday": [
-        "08:00",
-        "14:00"
-      ]
-    },
-    "classTimes": {
-      "Saturday": [
-        {
-          "start": "16:00",
-          "end": "17:00",
-          "room": "B2-102",
-          "batch": "1st-CSE-Evn"
-        },
-        {
-          "start": "17:00",
-          "end": "18:00",
-          "room": "B2-102",
-          "batch": "1st-CSE-Evn"
-        },
-        {
-          "start": "18:00",
-          "end": "19:00",
-          "room": "B2-102",
-          "batch": "2nd-EEE-Evn"
-        },
-        {
-          "start": "19:00",
-          "end": "20:00",
-          "room": "B2-102",
-          "batch": "4th-CSE-Evn"
-        },
-        {
-          "start": "20:00",
-          "end": "21:00",
-          "room": "B2-102",
-          "batch": "2nd-ME-Evn"
-        },
-        {
-          "start": "21:00",
-          "end": "22:00",
-          "room": "B2-102",
-          "batch": "7th-CSE-Evn"
-        }
-      ],
-      "Sunday": [
-        {
-          "start": "09:00",
-          "end": "12:00",
-          "room": "B2-102",
-          "batch": "2nd-ME-A"
-        }
-      ],
-      "Monday": [
-        {
-          "start": "09:00",
-          "end": "12:00",
-          "room": "B2-102",
-          "batch": "2nd-EEE-A"
-        }
-      ],
-      "Tuesday": [
-        {
-          "start": "09:00",
-          "end": "12:00",
-          "room": "B2-102",
-          "batch": "4th-CSE-A"
-        }
-      ],
-      "Wednesday": [
-        {
-          "start": "08:00",
-          "end": "11:00",
-          "room": "B2-102",
-          "batch": "1st-CSE-B"
-        },
-        {
-          "start": "15:00",
-          "end": "18:00",
-          "room": "B2-102",
-          "batch": "7th-CSE-A"
-        }
-      ],
-      "Thursday": [
-        {
-          "start": "08:00",
-          "end": "11:00",
-          "room": "B2-102",
-          "batch": "7th-CSE-B"
-        },
-        {
-          "start": "11:00",
-          "end": "14:00",
-          "room": "B2-102",
-          "batch": "1st-CSE-A"
-        }
-      ]
-    },
-    "status": {
-      "status": "off_duty"
-    },
-    "manualOverride": null,
-    "overrideExpiry": null
-  },
-  {
-    "name": "Ahad Khan",
-    "designation": "Lab Instructor",
-    "contact": "01765447491",
-    "email": "ugv.ahadkhan@gmail.com",
-    "image": "/images/fac12.jpg",
-    "weekend": [
-      "Friday"
-    ],
-    "officeHours": {
-      "Saturday": [
-        "09:00",
-        "18:00"
-      ],
-      "Sunday": [
-        "09:00",
-        "17:00"
-      ],
-      "Monday": [
-        "09:00",
-        "17:00"
-      ],
-      "Tuesday": [
-        "10:00",
-        "17:00"
-      ],
-      "Wednesday": [
-        "10:00",
-        "17:00"
-      ],
-      "Thursday": [
-        "09:00",
-        "18:00"
-      ]
-    },
-    "classTimes": {
-      "Saturday": [
-        {
-          "start": "09:00",
-          "end": "11:00",
-          "room": "B2-003",
-          "batch": "5th-CSE-C"
-        },
-        {
-          "start": "13:00",
-          "end": "16:00",
-          "room": "B2-505",
-          "batch": "5th-CSE-B"
-        },
-        {
-          "start": "16:00",
-          "end": "17:00",
-          "room": "B2-505",
-          "batch": "6th-CSE-Evn"
-        },
-        {
-          "start": "17:00",
-          "end": "18:00",
-          "room": "B2-003",
-          "batch": "5th-CSE-Evn"
-        }
-      ],
-      "Sunday": [
-        {
-          "start": "10:00",
-          "end": "13:00",
-          "room": "B2-505",
-          "batch": "6th-CSE-B"
-        },
-        {
-          "start": "14:00",
-          "end": "17:00",
-          "room": "B2-003",
-          "batch": "6th-CSE-A"
-        }
-      ],
-      "Monday": [
-        {
-          "start": "10:00",
-          "end": "13:00",
-          "room": "B2-505",
-          "batch": "6th-CSE-A"
-        },
-        {
-          "start": "14:00",
-          "end": "17:00",
-          "room": "B2-003",
-          "batch": "6th-CSE-B"
-        }
-      ],
-      "Tuesday": [
-        {
-          "start": "10:00",
-          "end": "13:00",
-          "room": "B2-003",
-          "batch": "5th-CSE-A"
-        }
-      ],
-      "Wednesday": [
-        {
-          "start": "14:00",
-          "end": "17:00",
-          "room": "B2-505",
-          "batch": "5th-CSE-B"
-        }
-      ],
-      "Thursday": [
-        {
-          "start": "09:00",
-          "end": "12:00",
-          "room": "B2-003",
-          "batch": "5th-CSE-A"
-        },
-        {
-          "start": "12:00",
-          "end": "15:00",
-          "room": "B2-505",
-          "batch": "5th-CSE-C"
-        },
-        {
-          "start": "16:00",
-          "end": "17:00",
-          "room": "B2-003",
-          "batch": "6th-CSE-Evn"
-        },
-        {
-          "start": "17:00",
-          "end": "18:00",
-          "room": "B2-505",
-          "batch": "5th-CSE-Evn"
-        }
-      ]
-    },
-    "status": {
-      "status": "off_duty"
-    },
-    "manualOverride": null,
-    "overrideExpiry": null
-  },
-  {
-    "name": "Amartya Kundu Durjoy",
-    "designation": "Lecturer",
-    "contact": "01766338973",
-    "email": "amartyakundudurjoy@gmail.com",
-    "image": "/images/fac8.jpg",
-    "weekend": [
-      "Friday",
-      "Saturday"
-    ],
-    "officeHours": {
-      "Sunday": [
-        "11:00",
-        "18:00"
-      ],
-      "Monday": [
-        "11:00",
-        "18:00"
-      ],
-      "Tuesday": [
-        "11:00",
-        "16:00"
-      ],
-      "Wednesday": [
-        "11:00",
-        "18:00"
-      ],
-      "Thursday": [
-        "12:00",
-        "22:00"
-      ]
-    },
-    "classTimes": {
-      "Sunday": [
-        {
-          "start": "11:00",
-          "end": "12:00",
-          "room": "B2-404",
-          "batch": "2nd-CSE-B"
-        },
-        {
-          "start": "12:00",
-          "end": "13:00",
-          "room": "B2-406",
-          "batch": "2nd-CSE-A"
-        },
-        {
-          "start": "13:00",
-          "end": "14:00",
-          "room": "B2-003",
-          "batch": "5th-CSE-B"
-        },
-        {
-          "start": "15:00",
-          "end": "16:00",
-          "room": "B2-206",
-          "batch": "5th-CSE-A"
-        },
-        {
-          "start": "16:00",
-          "end": "17:00",
-          "room": "B2-206",
-          "batch": "5th-CSE-C"
-        }
-      ],
-      "Monday": [
-        {
-          "start": "11:00",
-          "end": "12:00",
-          "room": "B2-306",
-          "batch": "6th-CSE-B"
-        },
-        {
-          "start": "12:00",
-          "end": "13:00",
-          "room": "B2-206",
-          "batch": "5th-CSE-C"
-        },
-        {
-          "start": "13:00",
-          "end": "14:00",
-          "room": "B2-205",
-          "batch": "2nd-CSE-B"
-        },
-        {
-          "start": "14:00",
-          "end": "15:00",
-          "room": "B2-304",
-          "batch": "5th-CSE-A"
-        },
-        {
-          "start": "15:00",
-          "end": "16:00",
-          "room": "B2-205",
-          "batch": "5th-CSE-A"
-        }
-      ],
-      "Tuesday": [
-        {
-          "start": "11:00",
-          "end": "12:00",
-          "room": "B2-304",
-          "batch": "6th-CSE-A"
-        },
-        {
-          "start": "12:00",
-          "end": "13:00",
-          "room": "B2-404",
-          "batch": "5th-CSE-B"
-        },
-        {
-          "start": "13:00",
-          "end": "16:00",
-          "room": "B2-206",
-          "batch": "5th-CSE-B"
-        }
-      ],
-      "Wednesday": [
-        {
-          "start": "11:00",
-          "end": "12:00",
-          "room": "B2-205",
-          "batch": "6th-CSE-B"
-        },
-        {
-          "start": "12:00",
-          "end": "13:00",
-          "room": "B2-205",
-          "batch": "6th-CSE-A"
-        },
-        {
-          "start": "13:00",
-          "end": "14:00",
-          "room": "B2-205",
-          "batch": "2nd-CSE-A"
-        },
-        {
-          "start": "15:00",
-          "end": "18:00",
-          "room": "B2-206",
-          "batch": "5th-CSE-C"
-        }
-      ],
-      "Thursday": [
-        {
-          "start": "12:00",
-          "end": "15:00",
-          "room": "B2-203",
-          "batch": "6th-CSE-A"
-        },
-        {
-          "start": "15:00",
-          "end": "18:00",
-          "room": "B2-205",
-          "batch": "6th-CSE-B"
-        },
-        {
-          "start": "18:00",
-          "end": "19:00",
-          "room": "B2-203",
-          "batch": "5th-CSE-Evn"
-        },
-        {
-          "start": "19:00",
-          "end": "20:00",
-          "room": "B2-404",
-          "batch": "5th-CSE-Evn"
-        },
-        {
-          "start": "20:00",
-          "end": "21:00",
-          "room": "B2-205",
-          "batch": "2nd-CSE-Evn"
-        }
-      ]
-    },
-    "status": {
-      "status": "off_duty"
-    },
-    "manualOverride": null,
-    "overrideExpiry": null
-  },
-  {
-    "name": "Galib Jaman",
-    "designation": "Lab Instructor",
-    "contact": "01766555213",
-    "email": "ugv.galibjaman@gmail.com",
-    "image": "/images/fac13.jpg",
-    "weekend": [
-      "Friday"
-    ],
-    "officeHours": {
-      "Saturday": [
-        "09:00",
-        "19:00"
-      ],
-      "Sunday": [
-        "09:00",
-        "17:00"
-      ],
-      "Monday": [
-        "09:00",
-        "16:00"
-      ],
-      "Tuesday": [
-        "09:00",
-        "16:00"
-      ],
-      "Wednesday": [
-        "09:00",
-        "17:00"
-      ],
-      "Thursday": [
-        "09:00",
-        "17:00"
-      ]
-    },
-    "classTimes": {
-      "Saturday": [
-        {
-          "start": "17:00",
-          "end": "18:00",
-          "room": "B2-501",
-          "batch": "8th-CSE-Evn"
-        },
-        {
-          "start": "18:00",
-          "end": "19:00",
-          "room": "B2-204",
-          "batch": "5th-CSE-Evn"
-        }
-      ],
-      "Monday": [
-        {
-          "start": "10:00",
-          "end": "13:00",
-          "room": "B2-204",
-          "batch": "2nd-CSE-A"
-        },
-        {
-          "start": "13:00",
-          "end": "16:00",
-          "room": "B2-204",
-          "batch": "5th-CSE-B"
-        }
-      ],
-      "Tuesday": [
-        {
-          "start": "10:00",
-          "end": "13:00",
-          "room": "B2-204",
-          "batch": "2nd-CSE-B"
-        },
-        {
-          "start": "13:00",
-          "end": "16:00",
-          "room": "B2-204",
-          "batch": "5th-CSE-C"
-        }
-      ],
-      "Wednesday": [
-        {
-          "start": "13:00",
-          "end": "16:00",
-          "room": "B2-204",
-          "batch": "5th-CSE-A"
-        }
-      ],
-      "Thursday": [
-        {
-          "start": "12:00",
-          "end": "15:00",
-          "room": "B2-204",
-          "batch": "4th-CE-A"
-        }
-      ]
-    },
-    "status": {
-      "status": "off_duty"
-    },
-    "manualOverride": null,
-    "overrideExpiry": null
-  },
-  {
     "name": "Md Abdur Razzak",
     "designation": "Head & Assistant Professor",
     "contact": "01746671227",
@@ -686,461 +131,158 @@
       "status": "off_duty"
     },
     "manualOverride": null,
-    "overrideExpiry": null
+    "overrideExpiry": null,
+    "precedence": 1
   },
   {
-    "name": "Md. Masudur Rahman",
-    "designation": "Lecturer",
-    "contact": "01731279192",
-    "email": "masud7866@gmail.com",
-    "image": "/images/fac5.jpg",
-    "weekend": [
-      "Thursday",
-      "Friday"
-    ],
-    "officeHours": {
-      "Saturday": [
-        "13:00",
-        "21:00"
-      ],
-      "Sunday": [
-        "10:00",
-        "17:00"
-      ],
-      "Monday": [
-        "10:00",
-        "17:00"
-      ],
-      "Tuesday": [
-        "11:00",
-        "18:00"
-      ],
-      "Wednesday": [
-        "10:00",
-        "17:00"
-      ]
-    },
-    "classTimes": {
-      "Saturday": [
-        {
-          "start": "13:00",
-          "end": "14:00",
-          "room": "B2-204",
-          "batch": "8th-CSE-B"
-        },
-        {
-          "start": "14:00",
-          "end": "15:00",
-          "room": "B2-205",
-          "batch": "7th-CSE-A"
-        },
-        {
-          "start": "17:00",
-          "end": "18:00",
-          "room": "B2-205",
-          "batch": "6th-CSE-Evn"
-        },
-        {
-          "start": "20:00",
-          "end": "21:00",
-          "room": "B2-205",
-          "batch": "8th-CSE-Evn"
-        }
-      ],
-      "Sunday": [
-        {
-          "start": "11:00",
-          "end": "12:00",
-          "room": "B2-405",
-          "batch": "7th-CSE-B"
-        },
-        {
-          "start": "12:00",
-          "end": "13:00",
-          "room": "B2-102",
-          "batch": "8th-CSE-B"
-        },
-        {
-          "start": "13:00",
-          "end": "14:00",
-          "room": "B2-204",
-          "batch": "8th-CSE-A"
-        },
-        {
-          "start": "16:00",
-          "end": "17:00",
-          "room": "B2-205",
-          "batch": "7th-CSE-A"
-        }
-      ],
-      "Monday": [
-        {
-          "start": "11:00",
-          "end": "12:00",
-          "room": "B2-304",
-          "batch": "7th-CSE-B"
-        },
-        {
-          "start": "14:00",
-          "end": "15:00",
-          "room": "B2-205",
-          "batch": "8th-CSE-A"
-        }
-      ],
-      "Tuesday": [
-        {
-          "start": "12:00",
-          "end": "15:00",
-          "room": "B2-102",
-          "batch": "8th-CSE-A"
-        },
-        {
-          "start": "15:00",
-          "end": "16:00",
-          "room": "B2-102",
-          "batch": "8th-CSE-B"
-        },
-        {
-          "start": "16:00",
-          "end": "17:00",
-          "room": "B2-204",
-          "batch": "8th-CSE-A"
-        }
-      ],
-      "Wednesday": [
-        {
-          "start": "11:00",
-          "end": "12:00",
-          "room": "B2-102",
-          "batch": "8th-CSE-A"
-        },
-        {
-          "start": "12:00",
-          "end": "15:00",
-          "room": "B2-102",
-          "batch": "8th-CSE-B"
-        },
-        {
-          "start": "15:00",
-          "end": "16:00",
-          "room": "B2-304",
-          "batch": "8th-CSE-B"
-        }
-      ]
-    },
-    "status": {
-      "status": "off_duty"
-    },
-    "manualOverride": null,
-    "overrideExpiry": null
-  },
-  {
-    "name": "Md. Mehadi Hasan",
-    "designation": "Lecturer",
-    "contact": "01836490950",
-    "email": "mehadi.cou106@gmail.com",
-    "image": "/images/fac10.jpg",
+    "name": "Partho Sarathi Sarker",
+    "designation": "Deputy Head & Assistant Professor",
+    "contact": "01926203351",
+    "email": "parthosarker93@gmail.com",
+    "image": "/images/fac2.jpg",
     "weekend": [
       "Friday",
       "Saturday"
     ],
     "officeHours": {
       "Sunday": [
-        "10:00",
+        "11:00",
         "17:00"
       ],
       "Monday": [
-        "08:00",
-        "14:00"
+        "09:00",
+        "17:00"
       ],
       "Tuesday": [
-        "11:00",
+        "09:00",
         "17:00"
       ],
       "Wednesday": [
         "10:00",
-        "17:00"
+        "18:00"
       ],
       "Thursday": [
-        "13:00",
-        "22:00"
+        "10:00",
+        "19:00"
       ]
     },
     "classTimes": {
       "Sunday": [
         {
-          "start": "10:00",
-          "end": "11:00",
-          "room": "B2-203",
+          "start": "12:00",
+          "end": "13:00",
+          "room": "B2-305",
           "batch": "4th-CSE-A"
         },
         {
-          "start": "12:00",
-          "end": "13:00",
-          "room": "B2-203",
-          "batch": "5th-CSE-A"
-        },
-        {
-          "start": "14:00",
-          "end": "15:00",
-          "room": "B2-205",
-          "batch": "5th-CSE-C"
+          "start": "13:00",
+          "end": "14:00",
+          "room": "B2-305",
+          "batch": "6th-CSE-B"
         },
         {
           "start": "15:00",
           "end": "16:00",
-          "room": "B2-205",
-          "batch": "5th-CSE-B"
+          "room": "B2-305",
+          "batch": "6th-CSE-B"
         }
       ],
       "Monday": [
         {
-          "start": "08:00",
-          "end": "11:00",
-          "room": "B2-206",
-          "batch": "4th-CSE-A"
+          "start": "11:00",
+          "end": "12:00",
+          "room": "B2-305",
+          "batch": "2nd-CSE-B"
+        },
+        {
+          "start": "13:00",
+          "end": "16:00",
+          "room": "B2-305",
+          "batch": "6th-CSE-A"
         }
       ],
       "Tuesday": [
         {
-          "start": "16:00",
-          "end": "17:00",
-          "room": "B2-203",
-          "batch": "5th-CSE-B"
+          "start": "12:00",
+          "end": "13:00",
+          "room": "B2-305",
+          "batch": "4th-CSE-A"
+        },
+        {
+          "start": "13:00",
+          "end": "14:00",
+          "room": "B2-305",
+          "batch": "6th-CSE-A"
+        },
+        {
+          "start": "14:00",
+          "end": "15:00",
+          "room": "B2-305",
+          "batch": "6th-CSE-A"
         }
       ],
       "Wednesday": [
         {
-          "start": "12:00",
-          "end": "13:00",
-          "room": "B2-205",
-          "batch": "5th-CSE-C"
+          "start": "11:00",
+          "end": "12:00",
+          "room": "B2-305",
+          "batch": "2nd-CSE-A"
         },
         {
-          "start": "16:00",
-          "end": "17:00",
-          "room": "B2-205",
-          "batch": "5th-CSE-A"
+          "start": "13:00",
+          "end": "14:00",
+          "room": "B2-305",
+          "batch": "6th-CSE-B"
+        },
+        {
+          "start": "14:00",
+          "end": "15:00",
+          "room": "B2-305",
+          "batch": "6th-CSE-A"
+        },
+        {
+          "start": "15:00",
+          "end": "18:00",
+          "room": "B2-203",
+          "batch": "6th-CSE-B"
         }
       ],
       "Thursday": [
         {
           "start": "13:00",
           "end": "14:00",
-          "room": "B2-205",
-          "batch": "4th-CSE-A"
+          "room": "B2-305",
+          "batch": "2nd-CSE-A"
+        },
+        {
+          "start": "14:00",
+          "end": "15:00",
+          "room": "B2-305",
+          "batch": "6th-CSE-B"
         },
         {
           "start": "15:00",
           "end": "16:00",
-          "room": "B2-003",
-          "batch": "5th-CSE-Evn"
+          "room": "B2-404",
+          "batch": "6th-CSE-A"
         },
         {
           "start": "16:00",
           "end": "17:00",
-          "room": "B2-203",
-          "batch": "4th-CSE-Evn"
-        },
-        {
-          "start": "18:00",
-          "end": "19:00",
-          "room": "B2-102",
-          "batch": "4th-CSE-Evn"
-        },
-        {
-          "start": "19:00",
-          "end": "20:00",
-          "room": "B2-203",
-          "batch": "6th-CSE-Evn"
-        },
-        {
-          "start": "20:00",
-          "end": "21:00",
-          "room": "B2-003",
-          "batch": "6th-CSE-Evn"
-        }
-      ]
-    },
-    "status": {
-      "status": "off_duty"
-    },
-    "manualOverride": null,
-    "overrideExpiry": null
-  },
-  {
-    "name": "Md. Minhaj Ul Islam",
-    "designation": "Lecturer",
-    "contact": "01784463101",
-    "email": "minhaj17.cse@bu.ac.bd",
-    "image": "/images/fac9.jpg",
-    "weekend": [
-      "Thursday",
-      "Friday"
-    ],
-    "officeHours": {
-      "Saturday": [
-        "12:00",
-        "22:00"
-      ],
-      "Sunday": [
-        "09:00",
-        "17:00"
-      ],
-      "Monday": [
-        "09:00",
-        "17:00"
-      ],
-      "Tuesday": [
-        "10:00",
-        "17:00"
-      ],
-      "Wednesday": [
-        "10:00",
-        "17:00"
-      ]
-    },
-    "classTimes": {
-      "Saturday": [
-        {
-          "start": "14:00",
-          "end": "15:00",
-          "room": "B2-306",
-          "batch": "6th-CSE-B"
-        },
-        {
-          "start": "16:00",
-          "end": "17:00",
-          "room": "B2-306",
-          "batch": "2nd-ME-Evn"
+          "room": "B2-404",
+          "batch": "2nd-CSE-B"
         },
         {
           "start": "17:00",
           "end": "18:00",
-          "room": "B2-203",
-          "batch": "3rd-CSE-Evn"
-        },
-        {
-          "start": "19:00",
-          "end": "20:00",
           "room": "B2-305",
-          "batch": "3rd-CSE-Evn"
+          "batch": "6th-CSE-Evn"
         },
         {
-          "start": "20:00",
-          "end": "21:00",
-          "room": "B2-404",
-          "batch": "5th-CSE-Evn"
-        }
-      ],
-      "Sunday": [
-        {
-          "start": "09:00",
-          "end": "10:00",
-          "room": "B2-304",
-          "batch": "3rd-CSE-A"
-        },
-        {
-          "start": "12:00",
-          "end": "13:00",
-          "room": "B2-404",
-          "batch": "5th-CSE-B"
-        },
-        {
-          "start": "13:00",
-          "end": "14:00",
-          "room": "B2-404",
-          "batch": "5th-CSE-A"
-        },
-        {
-          "start": "14:00",
-          "end": "15:00",
+          "start": "18:00",
+          "end": "19:00",
           "room": "B2-305",
-          "batch": "6th-CSE-B"
-        }
-      ],
-      "Monday": [
-        {
-          "start": "09:00",
-          "end": "10:00",
-          "room": "B2-306",
-          "batch": "3rd-CSE-B"
-        },
-        {
-          "start": "10:00",
-          "end": "13:00",
-          "room": "B2-203",
-          "batch": "3rd-CSE-A"
-        },
-        {
-          "start": "13:00",
-          "end": "14:00",
-          "room": "B2-306",
-          "batch": "5th-CSE-C"
-        }
-      ],
-      "Tuesday": [
-        {
-          "start": "10:00",
-          "end": "13:00",
-          "room": "B2-203",
-          "batch": "3rd-CSE-B"
-        },
-        {
-          "start": "13:00",
-          "end": "14:00",
-          "room": "B2-404",
-          "batch": "5th-CSE-A"
-        },
-        {
-          "start": "14:00",
-          "end": "15:00",
-          "room": "B2-404",
-          "batch": "2nd-ME-A"
-        },
-        {
-          "start": "15:00",
-          "end": "16:00",
-          "room": "B2-304",
-          "batch": "6th-CSE-A"
-        }
-      ],
-      "Wednesday": [
-        {
-          "start": "10:00",
-          "end": "11:00",
-          "room": "B2-304",
-          "batch": "3rd-CSE-A"
-        },
-        {
-          "start": "11:00",
-          "end": "12:00",
-          "room": "B2-304",
-          "batch": "3rd-CSE-B"
-        },
-        {
-          "start": "12:00",
-          "end": "13:00",
-          "room": "B2-404",
-          "batch": "5th-CSE-B"
-        },
-        {
-          "start": "13:00",
-          "end": "14:00",
-          "room": "B2-203",
-          "batch": "5th-CSE-C"
-        },
-        {
-          "start": "14:00",
-          "end": "15:00",
-          "room": "B2-306",
-          "batch": "6th-CSE-B"
-        },
-        {
-          "start": "15:00",
-          "end": "16:00",
-          "room": "B2-306",
-          "batch": "6th-CSE-A"
+          "batch": "2nd-CSE-Evn"
         }
       ]
     },
@@ -1148,7 +290,8 @@
       "status": "off_duty"
     },
     "manualOverride": null,
-    "overrideExpiry": null
+    "overrideExpiry": null,
+    "precedence": 2
   },
   {
     "name": "Md. Riadul Islam",
@@ -1276,108 +419,8 @@
       "status": "off_duty"
     },
     "manualOverride": null,
-    "overrideExpiry": null
-  },
-  {
-    "name": "Md. Sakib Uz Zaman",
-    "designation": "Lab Instructor",
-    "contact": "01896287005",
-    "email": "sakibzaman.ugv@gmail.com",
-    "image": "/images/md.sakibuzzaman.jpg",
-    "weekend": [
-      "Friday"
-    ],
-    "officeHours": {
-      "Sunday": [
-        "09:00",
-        "17:00"
-      ],
-      "Monday": [
-        "09:00",
-        "17:00"
-      ],
-      "Tuesday": [
-        "08:00",
-        "16:00"
-      ],
-      "Wednesday": [
-        "08:00",
-        "16:00"
-      ],
-      "Thursday": [
-        "09:00",
-        "17:00"
-      ],
-      "Saturday": [
-        "08:00",
-        "16:00"
-      ]
-    },
-    "classTimes": {
-      "Monday": [
-        {
-          "start": "14:00",
-          "end": "16:00",
-          "room": "B1-402",
-          "batch": "1st-Eng-A"
-        }
-      ],
-      "Tuesday": [
-        {
-          "start": "08:00",
-          "end": "10:00",
-          "room": "B1-402",
-          "batch": "1st-BBA-A"
-        },
-        {
-          "start": "10:00",
-          "end": "12:00",
-          "room": "B1-402",
-          "batch": "8th-Eng-A"
-        }
-      ],
-      "Wednesday": [
-        {
-          "start": "08:00",
-          "end": "10:00",
-          "room": "B1-402",
-          "batch": "1st-Eng-B"
-        },
-        {
-          "start": "10:00",
-          "end": "12:00",
-          "room": "B1-402",
-          "batch": "7th-Eng-A"
-        }
-      ],
-      "Thursday": [
-        {
-          "start": "10:00",
-          "end": "12:00",
-          "room": "B1-402",
-          "batch": "8th-BBA-A"
-        }
-      ],
-      "Saturday": [
-        {
-          "start": "08:00",
-          "end": "10:00",
-          "room": "B1-402",
-          "batch": "7th-BBA-A"
-        },
-        {
-          "start": "10:00",
-          "end": "12:00",
-          "room": "B1-402",
-          "batch": "1st-BBA-B"
-        }
-      ]
-    },
-    "status": {
-      "status": "off_duty"
-    },
-    "manualOverride": null,
-    "overrideExpiry": null
+    "overrideExpiry": null,
+    "precedence": 3
   },
   {
     "name": "Md. Tariqul Islam",
@@ -1559,7 +602,155 @@
       "status": "off_duty"
     },
     "manualOverride": null,
-    "overrideExpiry": null
+    "overrideExpiry": null,
+    "precedence": 4
+  },
+  {
+    "name": "Md. Masudur Rahman",
+    "designation": "Lecturer",
+    "contact": "01731279192",
+    "email": "masud7866@gmail.com",
+    "image": "/images/fac5.jpg",
+    "weekend": [
+      "Thursday",
+      "Friday"
+    ],
+    "officeHours": {
+      "Saturday": [
+        "13:00",
+        "21:00"
+      ],
+      "Sunday": [
+        "10:00",
+        "17:00"
+      ],
+      "Monday": [
+        "10:00",
+        "17:00"
+      ],
+      "Tuesday": [
+        "11:00",
+        "18:00"
+      ],
+      "Wednesday": [
+        "10:00",
+        "17:00"
+      ]
+    },
+    "classTimes": {
+      "Saturday": [
+        {
+          "start": "13:00",
+          "end": "14:00",
+          "room": "B2-204",
+          "batch": "8th-CSE-B"
+        },
+        {
+          "start": "14:00",
+          "end": "15:00",
+          "room": "B2-205",
+          "batch": "7th-CSE-A"
+        },
+        {
+          "start": "17:00",
+          "end": "18:00",
+          "room": "B2-205",
+          "batch": "6th-CSE-Evn"
+        },
+        {
+          "start": "20:00",
+          "end": "21:00",
+          "room": "B2-205",
+          "batch": "8th-CSE-Evn"
+        }
+      ],
+      "Sunday": [
+        {
+          "start": "11:00",
+          "end": "12:00",
+          "room": "B2-405",
+          "batch": "7th-CSE-B"
+        },
+        {
+          "start": "12:00",
+          "end": "13:00",
+          "room": "B2-102",
+          "batch": "8th-CSE-B"
+        },
+        {
+          "start": "13:00",
+          "end": "14:00",
+          "room": "B2-204",
+          "batch": "8th-CSE-A"
+        },
+        {
+          "start": "16:00",
+          "end": "17:00",
+          "room": "B2-205",
+          "batch": "7th-CSE-A"
+        }
+      ],
+      "Monday": [
+        {
+          "start": "11:00",
+          "end": "12:00",
+          "room": "B2-304",
+          "batch": "7th-CSE-B"
+        },
+        {
+          "start": "14:00",
+          "end": "15:00",
+          "room": "B2-205",
+          "batch": "8th-CSE-A"
+        }
+      ],
+      "Tuesday": [
+        {
+          "start": "12:00",
+          "end": "15:00",
+          "room": "B2-102",
+          "batch": "8th-CSE-A"
+        },
+        {
+          "start": "15:00",
+          "end": "16:00",
+          "room": "B2-102",
+          "batch": "8th-CSE-B"
+        },
+        {
+          "start": "16:00",
+          "end": "17:00",
+          "room": "B2-204",
+          "batch": "8th-CSE-A"
+        }
+      ],
+      "Wednesday": [
+        {
+          "start": "11:00",
+          "end": "12:00",
+          "room": "B2-102",
+          "batch": "8th-CSE-A"
+        },
+        {
+          "start": "12:00",
+          "end": "15:00",
+          "room": "B2-102",
+          "batch": "8th-CSE-B"
+        },
+        {
+          "start": "15:00",
+          "end": "16:00",
+          "room": "B2-304",
+          "batch": "8th-CSE-B"
+        }
+      ]
+    },
+    "status": {
+      "status": "off_duty"
+    },
+    "manualOverride": null,
+    "overrideExpiry": null,
+    "precedence": 5
   },
   {
     "name": "Md. Zahid Akon",
@@ -1705,14 +896,15 @@
       "status": "off_duty"
     },
     "manualOverride": null,
-    "overrideExpiry": null
+    "overrideExpiry": null,
+    "precedence": 6
   },
   {
-    "name": "Partho Sarathi Sarker",
-    "designation": "Deputy Head & Assistant Professor",
-    "contact": "01926203351",
-    "email": "parthosarker93@gmail.com",
-    "image": "/images/fac2.jpg",
+    "name": "Amartya Kundu Durjoy",
+    "designation": "Lecturer",
+    "contact": "01766338973",
+    "email": "amartyakundudurjoy@gmail.com",
+    "image": "/images/fac8.jpg",
     "weekend": [
       "Friday",
       "Saturday"
@@ -1720,141 +912,165 @@
     "officeHours": {
       "Sunday": [
         "11:00",
-        "17:00"
+        "18:00"
       ],
       "Monday": [
-        "09:00",
-        "17:00"
+        "11:00",
+        "18:00"
       ],
       "Tuesday": [
-        "09:00",
-        "17:00"
+        "11:00",
+        "16:00"
       ],
       "Wednesday": [
-        "10:00",
+        "11:00",
         "18:00"
       ],
       "Thursday": [
-        "10:00",
-        "19:00"
+        "12:00",
+        "22:00"
       ]
     },
     "classTimes": {
       "Sunday": [
         {
+          "start": "11:00",
+          "end": "12:00",
+          "room": "B2-404",
+          "batch": "2nd-CSE-B"
+        },
+        {
           "start": "12:00",
           "end": "13:00",
-          "room": "B2-305",
-          "batch": "4th-CSE-A"
+          "room": "B2-406",
+          "batch": "2nd-CSE-A"
         },
         {
           "start": "13:00",
           "end": "14:00",
-          "room": "B2-305",
-          "batch": "6th-CSE-B"
+          "room": "B2-003",
+          "batch": "5th-CSE-B"
         },
         {
           "start": "15:00",
           "end": "16:00",
-          "room": "B2-305",
-          "batch": "6th-CSE-B"
+          "room": "B2-206",
+          "batch": "5th-CSE-A"
+        },
+        {
+          "start": "16:00",
+          "end": "17:00",
+          "room": "B2-206",
+          "batch": "5th-CSE-C"
         }
       ],
       "Monday": [
         {
           "start": "11:00",
           "end": "12:00",
-          "room": "B2-305",
-          "batch": "2nd-CSE-B"
+          "room": "B2-306",
+          "batch": "6th-CSE-B"
         },
-        {
-          "start": "13:00",
-          "end": "16:00",
-          "room": "B2-305",
-          "batch": "6th-CSE-A"
-        }
-      ],
-      "Tuesday": [
         {
           "start": "12:00",
           "end": "13:00",
-          "room": "B2-305",
-          "batch": "4th-CSE-A"
+          "room": "B2-206",
+          "batch": "5th-CSE-C"
         },
         {
           "start": "13:00",
           "end": "14:00",
-          "room": "B2-305",
-          "batch": "6th-CSE-A"
+          "room": "B2-205",
+          "batch": "2nd-CSE-B"
         },
         {
           "start": "14:00",
           "end": "15:00",
-          "room": "B2-305",
+          "room": "B2-304",
+          "batch": "5th-CSE-A"
+        },
+        {
+          "start": "15:00",
+          "end": "16:00",
+          "room": "B2-205",
+          "batch": "5th-CSE-A"
+        }
+      ],
+      "Tuesday": [
+        {
+          "start": "11:00",
+          "end": "12:00",
+          "room": "B2-304",
           "batch": "6th-CSE-A"
+        },
+        {
+          "start": "12:00",
+          "end": "13:00",
+          "room": "B2-404",
+          "batch": "5th-CSE-B"
+        },
+        {
+          "start": "13:00",
+          "end": "16:00",
+          "room": "B2-206",
+          "batch": "5th-CSE-B"
         }
       ],
       "Wednesday": [
         {
           "start": "11:00",
           "end": "12:00",
-          "room": "B2-305",
-          "batch": "2nd-CSE-A"
+          "room": "B2-205",
+          "batch": "6th-CSE-B"
+        },
+        {
+          "start": "12:00",
+          "end": "13:00",
+          "room": "B2-205",
+          "batch": "6th-CSE-A"
         },
         {
           "start": "13:00",
           "end": "14:00",
-          "room": "B2-305",
-          "batch": "6th-CSE-B"
-        },
-        {
-          "start": "14:00",
-          "end": "15:00",
-          "room": "B2-305",
-          "batch": "6th-CSE-A"
+          "room": "B2-205",
+          "batch": "2nd-CSE-A"
         },
         {
           "start": "15:00",
           "end": "18:00",
-          "room": "B2-203",
-          "batch": "6th-CSE-B"
+          "room": "B2-206",
+          "batch": "5th-CSE-C"
         }
       ],
       "Thursday": [
         {
-          "start": "13:00",
-          "end": "14:00",
-          "room": "B2-305",
-          "batch": "2nd-CSE-A"
-        },
-        {
-          "start": "14:00",
+          "start": "12:00",
           "end": "15:00",
-          "room": "B2-305",
-          "batch": "6th-CSE-B"
-        },
-        {
-          "start": "15:00",
-          "end": "16:00",
-          "room": "B2-404",
+          "room": "B2-203",
           "batch": "6th-CSE-A"
         },
         {
-          "start": "16:00",
-          "end": "17:00",
-          "room": "B2-404",
-          "batch": "2nd-CSE-B"
-        },
-        {
-          "start": "17:00",
+          "start": "15:00",
           "end": "18:00",
-          "room": "B2-305",
-          "batch": "6th-CSE-Evn"
+          "room": "B2-205",
+          "batch": "6th-CSE-B"
         },
         {
           "start": "18:00",
           "end": "19:00",
-          "room": "B2-305",
+          "room": "B2-203",
+          "batch": "5th-CSE-Evn"
+        },
+        {
+          "start": "19:00",
+          "end": "20:00",
+          "room": "B2-404",
+          "batch": "5th-CSE-Evn"
+        },
+        {
+          "start": "20:00",
+          "end": "21:00",
+          "room": "B2-205",
           "batch": "2nd-CSE-Evn"
         }
       ]
@@ -1863,7 +1079,326 @@
       "status": "off_duty"
     },
     "manualOverride": null,
-    "overrideExpiry": null
+    "overrideExpiry": null,
+    "precedence": 7
+  },
+  {
+    "name": "Md. Minhaj Ul Islam",
+    "designation": "Lecturer",
+    "contact": "01784463101",
+    "email": "minhaj17.cse@bu.ac.bd",
+    "image": "/images/fac9.jpg",
+    "weekend": [
+      "Thursday",
+      "Friday"
+    ],
+    "officeHours": {
+      "Saturday": [
+        "12:00",
+        "22:00"
+      ],
+      "Sunday": [
+        "09:00",
+        "17:00"
+      ],
+      "Monday": [
+        "09:00",
+        "17:00"
+      ],
+      "Tuesday": [
+        "10:00",
+        "17:00"
+      ],
+      "Wednesday": [
+        "10:00",
+        "17:00"
+      ]
+    },
+    "classTimes": {
+      "Saturday": [
+        {
+          "start": "14:00",
+          "end": "15:00",
+          "room": "B2-306",
+          "batch": "6th-CSE-B"
+        },
+        {
+          "start": "16:00",
+          "end": "17:00",
+          "room": "B2-306",
+          "batch": "2nd-ME-Evn"
+        },
+        {
+          "start": "17:00",
+          "end": "18:00",
+          "room": "B2-203",
+          "batch": "3rd-CSE-Evn"
+        },
+        {
+          "start": "19:00",
+          "end": "20:00",
+          "room": "B2-305",
+          "batch": "3rd-CSE-Evn"
+        },
+        {
+          "start": "20:00",
+          "end": "21:00",
+          "room": "B2-404",
+          "batch": "5th-CSE-Evn"
+        }
+      ],
+      "Sunday": [
+        {
+          "start": "09:00",
+          "end": "10:00",
+          "room": "B2-304",
+          "batch": "3rd-CSE-A"
+        },
+        {
+          "start": "12:00",
+          "end": "13:00",
+          "room": "B2-404",
+          "batch": "5th-CSE-B"
+        },
+        {
+          "start": "13:00",
+          "end": "14:00",
+          "room": "B2-404",
+          "batch": "5th-CSE-A"
+        },
+        {
+          "start": "14:00",
+          "end": "15:00",
+          "room": "B2-305",
+          "batch": "6th-CSE-B"
+        }
+      ],
+      "Monday": [
+        {
+          "start": "09:00",
+          "end": "10:00",
+          "room": "B2-306",
+          "batch": "3rd-CSE-B"
+        },
+        {
+          "start": "10:00",
+          "end": "13:00",
+          "room": "B2-203",
+          "batch": "3rd-CSE-A"
+        },
+        {
+          "start": "13:00",
+          "end": "14:00",
+          "room": "B2-306",
+          "batch": "5th-CSE-C"
+        }
+      ],
+      "Tuesday": [
+        {
+          "start": "10:00",
+          "end": "13:00",
+          "room": "B2-203",
+          "batch": "3rd-CSE-B"
+        },
+        {
+          "start": "13:00",
+          "end": "14:00",
+          "room": "B2-404",
+          "batch": "5th-CSE-A"
+        },
+        {
+          "start": "14:00",
+          "end": "15:00",
+          "room": "B2-404",
+          "batch": "2nd-ME-A"
+        },
+        {
+          "start": "15:00",
+          "end": "16:00",
+          "room": "B2-304",
+          "batch": "6th-CSE-A"
+        }
+      ],
+      "Wednesday": [
+        {
+          "start": "10:00",
+          "end": "11:00",
+          "room": "B2-304",
+          "batch": "3rd-CSE-A"
+        },
+        {
+          "start": "11:00",
+          "end": "12:00",
+          "room": "B2-304",
+          "batch": "3rd-CSE-B"
+        },
+        {
+          "start": "12:00",
+          "end": "13:00",
+          "room": "B2-404",
+          "batch": "5th-CSE-B"
+        },
+        {
+          "start": "13:00",
+          "end": "14:00",
+          "room": "B2-203",
+          "batch": "5th-CSE-C"
+        },
+        {
+          "start": "14:00",
+          "end": "15:00",
+          "room": "B2-306",
+          "batch": "6th-CSE-B"
+        },
+        {
+          "start": "15:00",
+          "end": "16:00",
+          "room": "B2-306",
+          "batch": "6th-CSE-A"
+        }
+      ]
+    },
+    "status": {
+      "status": "off_duty"
+    },
+    "manualOverride": null,
+    "overrideExpiry": null,
+    "precedence": 8
+  },
+  {
+    "name": "Md. Mehadi Hasan",
+    "designation": "Lecturer",
+    "contact": "01836490950",
+    "email": "mehadi.cou106@gmail.com",
+    "image": "/images/fac10.jpg",
+    "weekend": [
+      "Friday",
+      "Saturday"
+    ],
+    "officeHours": {
+      "Sunday": [
+        "10:00",
+        "17:00"
+      ],
+      "Monday": [
+        "08:00",
+        "14:00"
+      ],
+      "Tuesday": [
+        "11:00",
+        "17:00"
+      ],
+      "Wednesday": [
+        "10:00",
+        "17:00"
+      ],
+      "Thursday": [
+        "13:00",
+        "22:00"
+      ]
+    },
+    "classTimes": {
+      "Sunday": [
+        {
+          "start": "10:00",
+          "end": "11:00",
+          "room": "B2-203",
+          "batch": "4th-CSE-A"
+        },
+        {
+          "start": "12:00",
+          "end": "13:00",
+          "room": "B2-203",
+          "batch": "5th-CSE-A"
+        },
+        {
+          "start": "14:00",
+          "end": "15:00",
+          "room": "B2-205",
+          "batch": "5th-CSE-C"
+        },
+        {
+          "start": "15:00",
+          "end": "16:00",
+          "room": "B2-205",
+          "batch": "5th-CSE-B"
+        }
+      ],
+      "Monday": [
+        {
+          "start": "08:00",
+          "end": "11:00",
+          "room": "B2-206",
+          "batch": "4th-CSE-A"
+        }
+      ],
+      "Tuesday": [
+        {
+          "start": "16:00",
+          "end": "17:00",
+          "room": "B2-203",
+          "batch": "5th-CSE-B"
+        }
+      ],
+      "Wednesday": [
+        {
+          "start": "12:00",
+          "end": "13:00",
+          "room": "B2-205",
+          "batch": "5th-CSE-C"
+        },
+        {
+          "start": "16:00",
+          "end": "17:00",
+          "room": "B2-205",
+          "batch": "5th-CSE-A"
+        }
+      ],
+      "Thursday": [
+        {
+          "start": "13:00",
+          "end": "14:00",
+          "room": "B2-205",
+          "batch": "4th-CSE-A"
+        },
+        {
+          "start": "15:00",
+          "end": "16:00",
+          "room": "B2-003",
+          "batch": "5th-CSE-Evn"
+        },
+        {
+          "start": "16:00",
+          "end": "17:00",
+          "room": "B2-203",
+          "batch": "4th-CSE-Evn"
+        },
+        {
+          "start": "18:00",
+          "end": "19:00",
+          "room": "B2-102",
+          "batch": "4th-CSE-Evn"
+        },
+        {
+          "start": "19:00",
+          "end": "20:00",
+          "room": "B2-203",
+          "batch": "6th-CSE-Evn"
+        },
+        {
+          "start": "20:00",
+          "end": "21:00",
+          "room": "B2-003",
+          "batch": "6th-CSE-Evn"
+        }
+      ]
+    },
+    "status": {
+      "status": "off_duty"
+    },
+    "manualOverride": null,
+    "overrideExpiry": null,
+    "precedence": 9
   },
   {
     "name": "Saif Bashar",
@@ -1997,6 +1532,485 @@
       "status": "off_duty"
     },
     "manualOverride": null,
-    "overrideExpiry": null
+    "overrideExpiry": null,
+    "precedence": 10
+  },
+  {
+    "name": "Abdul Aziz",
+    "designation": "Lab Instructor",
+    "contact": "01877774031",
+    "email": "aziz2022.abf@gmail.com",
+    "image": "/images/fac11.jpg",
+    "weekend": [
+      "Friday"
+    ],
+    "officeHours": {
+      "Saturday": [
+        "12:00",
+        "22:00"
+      ],
+      "Sunday": [
+        "09:00",
+        "17:00"
+      ],
+      "Monday": [
+        "09:00",
+        "17:00"
+      ],
+      "Tuesday": [
+        "09:00",
+        "17:00"
+      ],
+      "Wednesday": [
+        "08:00",
+        "18:00"
+      ],
+      "Thursday": [
+        "08:00",
+        "14:00"
+      ]
+    },
+    "classTimes": {
+      "Saturday": [
+        {
+          "start": "16:00",
+          "end": "17:00",
+          "room": "B2-102",
+          "batch": "1st-CSE-Evn"
+        },
+        {
+          "start": "17:00",
+          "end": "18:00",
+          "room": "B2-102",
+          "batch": "1st-CSE-Evn"
+        },
+        {
+          "start": "18:00",
+          "end": "19:00",
+          "room": "B2-102",
+          "batch": "2nd-EEE-Evn"
+        },
+        {
+          "start": "19:00",
+          "end": "20:00",
+          "room": "B2-102",
+          "batch": "4th-CSE-Evn"
+        },
+        {
+          "start": "20:00",
+          "end": "21:00",
+          "room": "B2-102",
+          "batch": "2nd-ME-Evn"
+        },
+        {
+          "start": "21:00",
+          "end": "22:00",
+          "room": "B2-102",
+          "batch": "7th-CSE-Evn"
+        }
+      ],
+      "Sunday": [
+        {
+          "start": "09:00",
+          "end": "12:00",
+          "room": "B2-102",
+          "batch": "2nd-ME-A"
+        }
+      ],
+      "Monday": [
+        {
+          "start": "09:00",
+          "end": "12:00",
+          "room": "B2-102",
+          "batch": "2nd-EEE-A"
+        }
+      ],
+      "Tuesday": [
+        {
+          "start": "09:00",
+          "end": "12:00",
+          "room": "B2-102",
+          "batch": "4th-CSE-A"
+        }
+      ],
+      "Wednesday": [
+        {
+          "start": "08:00",
+          "end": "11:00",
+          "room": "B2-102",
+          "batch": "1st-CSE-B"
+        },
+        {
+          "start": "15:00",
+          "end": "18:00",
+          "room": "B2-102",
+          "batch": "7th-CSE-A"
+        }
+      ],
+      "Thursday": [
+        {
+          "start": "08:00",
+          "end": "11:00",
+          "room": "B2-102",
+          "batch": "7th-CSE-B"
+        },
+        {
+          "start": "11:00",
+          "end": "14:00",
+          "room": "B2-102",
+          "batch": "1st-CSE-A"
+        }
+      ]
+    },
+    "status": {
+      "status": "off_duty"
+    },
+    "manualOverride": null,
+    "overrideExpiry": null,
+    "precedence": 11
+  },
+  {
+    "name": "Ahad Khan",
+    "designation": "Lab Instructor",
+    "contact": "01765447491",
+    "email": "ugv.ahadkhan@gmail.com",
+    "image": "/images/fac12.jpg",
+    "weekend": [
+      "Friday"
+    ],
+    "officeHours": {
+      "Saturday": [
+        "09:00",
+        "18:00"
+      ],
+      "Sunday": [
+        "09:00",
+        "17:00"
+      ],
+      "Monday": [
+        "09:00",
+        "17:00"
+      ],
+      "Tuesday": [
+        "10:00",
+        "17:00"
+      ],
+      "Wednesday": [
+        "10:00",
+        "17:00"
+      ],
+      "Thursday": [
+        "09:00",
+        "18:00"
+      ]
+    },
+    "classTimes": {
+      "Saturday": [
+        {
+          "start": "09:00",
+          "end": "11:00",
+          "room": "B2-003",
+          "batch": "5th-CSE-C"
+        },
+        {
+          "start": "13:00",
+          "end": "16:00",
+          "room": "B2-505",
+          "batch": "5th-CSE-B"
+        },
+        {
+          "start": "16:00",
+          "end": "17:00",
+          "room": "B2-505",
+          "batch": "6th-CSE-Evn"
+        },
+        {
+          "start": "17:00",
+          "end": "18:00",
+          "room": "B2-003",
+          "batch": "5th-CSE-Evn"
+        }
+      ],
+      "Sunday": [
+        {
+          "start": "10:00",
+          "end": "13:00",
+          "room": "B2-505",
+          "batch": "6th-CSE-B"
+        },
+        {
+          "start": "14:00",
+          "end": "17:00",
+          "room": "B2-003",
+          "batch": "6th-CSE-A"
+        }
+      ],
+      "Monday": [
+        {
+          "start": "10:00",
+          "end": "13:00",
+          "room": "B2-505",
+          "batch": "6th-CSE-A"
+        },
+        {
+          "start": "14:00",
+          "end": "17:00",
+          "room": "B2-003",
+          "batch": "6th-CSE-B"
+        }
+      ],
+      "Tuesday": [
+        {
+          "start": "10:00",
+          "end": "13:00",
+          "room": "B2-003",
+          "batch": "5th-CSE-A"
+        }
+      ],
+      "Wednesday": [
+        {
+          "start": "14:00",
+          "end": "17:00",
+          "room": "B2-505",
+          "batch": "5th-CSE-B"
+        }
+      ],
+      "Thursday": [
+        {
+          "start": "09:00",
+          "end": "12:00",
+          "room": "B2-003",
+          "batch": "5th-CSE-A"
+        },
+        {
+          "start": "12:00",
+          "end": "15:00",
+          "room": "B2-505",
+          "batch": "5th-CSE-C"
+        },
+        {
+          "start": "16:00",
+          "end": "17:00",
+          "room": "B2-003",
+          "batch": "6th-CSE-Evn"
+        },
+        {
+          "start": "17:00",
+          "end": "18:00",
+          "room": "B2-505",
+          "batch": "5th-CSE-Evn"
+        }
+      ]
+    },
+    "status": {
+      "status": "off_duty"
+    },
+    "manualOverride": null,
+    "overrideExpiry": null,
+    "precedence": 12
+  },
+  {
+    "name": "Galib Jaman",
+    "designation": "Lab Instructor",
+    "contact": "01766555213",
+    "email": "ugv.galibjaman@gmail.com",
+    "image": "/images/fac13.jpg",
+    "weekend": [
+      "Friday"
+    ],
+    "officeHours": {
+      "Saturday": [
+        "09:00",
+        "19:00"
+      ],
+      "Sunday": [
+        "09:00",
+        "17:00"
+      ],
+      "Monday": [
+        "09:00",
+        "16:00"
+      ],
+      "Tuesday": [
+        "09:00",
+        "16:00"
+      ],
+      "Wednesday": [
+        "09:00",
+        "17:00"
+      ],
+      "Thursday": [
+        "09:00",
+        "17:00"
+      ]
+    },
+    "classTimes": {
+      "Saturday": [
+        {
+          "start": "17:00",
+          "end": "18:00",
+          "room": "B2-501",
+          "batch": "8th-CSE-Evn"
+        },
+        {
+          "start": "18:00",
+          "end": "19:00",
+          "room": "B2-204",
+          "batch": "5th-CSE-Evn"
+        }
+      ],
+      "Monday": [
+        {
+          "start": "10:00",
+          "end": "13:00",
+          "room": "B2-204",
+          "batch": "2nd-CSE-A"
+        },
+        {
+          "start": "13:00",
+          "end": "16:00",
+          "room": "B2-204",
+          "batch": "5th-CSE-B"
+        }
+      ],
+      "Tuesday": [
+        {
+          "start": "10:00",
+          "end": "13:00",
+          "room": "B2-204",
+          "batch": "2nd-CSE-B"
+        },
+        {
+          "start": "13:00",
+          "end": "16:00",
+          "room": "B2-204",
+          "batch": "5th-CSE-C"
+        }
+      ],
+      "Wednesday": [
+        {
+          "start": "13:00",
+          "end": "16:00",
+          "room": "B2-204",
+          "batch": "5th-CSE-A"
+        }
+      ],
+      "Thursday": [
+        {
+          "start": "12:00",
+          "end": "15:00",
+          "room": "B2-204",
+          "batch": "4th-CE-A"
+        }
+      ]
+    },
+    "status": {
+      "status": "off_duty"
+    },
+    "manualOverride": null,
+    "overrideExpiry": null,
+    "precedence": 13
+  },
+  {
+    "name": "Md. Sakib Uz Zaman",
+    "designation": "Lab Instructor",
+    "contact": "01896287005",
+    "email": "sakibzaman.ugv@gmail.com",
+    "image": "/images/md.sakibuzzaman.jpg",
+    "weekend": [
+      "Friday"
+    ],
+    "officeHours": {
+      "Sunday": [
+        "09:00",
+        "17:00"
+      ],
+      "Monday": [
+        "09:00",
+        "17:00"
+      ],
+      "Tuesday": [
+        "08:00",
+        "16:00"
+      ],
+      "Wednesday": [
+        "08:00",
+        "16:00"
+      ],
+      "Thursday": [
+        "09:00",
+        "17:00"
+      ],
+      "Saturday": [
+        "08:00",
+        "16:00"
+      ]
+    },
+    "classTimes": {
+      "Monday": [
+        {
+          "start": "14:00",
+          "end": "16:00",
+          "room": "B1-402",
+          "batch": "1st-Eng-A"
+        }
+      ],
+      "Tuesday": [
+        {
+          "start": "08:00",
+          "end": "10:00",
+          "room": "B1-402",
+          "batch": "1st-BBA-A"
+        },
+        {
+          "start": "10:00",
+          "end": "12:00",
+          "room": "B1-402",
+          "batch": "8th-Eng-A"
+        }
+      ],
+      "Wednesday": [
+        {
+          "start": "08:00",
+          "end": "10:00",
+          "room": "B1-402",
+          "batch": "1st-Eng-B"
+        },
+        {
+          "start": "10:00",
+          "end": "12:00",
+          "room": "B1-402",
+          "batch": "7th-Eng-A"
+        }
+      ],
+      "Thursday": [
+        {
+          "start": "10:00",
+          "end": "12:00",
+          "room": "B1-402",
+          "batch": "8th-BBA-A"
+        }
+      ],
+      "Saturday": [
+        {
+          "start": "08:00",
+          "end": "10:00",
+          "room": "B1-402",
+          "batch": "7th-BBA-A"
+        },
+        {
+          "start": "10:00",
+          "end": "12:00",
+          "room": "B1-402",
+          "batch": "1st-BBA-B"
+        }
+      ]
+    },
+    "status": {
+      "status": "off_duty"
+    },
+    "manualOverride": null,
+    "overrideExpiry": null,
+    "precedence": 14
   }
 ]
