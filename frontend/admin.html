@@ -1490,26 +1490,47 @@
 
                 sortedFaculty.forEach((f, index) => {
                     let displayImagePath = f.image;
+                    let imageUrl = '';
+
+                    // Handle different image path formats
                     if (f.image && f.image.startsWith('/images/')) {
                         displayImagePath = f.image;
+                        imageUrl = `${API_BASE}${f.image}`;
                     } else if (f.image && f.image.startsWith('/public/')) {
                         displayImagePath = f.image;
+                        imageUrl = `${API_BASE}${f.image}`;
+                    } else if (f.image) {
+                        // Handle other formats
+                        displayImagePath = f.image;
+                        imageUrl = `${API_BASE}${f.image}`;
+                    } else {
+                        // Default fallback
+                        displayImagePath = '/images/default.jpg';
+                        imageUrl = `${API_BASE}/images/default.jpg`;
                     }
 
                     const facultyCard = document.createElement('div');
                     facultyCard.className = 'faculty-card';
                     facultyCard.innerHTML = `
                         <div class="faculty-header">
-                            <div class="faculty-name">
-                                <span style="background: #2563eb; color: white; padding: 2px 6px; border-radius: 4px; font-size: 11px; margin-right: 8px;">#${index + 1}</span>
-                                ${f.name}
+                            <div style="display: flex; align-items: center; gap: 12px; flex: 1;">
+                                <img src="${imageUrl}" 
+                                     alt="${f.name}" 
+                                     style="width: 50px; height: 50px; border-radius: 8px; object-fit: cover; border: 2px solid #e5e7eb; flex-shrink: 0;"
+                                     onerror="this.src='${API_BASE}/images/default.jpg'; this.style.opacity='0.5';">
+                                <div>
+                                    <div class="faculty-name">
+                                        <span style="background: #2563eb; color: white; padding: 2px 6px; border-radius: 4px; font-size: 11px; margin-right: 8px;">#${index + 1}</span>
+                                        ${f.name}
+                                    </div>
+                                    <div style="font-size: 12px; color: #6b7280; margin-top: 2px;">${f.designation || 'N/A'}</div>
+                                </div>
                             </div>
                             <div class="faculty-actions">
                                 <button class="btn btn-primary" onclick="editFaculty('${f.name.replace(/'/g, "\\'")}')">Edit</button>
                                 <button class="btn btn-danger" onclick="deleteFaculty('${f.name.replace(/'/g, "\\'")}')">Delete</button>
                             </div>
                         </div>
-                        <div class="faculty-info"><strong>Designation:</strong> ${f.designation || 'N/A'}</div>
                         <div class="faculty-info"><strong>Display Order:</strong> #${index + 1}</div>
                         <div class="faculty-info"><strong>Contact:</strong> ${f.contact || 'N/A'}</div>
                         <div class="faculty-info"><strong>Email:</strong> ${f.email || 'N/A'}</div>
@@ -2154,6 +2175,7 @@
                 localStorage.removeItem('lastVisitedPage');
                 window.location.href = 'login.html';
             }).catch(() => {
+
                 // Clear preferences even if logout request fails
                 localStorage.removeItem('lastVisitedPage');
                 window.location.href = 'login.html';
