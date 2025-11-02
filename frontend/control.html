@@ -418,42 +418,39 @@
 
     @media (min-width: 600px) {
       .faculty-card {
-        flex-direction: row;
+        display: grid;
+        grid-template-columns: auto 1fr auto auto auto;
+        gap: 1rem;
         align-items: center;
-        justify-content: space-between;
-        padding: 0.75rem;
-      }
-
-      .bulk-status {
-        margin: 0.75rem auto;
-        flex-direction: row;
-        align-items: center;
-      }
-
-      .bulk-status label {
-        flex: 1;
-      }
-
-      .bulk-status select {
-        flex: 2;
-      }
-
-      .bulk-status button {
-        flex: 1;
-        max-width: 200px;
       }
 
       .faculty-card label {
-        flex: 1;
+        grid-column: 1;
+        margin-bottom: 0;
+        white-space: nowrap;
       }
 
       .faculty-card select {
-        flex: 2;
+        grid-column: 2;
+        margin-bottom: 0;
       }
 
-      .faculty-card button {
-        flex: 1;
-        max-width: 200px;
+      .faculty-card .custom-expiry-btn-small {
+        grid-column: 3;
+        margin: 0;
+      }
+
+      .faculty-card button:last-child {
+        grid-column: 4;
+        margin-bottom: 0;
+      }
+
+      /* Info text (like "No manual override") */
+      .faculty-card > div:last-child {
+        grid-column: 5;
+        white-space: nowrap;
+        color: #6b7280;
+        font-size: 0.9rem;
       }
     }
 
