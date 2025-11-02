@@ -419,38 +419,42 @@
     @media (min-width: 600px) {
       .faculty-card {
         display: grid;
-        grid-template-columns: auto 1fr auto auto auto;
-        gap: 1rem;
+        grid-template-columns: auto 200px auto auto;
+        grid-template-rows: auto auto;
+        gap: 0.5rem 1rem;
         align-items: center;
       }
 
       .faculty-card label {
         grid-column: 1;
+        grid-row: 1 / 3;
         margin-bottom: 0;
         white-space: nowrap;
+        align-self: start;
+        padding-top: 0.5rem;
       }
 
       .faculty-card select {
         grid-column: 2;
+        grid-row: 1 / 3;
         margin-bottom: 0;
       }
 
       .faculty-card .custom-expiry-btn-small {
         grid-column: 3;
+        grid-row: 1 / 3;
         margin: 0;
       }
 
       .faculty-card button:last-child {
         grid-column: 4;
+        grid-row: 1 / 3;
         margin-bottom: 0;
       }
 
-      /* Info text (like "No manual override") */
-      .faculty-card > div:last-child {
-        grid-column: 5;
-        white-space: nowrap;
-        color: #6b7280;
-        font-size: 0.9rem;
+      /* Remove the room/batch info from the label and style it separately */
+      .faculty-card label > div {
+        display: none;
       }
     }
 
