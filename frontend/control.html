@@ -417,54 +417,57 @@
     }
 
     @media (min-width: 600px) {
-      .faculty-card {
-        display: grid;
-        grid-template-columns: auto 1fr auto auto;
-        grid-template-rows: auto auto;
-        gap: 0.5rem 1rem;
-        align-items: center;
-      }
+  .faculty-card {
+    display: grid;
+    grid-template-columns: auto 1fr auto auto;
+    gap: 0.5rem 1rem;
+    align-items: center;
+  }
 
-      .faculty-card label {
-        grid-column: 1;
-        grid-row: 1 / 3;
-        margin-bottom: 0;
-        display: flex;
-        flex-direction: column;
-        align-items: flex-start;
-        gap: 0.25rem;
-      }
+  .faculty-card label {
+    grid-column: 1;
+    grid-row: 1;
+    margin-bottom: 0;
+    display: flex;
+    flex-direction: row;
+    align-items: flex-start;
+    gap: 0.5rem;
+  }
 
-      /* Room/batch info below the name */
-      .faculty-card label > div {
-        font-size: 0.75em;
-        color: #6b7280;
-        margin-left: 2.5em; /* Align with name text */
-        white-space: pre-line;
-        line-height: 1.3;
-      }
+  /* Room/batch info wrapper */
+  .faculty-card label > div {
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+  }
 
-      .faculty-card select {
-        grid-column: 2;
-        grid-row: 1 / 3;
-        margin-bottom: 0;
-        align-self: center;
-      }
+  /* Style for name and room/batch container */
+  .faculty-card label > div:last-child {
+    font-size: 0.75em;
+    color: #6b7280;
+    margin-top: 0.15rem;
+    white-space: pre-line;
+    line-height: 1.3;
+  }
 
-      .faculty-card .custom-expiry-btn-small {
-        grid-column: 3;
-        grid-row: 1 / 3;
-        margin: 0;
-        align-self: center;
-      }
+  .faculty-card select {
+    grid-column: 2;
+    grid-row: 1;
+    margin-bottom: 0;
+  }
 
-      .faculty-card button:last-child {
-        grid-column: 4;
-        grid-row: 1 / 3;
-        margin-bottom: 0;
-        align-self: center;
-      }
-    }
+  .faculty-card .custom-expiry-btn-small {
+    grid-column: 3;
+    grid-row: 1;
+    margin: 0;
+  }
+
+  .faculty-card button:last-child {
+    grid-column: 4;
+    grid-row: 1;
+    margin-bottom: 0;
+  }
+}
 
     /* Add these styles to your existing CSS section */
 
@@ -1396,13 +1399,19 @@
         img.style.objectFit = "cover";
 
         const label = document.createElement("label");
-        label.textContent = f.name;
-        label.style.display = "flex";
-        label.style.alignItems = "center";
-        label.style.gap = "0.5rem";
-        label.prepend(img);
 
-        // --- Add this block to extract and show room/batch info ---
+        // Create a container for name and info
+        const nameContainer = document.createElement("div");
+        nameContainer.style.display = "flex";
+        nameContainer.style.flexDirection = "column";
+        nameContainer.style.gap = "0.15rem";
+
+        // Add the name
+        const nameText = document.createElement("span");
+        nameText.textContent = f.name;
+        nameContainer.appendChild(nameText);
+
+        // Add room/batch info if available
         let room = null,
           batch = null;
         let statusObj = hasValidManualOverride(f) ? f.manualOverride : f.status;
@@ -1411,24 +1420,24 @@
           batch = statusObj.batch || null;
         }
 
-        // Only show if room or batch exists
         if (room || batch) {
           const infoDiv = document.createElement("div");
-          infoDiv.style.fontSize = "0.75em";
+          infoDiv.style.fontSize = "0.85em";
           infoDiv.style.color = "#6b7280";
-          infoDiv.style.marginLeft = "2.5em";
-          infoDiv.style.marginTop = "0.2em";
-          infoDiv.style.lineHeight = "1.3"; // Add line height for better spacing
+          infoDiv.style.lineHeight = "1.3";
 
           let infoText = "";
           if (room) infoText += `Room: ${room}`;
-          if (room && batch) infoText += "\n"; // Line break instead of " | "
+          if (room && batch) infoText += "\n";
           if (batch) infoText += `Batch: ${batch}`;
 
-          infoDiv.style.whiteSpace = "pre-line"; // This allows line breaks to render
-          label.appendChild(infoDiv);
+          infoDiv.style.whiteSpace = "pre-line";
+          infoDiv.textContent = infoText;
+          nameContainer.appendChild(infoDiv);
         }
-        // --- End block ---
+
+        label.appendChild(img);
+        label.appendChild(nameContainer);
 
         const selectElement = document.createElement("select");
         selectElement.id = `status-${f.name}`;
