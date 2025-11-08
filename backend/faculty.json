@@ -1991,17 +1991,15 @@
           "batch": "3rd-CSE-Evn"
         },
         {
-          "start": "19:00",
-          "end": "20:00",
-          "room": "B2-305",
-          "batch": "3rd-CSE-Evn"
+          "start": "20:00",
+          "end": "21:00",
+          "room": "B2-205",
+          "batch": "5th-CSE-Evn"
         }
       ]
     },
     "status": {
-      "status": "in_class",
-      "room": "B2-306",
-      "batch": "6th-CSE-B"
+      "status": "at_dept"
     },
     "manualOverride": null,
     "overrideExpiry": null,
