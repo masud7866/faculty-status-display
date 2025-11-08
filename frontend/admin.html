@@ -716,6 +716,20 @@
                                 <label for="email">Email</label>
                                 <input type="email" id="email" class="form-control">
                             </div>
+                            <div class="form-group">
+                                <label for="displayPosition">Display Position</label>
+                                <select id="displayPosition" class="form-control">
+                                    <option value="first">First (Top)</option>
+                                    <option value="last" selected>Last (Bottom)</option>
+                                    <option value="custom">Custom Position...</option>
+                                </select>
+                            </div>
+                            <div class="form-group" id="customPositionGroup" style="display: none;">
+                                <label for="customPosition">Position Number</label>
+                                <input type="number" id="customPosition" class="form-control" min="1" placeholder="e.g., 5">
+                                <small style="color: #6b7280; font-size: 11px;">Total faculty: <span id="totalFacultyCount">0</span>
+                                </small>
+                            </div>
                         </div>
 
                         <div class="image-upload-section">
@@ -984,6 +998,20 @@
             setupFileUpload();
         }
 
+        document.getElementById('displayPosition').addEventListener('change', function() {
+            const customGroup = document.getElementById('customPositionGroup');
+            if (this.value === 'custom') {
+                customGroup.style.display = 'block';
+                document.getElementById('customPosition').value = facultyData.length + 1;
+            } else {
+                customGroup.style.display = 'none';
+            }
+        });
+
+        function updateFacultyCount() {
+            document.getElementById('totalFacultyCount').textContent = facultyData.length;
+        }
+
         function showToast(message, type = 'success') {
             const toast = document.createElement('div');
             toast.className = `toast ${type}`;
@@ -1116,6 +1144,10 @@
             if (precedenceInput) {
                 precedenceInput.remove();
             }
+
+            document.getElementById('displayPosition').value = 'last';
+            document.getElementById('customPositionGroup').style.display = 'none';
+            document.getElementById('customPosition').value = '';
         }
 
         function cancelEdit() {
@@ -1370,6 +1402,52 @@
                 if (storedPrecedence) {
                     newFacultyData.precedence = parseInt(storedPrecedence);
                 }
+            } else {
+                // NEW FACULTY - Handle display position
+                const displayPosition = document.getElementById('displayPosition').value;
+                
+                if (displayPosition === 'first') {
+                    newFacultyData.precedence = 1;
+                    // Shift all existing faculty down by 1
+                    const updatePromises = facultyData.map(async (f) => {
+                        const newPrecedence = (f.precedence || 50) + 1;
+                        return fetch(`${API_BASE}/api/admin/faculty/${encodeURIComponent(f.name)}`, {
+                            method: 'PUT',
+                            headers: { 'Content-Type': 'application/json' },
+                            credentials: 'include',
+                            body: JSON.stringify({ precedence: newPrecedence })
+                        });
+                    });
+                    await Promise.all(updatePromises);
+                    
+                } else if (displayPosition === 'custom') {
+                    const customPos = parseInt(document.getElementById('customPosition').value);
+                    const targetPrecedence = customPos || facultyData.length + 1;
+                    
+                    newFacultyData.precedence = targetPrecedence;
+                    
+                    // Shift all faculty with precedence >= targetPrecedence down by 1
+                    const updatePromises = facultyData
+                        .filter(f => (f.precedence || 50) >= targetPrecedence)
+                        .map(async (f) => {
+                            const newPrecedence = (f.precedence || 50) + 1;
+                            return fetch(`${API_BASE}/api/admin/faculty/${encodeURIComponent(f.name)}`, {
+                                method: 'PUT',
+                                headers: { 'Content-Type': 'application/json' },
+                                credentials: 'include',
+                                body: JSON.stringify({ precedence: newPrecedence })
+                            });
+                        });
+                    
+                    if (updatePromises.length > 0) {
+                        await Promise.all(updatePromises);
+                        showToast(`Moved ${updatePromises.length} faculty member(s) down to make room`, 'info');
+                    }
+                    
+                } else { // 'last'
+                    const maxPrecedence = Math.max(...facultyData.map(f => f.precedence || 50), 0);
+                    newFacultyData.precedence = maxPrecedence + 1;
+                }
             }
 
             // Get weekend days
@@ -1565,6 +1643,7 @@
                     container.appendChild(facultyCard);
                 });
 
+                updateFacultyCount(); // Add this line
                 showToast(`Loaded ${sortedFaculty.length} faculty members (sorted by display order)`, 'info');
             } catch (error) {
                 showToast('Failed to load faculty', 'error');
@@ -2060,6 +2139,7 @@
                     const statusItem = document.createElement('div');
                     statusItem.style.color = '#10b981';
                     statusItem.style.fontSize = '12px';
+
                     statusItem.style.marginBottom = '4px';
                     statusItem.textContent = `✅ ${file.name} uploaded successfully`;
                     statusDiv.appendChild(statusItem);
