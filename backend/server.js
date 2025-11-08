@@ -337,43 +337,41 @@ app.put("/api/admin/faculty/:name", requireAuth, async (req, res) => {
       updatedAt: new Date()
     };
     
-    // Don't delete updatedAt and allow precedence updates
+    // Don't modify these fields
     delete updateData.status;
     delete updateData.manualOverride;
     delete updateData.overrideExpiry;
     delete updateData.createdAt;
+    delete updateData._id;
     
-    console.log(`Updating faculty ${originalName} with data:`, {
-      precedence: updateData.precedence,
-      name: updateData.name
-    });
+    // Preserve precedence if not provided
+    if (updateData.precedence === undefined) {
+      const existing = await db.collection('faculty').findOne({ name: originalName });
+      if (existing && existing.precedence !== undefined) {
+        updateData.precedence = existing.precedence;
+      }
+    }
+    
+    console.log(`Updating faculty ${originalName} with precedence:`, updateData.precedence);
     
     // If name is being changed, check for duplicates
     if (updateData.name && updateData.name !== originalName) {
       const existing = await db.collection('faculty').findOne({ name: updateData.name });
       if (existing) {
-        return res.status(404).json({ error: "Faculty with this name already exists" });
+        return res.status(400).json({ error: "Faculty with this name already exists" });
       }
     }
     
-    // Use $set to update specific fields, ensuring precedence is updated
     const result = await db.collection('faculty').updateOne(
       { name: originalName },
-      { 
-        $set: {
-          ...updateData,
-          precedence: updateData.precedence || 50 // Ensure precedence is set
-        }
-      }
+      { $set: updateData }
     );
     
     if (result.matchedCount === 0) {
       return res.status(404).json({ error: "Faculty not found" });
     }
     
-    // Verify the update by fetching the updated document
-    const updatedDoc = await db.collection('faculty').findOne({ name: updateData.name || originalName });
-    console.log(`✅ Updated faculty: ${originalName} (precedence: ${updatedDoc?.precedence || 'not set'})`);
+    console.log(`✅ Updated faculty: ${originalName} (precedence: ${updateData.precedence || 'default'})`);
     
     res.json({ message: "Faculty updated successfully" });
   } catch (error) {

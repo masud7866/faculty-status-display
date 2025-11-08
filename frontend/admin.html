@@ -1110,6 +1110,12 @@
 
             generateScheduleForms();
             showToast('Form reset!', 'info');
+
+            // ADD THIS:
+            const precedenceInput = document.getElementById('editPrecedence');
+            if (precedenceInput) {
+                precedenceInput.remove();
+            }
         }
 
         function cancelEdit() {
@@ -1128,6 +1134,16 @@
             // Set edit mode
             document.getElementById('editMode').value = 'true';
             document.getElementById('originalName').value = name;
+
+            // Store precedence in a hidden field
+            let precedenceInput = document.getElementById('editPrecedence');
+            if (!precedenceInput) {
+                precedenceInput = document.createElement('input');
+                precedenceInput.type = 'hidden';
+                precedenceInput.id = 'editPrecedence';
+                document.getElementById('addFacultyForm').appendChild(precedenceInput);
+            }
+            precedenceInput.value = faculty.precedence || 50;
 
             // Update UI
             document.getElementById('facultyFormTitle').textContent = `Edit Faculty - ${name}`;
@@ -1345,8 +1361,16 @@
                 weekend: [],
                 officeHours: {},
                 classTimes: {},
-                status: 'off_duty' // Change from 'unknown' to 'off_duty'
+                status: 'off_duty'
             };
+
+            // Preserve precedence when editing
+            if (isEditMode) {
+                const storedPrecedence = document.getElementById('editPrecedence')?.value;
+                if (storedPrecedence) {
+                    newFacultyData.precedence = parseInt(storedPrecedence);
+                }
+            }
 
             // Get weekend days
             document.querySelectorAll('[id^="weekend-"]:checked').forEach(checkbox => {
@@ -2160,6 +2184,7 @@
                 try {
                     reader.readAsDataURL(file);
                 } catch (error) {
+
                     clearTimeout(timeout);
                     reject(new Error('Failed to start file reading'));
                 }
