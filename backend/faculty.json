@@ -128,10 +128,10 @@
       ]
     },
     "status": {
-      "status": "on_leave"
+      "status": "off_duty"
     },
-    "manualOverride": "on_leave",
-    "overrideExpiry": "2025-11-08T17:59:59.999Z",
+    "manualOverride": null,
+    "overrideExpiry": null,
     "precedence": 1
   },
   {
@@ -287,7 +287,9 @@
       ]
     },
     "status": {
-      "status": "on_weekend"
+      "status": "in_class",
+      "room": "B2-203",
+      "batch": "6th-CSE-B"
     },
     "manualOverride": null,
     "overrideExpiry": null,
@@ -416,7 +418,7 @@
       ]
     },
     "status": {
-      "status": "on_weekend"
+      "status": "at_dept"
     },
     "manualOverride": null,
     "overrideExpiry": null,
@@ -746,7 +748,9 @@
       ]
     },
     "status": {
-      "status": "at_dept"
+      "status": "in_class",
+      "room": "B2-304",
+      "batch": "8th-CSE-B"
     },
     "manualOverride": null,
     "overrideExpiry": null,
@@ -893,7 +897,7 @@
       ]
     },
     "status": {
-      "status": "on_weekend"
+      "status": "at_dept"
     },
     "manualOverride": null,
     "overrideExpiry": null,
@@ -1076,7 +1080,9 @@
       ]
     },
     "status": {
-      "status": "on_weekend"
+      "status": "in_class",
+      "room": "B2-206",
+      "batch": "5th-CSE-C"
     },
     "manualOverride": null,
     "overrideExpiry": null,
@@ -1086,7 +1092,7 @@
     "name": "Md. Minhaj Ul Islam",
     "designation": "Lecturer",
     "contact": "01784463101",
-    "email": "minhaj17.cse@bu.ac.bd",
+    "email": "mminhaj17.cse@bu.ac.bd",
     "image": "/images/fac9.jpg",
     "weekend": [
       "Thursday",
@@ -1249,7 +1255,7 @@
     "status": {
       "status": "in_class",
       "room": "B2-306",
-      "batch": "2nd-ME-Evn"
+      "batch": "6th-CSE-A"
     },
     "manualOverride": null,
     "overrideExpiry": null,
@@ -1384,7 +1390,7 @@
       ]
     },
     "status": {
-      "status": "on_weekend"
+      "status": "at_dept"
     },
     "manualOverride": null,
     "overrideExpiry": null,
@@ -1519,9 +1525,7 @@
       ]
     },
     "status": {
-      "status": "in_class",
-      "room": "B2-203",
-      "batch": "7th-CSE-Evn"
+      "status": "off_duty"
     },
     "manualOverride": null,
     "overrideExpiry": null,
@@ -1657,7 +1661,7 @@
     "status": {
       "status": "in_class",
       "room": "B2-102",
-      "batch": "1st-CSE-Evn"
+      "batch": "7th-CSE-A"
     },
     "manualOverride": null,
     "overrideExpiry": null,
@@ -1799,7 +1803,7 @@
     "status": {
       "status": "in_class",
       "room": "B2-505",
-      "batch": "6th-CSE-Evn"
+      "batch": "5th-CSE-B"
     },
     "manualOverride": null,
     "overrideExpiry": null,
@@ -1901,7 +1905,9 @@
       ]
     },
     "status": {
-      "status": "at_dept"
+      "status": "in_class",
+      "room": "B2-204",
+      "batch": "5th-CSE-A"
     },
     "manualOverride": null,
     "overrideExpiry": null,
@@ -2003,7 +2009,7 @@
       ]
     },
     "status": {
-      "status": "off_duty"
+      "status": "at_dept"
     },
     "manualOverride": null,
     "overrideExpiry": null,
