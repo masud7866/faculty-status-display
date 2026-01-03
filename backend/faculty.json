@@ -1097,14 +1097,6 @@
       "Monday"
     ],
     "officeHours": {
-      "Sunday": [
-        "09:00",
-        "17:00"
-      ],
-      "Monday": [
-        "09:00",
-        "17:00"
-      ],
       "Tuesday": [
         "10:00",
         "17:00"
@@ -1131,13 +1123,13 @@
         {
           "start": "10:00",
           "end": "11:00",
-          "room": "B2-306",
+          "room": "B2-305",
           "batch": "3rd-CSE-A"
         },
         {
           "start": "11:00",
           "end": "12:00",
-          "room": "B2-306",
+          "room": "B2-305",
           "batch": "3rd-CSE-A"
         },
         {
@@ -1169,6 +1161,12 @@
         {
           "start": "13:00",
           "end": "14:00",
+          "room": "B2-306",
+          "batch": "5th-CSE-A"
+        },
+        {
+          "start": "14:00",
+          "end": "15:00",
           "room": "B2-306",
           "batch": "5th-CSE-A"
         }
@@ -1253,7 +1251,7 @@
       ]
     },
     "status": {
-      "status": "off_duty"
+      "status": "at_dept"
     },
     "manualOverride": null,
     "overrideExpiry": null,
