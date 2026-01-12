@@ -1,142 +1,5 @@
 [
   {
-    "name": "Md Abdur Razzak",
-    "designation": "Head & Assistant Professor",
-    "contact": "01746671227",
-    "email": "razzak.buet@gmail.com",
-    "image": "/images/fac1.jpg",
-    "weekend": [
-      "Thursday",
-      "Friday"
-    ],
-    "officeHours": {
-      "Saturday": [
-        "08:30",
-        "20:00"
-      ],
-      "Sunday": [
-        "08:30",
-        "15:00"
-      ],
-      "Monday": [
-        "08:30",
-        "15:00"
-      ],
-      "Tuesday": [
-        "08:30",
-        "15:00"
-      ],
-      "Wednesday": [
-        "08:30",
-        "15:30"
-      ]
-    },
-    "classTimes": {
-      "Saturday": [
-        {
-          "start": "12:00",
-          "end": "14:00",
-          "room": "B2-304",
-          "batch": "3rd-CSE-B"
-        },
-        {
-          "start": "16:00",
-          "end": "17:00",
-          "room": "B2-304",
-          "batch": "3rd-CSE-Evn"
-        },
-        {
-          "start": "17:00",
-          "end": "18:00",
-          "room": "B2-304",
-          "batch": "4th-CSE-Evn"
-        },
-        {
-          "start": "18:00",
-          "end": "19:00",
-          "room": "B2-304",
-          "batch": "7th-CSE-B"
-        },
-        {
-          "start": "19:00",
-          "end": "20:00",
-          "room": "B2-304",
-          "batch": "71st-CSE-Evn"
-        }
-      ],
-      "Sunday": [
-        {
-          "start": "11:00",
-          "end": "12:00",
-          "room": "B2-304",
-          "batch": "4th-CSE-A"
-        },
-        {
-          "start": "12:00",
-          "end": "13:00",
-          "room": "B2-304",
-          "batch": "3rd-CSE-A"
-        }
-      ],
-      "Monday": [
-        {
-          "start": "12:00",
-          "end": "13:00",
-          "room": "B2-304",
-          "batch": "3rd-CSE-B"
-        },
-        {
-          "start": "13:00",
-          "end": "14:00",
-          "room": "B2-304",
-          "batch": "7th-CSE-A"
-        }
-      ],
-      "Tuesday": [
-        {
-          "start": "12:00",
-          "end": "13:00",
-          "room": "B2-304",
-          "batch": "3rd-CSE-A"
-        },
-        {
-          "start": "13:00",
-          "end": "14:00",
-          "room": "B2-304",
-          "batch": "7th-CSE-B"
-        }
-      ],
-      "Wednesday": [
-        {
-          "start": "11:00",
-          "end": "12:00",
-          "room": "B2-306",
-          "batch": "7th-CSE-B"
-        },
-        {
-          "start": "12:00",
-          "end": "13:00",
-          "room": "B2-402",
-          "batch": "4th-CSE-A"
-        },
-        {
-          "start": "13:00",
-          "end": "14:00",
-          "room": "B2-304",
-          "batch": "7th-CSE-A"
-        }
-      ]
-    },
-    "status": {
-      "status": "in_class",
-      "room": "B2-304",
-      "batch": "3rd-CSE-B"
-    },
-    "manualOverride": null,
-    "overrideExpiry": null,
-    "precedence": 1
-  },
-  {
     "name": "Partho Sarathi Sarker",
     "designation": "Deputy Head & Assistant Professor",
     "contact": "01926203351",
@@ -289,7 +152,7 @@
       ]
     },
     "status": {
-      "status": "on_weekend"
+      "status": "off_duty"
     },
     "manualOverride": null,
     "overrideExpiry": null,
@@ -418,7 +281,7 @@
       ]
     },
     "status": {
-      "status": "on_weekend"
+      "status": "off_duty"
     },
     "manualOverride": null,
     "overrideExpiry": null,
@@ -601,9 +464,7 @@
       ]
     },
     "status": {
-      "status": "in_class",
-      "room": "B2-003",
-      "batch": "5th-CSE-B"
+      "status": "at_dept"
     },
     "manualOverride": null,
     "overrideExpiry": null,
@@ -897,7 +758,7 @@
       ]
     },
     "status": {
-      "status": "on_weekend"
+      "status": "off_duty"
     },
     "manualOverride": null,
     "overrideExpiry": null,
@@ -1080,7 +941,7 @@
       ]
     },
     "status": {
-      "status": "on_weekend"
+      "status": "at_dept"
     },
     "manualOverride": null,
     "overrideExpiry": null,
@@ -1251,7 +1112,7 @@
       ]
     },
     "status": {
-      "status": "at_dept"
+      "status": "on_weekend"
     },
     "manualOverride": null,
     "overrideExpiry": null,
@@ -1386,7 +1247,7 @@
       ]
     },
     "status": {
-      "status": "on_weekend"
+      "status": "off_duty"
     },
     "manualOverride": null,
     "overrideExpiry": null,
@@ -1522,8 +1383,8 @@
     },
     "status": {
       "status": "in_class",
-      "room": "B2-405",
-      "batch": "2nd-EEE-A"
+      "room": "B2-203",
+      "batch": "7th-CSE-A"
     },
     "manualOverride": null,
     "overrideExpiry": null,
@@ -1657,7 +1518,7 @@
       ]
     },
     "status": {
-      "status": "at_dept"
+      "status": "off_duty"
     },
     "manualOverride": null,
     "overrideExpiry": null,
@@ -1797,7 +1658,7 @@
       ]
     },
     "status": {
-      "status": "at_dept"
+      "status": "off_duty"
     },
     "manualOverride": null,
     "overrideExpiry": null,
@@ -1899,7 +1760,7 @@
       ]
     },
     "status": {
-      "status": "at_dept"
+      "status": "off_duty"
     },
     "manualOverride": null,
     "overrideExpiry": null,
@@ -2001,7 +1862,7 @@
       ]
     },
     "status": {
-      "status": "at_dept"
+      "status": "off_duty"
     },
     "manualOverride": null,
     "overrideExpiry": null,
