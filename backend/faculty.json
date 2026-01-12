@@ -1464,49 +1464,35 @@
     "email": "ugv.galibjaman@gmail.com",
     "image": "/images/fac13.jpg",
     "weekend": [
-      "Friday"
+      "Wednesday"
     ],
     "officeHours": {
-      "Saturday": [
-        "09:00",
-        "19:00"
-      ],
       "Sunday": [
         "09:00",
         "17:00"
       ],
       "Monday": [
         "09:00",
-        "16:00"
+        "17:00"
       ],
       "Tuesday": [
-        "09:00",
-        "16:00"
-      ],
-      "Wednesday": [
         "09:00",
         "17:00"
       ],
       "Thursday": [
         "09:00",
         "17:00"
+      ],
+      "Friday": [
+        "09:00",
+        "17:00"
+      ],
+      "Saturday": [
+        "09:00",
+        "17:00"
       ]
     },
     "classTimes": {
-      "Saturday": [
-        {
-          "start": "17:00",
-          "end": "18:00",
-          "room": "B2-501",
-          "batch": "8th-CSE-Evn"
-        },
-        {
-          "start": "18:00",
-          "end": "19:00",
-          "room": "B2-204",
-          "batch": "5th-CSE-Evn"
-        }
-      ],
       "Monday": [
         {
           "start": "10:00",
@@ -1549,6 +1535,20 @@
           "end": "15:00",
           "room": "B2-204",
           "batch": "4th-CE-A"
+        }
+      ],
+      "Saturday": [
+        {
+          "start": "17:00",
+          "end": "18:00",
+          "room": "B2-501",
+          "batch": "8th-CSE-Evn"
+        },
+        {
+          "start": "18:00",
+          "end": "19:00",
+          "room": "B2-204",
+          "batch": "5th-CSE-Evn"
         }
       ]
     },
