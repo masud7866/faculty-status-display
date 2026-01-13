@@ -412,7 +412,46 @@
         "16:00"
       ]
     },
-    "classTimes": {},
+    "classTimes": {
+      "Sunday": [
+        {
+          "start": "08:00",
+          "end": "09:00",
+          "room": "B2-307",
+          "batch": "6th-CSE-C"
+        },
+        {
+          "start": "09:00",
+          "end": "10:00",
+          "room": "B2-405",
+          "batch": "6th-CSE-B"
+        },
+        {
+          "start": "11:00",
+          "end": "12:00",
+          "room": "B2-405",
+          "batch": "6th-CSE-A"
+        },
+        {
+          "start": "12:00",
+          "end": "13:00",
+          "room": "B2-203",
+          "batch": "6th-CSE-A"
+        },
+        {
+          "start": "13:00",
+          "end": "14:00",
+          "room": "B2-303",
+          "batch": "6th-CSE-C"
+        },
+        {
+          "start": "14:00",
+          "end": "15:00",
+          "room": "B2-306",
+          "batch": "6th-CSE-B"
+        }
+      ]
+    },
     "status": {
       "status": "on_weekend"
     },
