@@ -676,6 +676,9 @@
         <div class="header">
             <h1>Faculty Admin Panel</h1>
             <div class="nav-buttons">
+                <button id="deployBtn" class="btn btn-success" onclick="deployChanges()" style="display:none;">
+                    📤 Deploy Changes (<span id="changeCount">0</span>)
+                </button>
                 <a href="control.html" class="btn btn-secondary">Control Panel</a>
                 <button onclick="logout()" class="btn btn-danger">Logout</button>
             </div>
@@ -947,6 +950,11 @@
         const API_BASE = 'https://faculty-status-display.onrender.com';
         const days = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
         let facultyData = []; // Store faculty data for editing
+        let pendingChanges = new Set(); // Track what needs to be deployed
+        let hasPendingChanges = false;
+        let pendingAdUploads = []; // Store ads waiting to be uploaded: [{file, base64, filename}]
+        let pendingAdDeletions = []; // Store ad filenames waiting to be deleted
+        let pendingFacultyImages = []; // Store faculty images waiting to be uploaded: [{filename, base64, facultyName}]
 
         // Function to redirect to login with proper parameters
         function redirectToLogin() {
@@ -1022,6 +1030,30 @@
                 toast.style.animation = 'slideIn 0.3s ease reverse';
                 setTimeout(() => toast.remove(), 300);
             }, 3000);
+        }
+
+        function markPendingChange(type) {
+            pendingChanges.add(type);
+            hasPendingChanges = true;
+            updateDeployButton();
+        }
+
+        function clearPendingChanges() {
+            pendingChanges.clear();
+            hasPendingChanges = false;
+            updateDeployButton();
+        }
+
+        function updateDeployButton() {
+            const deployBtn = document.getElementById('deployBtn');
+            const changeCount = document.getElementById('changeCount');
+            
+            if (hasPendingChanges && pendingChanges.size > 0) {
+                deployBtn.style.display = 'inline-block';
+                changeCount.textContent = pendingChanges.size;
+            } else {
+                deployBtn.style.display = 'none';
+            }
         }
 
         function showTab(tabName) {
@@ -1125,7 +1157,12 @@
 
         function resetForm() {
             document.getElementById('addFacultyForm').reset();
-            document.getElementById('imagePreviewSection').classList.add('hidden');
+            const previewSection = document.getElementById('imagePreviewSection');
+            previewSection.classList.add('hidden');
+            previewSection.style.background = '';
+            previewSection.style.border = '';
+            const nameSpan = document.getElementById('uploadedImageName');
+            if (nameSpan) nameSpan.style.color = '';
             document.getElementById('editMode').value = 'false';
             document.getElementById('originalName').value = '';
 
@@ -1353,7 +1390,9 @@
                 // Clear the file input
                 fileInput.value = '';
 
-                showToast('Faculty image uploaded successfully!');
+                // Note: Images are uploaded immediately to GitHub since they're referenced by faculty records
+                // Only faculty.json and marquee.txt are batched for manual deployment
+                showToast('Faculty image uploaded to GitHub!', 'success');
 
             } catch (error) {
                 console.error('Upload error:', error);
@@ -1517,35 +1556,8 @@
                 }
 
                 // SUCCESS: Faculty added/updated in database
-                showToast(`Faculty ${isEditMode ? 'updated' : 'added'} successfully! Updating JSON file...`, 'success');
-
-                // Update the JSON file to persist the change
-                try {
-                    const facultyResponse = await fetch(`${API_BASE}/api/faculty`, { credentials: 'include' });
-                    if (facultyResponse.ok) {
-                        const currentFaculty = await facultyResponse.json();
-
-                        const jsonUpdateResponse = await fetch(`${API_BASE}/api/upload`, {
-                            method: 'POST',
-                            headers: { 'Content-Type': 'application/json' },
-                            credentials: 'include',
-                            body: JSON.stringify({
-                                filename: 'faculty.json',
-                                content: btoa(JSON.stringify(currentFaculty, null, 2)),
-                                path: 'backend'
-                            })
-                        });
-
-                        if (jsonUpdateResponse.ok) {
-                            showToast('✅ Changes saved to JSON file - will persist after restart!', 'success');
-                        } else {
-                            showToast('⚠️ Faculty saved but JSON update failed - changes may not persist', 'warning');
-                        }
-                    }
-                } catch (jsonError) {
-                    console.error('JSON update error:', jsonError);
-                    showToast('⚠️ Faculty saved but JSON backup failed - changes may not persist', 'warning');
-                }
+                showToast(`Faculty ${isEditMode ? 'updated' : 'added'} to database!`, 'success');
+                markPendingChange('faculty');
 
                 resetForm();
                 loadFaculty();
@@ -1671,37 +1683,8 @@
                     return;
                 }
 
-                showToast('Faculty deleted successfully! Updating JSON file...', 'success');
-
-                // Update the JSON file to persist the deletion
-                try {
-                    // Get updated faculty list
-                    const facultyResponse = await fetch(`${API_BASE}/api/faculty`, { credentials: 'include' });
-                    if (facultyResponse.ok) {
-                        const currentFaculty = await facultyResponse.json();
-
-                        // Update faculty.json file on GitHub
-                        const jsonUpdateResponse = await fetch(`${API_BASE}/api/upload`, {
-                            method: 'POST',
-                            headers: { 'Content-Type': 'application/json' },
-                            credentials: 'include',
-                            body: JSON.stringify({
-                                filename: 'faculty.json',
-                                content: btoa(JSON.stringify(currentFaculty, null, 2)),
-                                path: 'backend'
-                            })
-                        });
-
-                        if (jsonUpdateResponse.ok) {
-                            showToast('✅ Deletion saved to JSON file - will persist after restart!', 'success');
-                        } else {
-                            showToast('⚠️ Faculty deleted but JSON update failed', 'warning');
-                        }
-                    }
-                } catch (jsonError) {
-                    console.error('JSON update error:', jsonError);
-                    showToast('⚠️ Faculty deleted but JSON backup failed', 'warning');
-                }
+                showToast('Faculty deleted from database!', 'success');
+                markPendingChange('faculty');
 
                 // Cancel edit if we're editing the deleted faculty
                 if (document.getElementById('editMode').value === 'true' &&
@@ -1809,7 +1792,7 @@
             }
 
             try {
-                showToast('Updating marquee text...', 'info');
+                showToast('Updating marquee text in database...', 'info');
 
                 const response = await fetch(`${API_BASE}/api/admin/marquee`, {
                     method: 'POST',
@@ -1827,38 +1810,8 @@
                     throw new Error('Failed to update marquee');
                 }
 
-                const result = await response.json();
-
-                // Show detailed status
-                const statusDiv = document.getElementById('marqueeUpdateStatus');
-                const messageDiv = document.getElementById('marqueeUpdateMessage');
-
-                let statusMessage = `✅ ${result.message}`;
-                let statusClass = 'success';
-
-                if (result.method === 'file_and_database') {
-                    statusMessage += '<br>📁 File updated on GitHub + Database backup';
-                } else if (result.method === 'local_file_and_database') {
-                    statusMessage += '<br>📁 Local file updated + Database backup';
-                } else if (result.method === 'database_only') {
-                    statusMessage += '<br>⚠️ Database only (file update failed)';
-                    statusClass = 'warning';
-                    if (result.warning) {
-                        statusMessage += `<br>🔔 ${result.warning}`;
-                    }
-                }
-
-                messageDiv.innerHTML = statusMessage;
-                statusDiv.classList.remove('hidden');
-                statusDiv.style.background = statusClass === 'warning' ? '#fef3c7' : '#f0f9ff';
-                statusDiv.style.borderColor = statusClass === 'warning' ? '#f59e0b' : '#3b82f6';
-
-                showToast('Marquee updated successfully!');
-
-                // Hide status after 10 seconds
-                setTimeout(() => {
-                    statusDiv.classList.add('hidden');
-                }, 10000);
+                showToast('Marquee updated in database!', 'success');
+                markPendingChange('marquee');
 
             } catch (error) {
                 showToast(`Error updating marquee: ${error.message}`, 'error');
@@ -1908,42 +1861,35 @@
         }
 
         async function deleteAdFile(filename) {
-            if (!confirm(`Are you sure you want to delete "${filename}"?\n\nThis will permanently remove the file from your repository and cannot be undone.`)) {
-                return;
-            }
+            if (!confirm(`Mark ${filename} for deletion? (Will be deleted when you click Deploy Changes)`)) return;
 
             try {
-                showToast('Deleting advertisement...', 'info');
-
-                const response = await fetch(`${API_BASE}/api/admin/ads/${encodeURIComponent(filename)}`, {
-                    method: 'DELETE',
-                    credentials: 'include'
-                });
-
-                if (!response.ok) {
-                    if (response.status === 403) {
-                        showToast('Session expired. Redirecting to login...', 'error');
-                        setTimeout(() => redirectToLogin(), 2000);
-                        return;
+                // Check if this is a pending upload - if so, just remove it from pending list
+                const uploadIndex = pendingAdUploads.findIndex(ad => ad.filename === filename || ad.originalName === filename);
+                if (uploadIndex !== -1) {
+                    pendingAdUploads.splice(uploadIndex, 1);
+                    showToast(`Removed ${filename} from pending uploads`, 'success');
+                    
+                    // If no more pending ads, remove from changes
+                    if (pendingAdUploads.length === 0 && pendingAdDeletions.length === 0) {
+                        pendingChanges.delete('ads');
+                        hasPendingChanges = pendingChanges.size > 0;
+                        updateDeployButton();
                     }
-                    if (response.status === 404) {
-                        showToast('File not found. It may have already been deleted.', 'error');
-                        loadAds(); // Refresh the list
-                        return;
+                } else {
+                    // Mark existing ad for deletion
+                    if (!pendingAdDeletions.includes(filename)) {
+                        pendingAdDeletions.push(filename);
+                        markPendingChange('ads');
+                        showToast(`${filename} marked for deletion`, 'success');
                     }
-                    const error = await response.json();
-                    throw new Error(error.error || 'Failed to delete file');
                 }
-
-                const result = await response.json();
-                showToast(`Advertisement "${filename}" deleted successfully!`);
-
-                // Refresh the ads list
-                loadAds();
+                
+                await loadAds(); // Refresh display
 
             } catch (error) {
-                showToast(`Failed to delete advertisement: ${error.message}`, 'error');
-                console.error('Delete ad error:', error);
+                showToast(`Failed to mark for deletion: ${error.message}`, 'error');
+                console.error('Delete error:', error);
             }
         }
 
@@ -2113,7 +2059,7 @@
             statusDiv.innerHTML = '';
             progressDiv.classList.remove('hidden');
 
-            let uploadedCount = 0;
+            let processedCount = 0;
             const totalFiles = files.length;
 
             for (let i = 0; i < files.length; i++) {
@@ -2130,8 +2076,19 @@
                 }
 
                 try {
-                    await uploadFileToGitHub(file, 'ads');
-                    uploadedCount++;
+                    // Convert file to base64 and store locally
+                    const base64 = await fileToBase64(file);
+                    const timestamp = Date.now();
+                    const filename = `ad_${timestamp}_${file.name}`;
+                    
+                    pendingAdUploads.push({
+                        file: file,
+                        base64: base64,
+                        filename: filename,
+                        originalName: file.name
+                    });
+                    
+                    processedCount++;
 
                     const progress = (i + 1) / totalFiles * 100;
                     progressBar.style.width = `${progress}%`;
@@ -2139,9 +2096,8 @@
                     const statusItem = document.createElement('div');
                     statusItem.style.color = '#10b981';
                     statusItem.style.fontSize = '12px';
-
                     statusItem.style.marginBottom = '4px';
-                    statusItem.textContent = `✅ ${file.name} uploaded successfully`;
+                    statusItem.textContent = `✅ ${file.name} ready to upload`;
                     statusDiv.appendChild(statusItem);
 
                 } catch (error) {
@@ -2157,9 +2113,10 @@
             progressDiv.classList.add('hidden');
             progressBar.style.width = '0%';
 
-            if (uploadedCount > 0) {
-                showToast(`${uploadedCount} ad file(s) uploaded successfully!`);
-                setTimeout(() => loadAds(), 2000);
+            if (processedCount > 0) {
+                markPendingChange('ads');
+                showToast(`${processedCount} ad(s) ready to deploy!`, 'success');
+                setTimeout(() => loadAds(), 500);
             }
 
             document.getElementById('fileInput').value = '';
@@ -2287,6 +2244,228 @@
             });
         }
 
+        // Manual deploy function - deploys all changes to GitHub at once
+        async function deployChanges() {
+            const changesList = [];
+            if (pendingChanges.has('faculty')) changesList.push('- faculty.json');
+            if (pendingChanges.has('marquee')) changesList.push('- marquee.txt');
+            if (pendingChanges.has('facultyImages')) changesList.push(`- ${pendingFacultyImages.length} faculty image(s)`);
+            if (pendingChanges.has('ads')) {
+                if (pendingAdUploads.length > 0) changesList.push(`- ${pendingAdUploads.length} new ad(s)`);
+                if (pendingAdDeletions.length > 0) changesList.push(`- Delete ${pendingAdDeletions.length} ad(s)`);
+            }
+            
+            if (changesList.length === 0) {
+                showToast('No pending changes to deploy', 'info');
+                return;
+            }
+            
+            if (!confirm(`Deploy all pending changes to GitHub?\n\nThis will update:\n${changesList.join('\n')}\n\nContinue?`)) {
+                return;
+            }
+
+            try {
+                document.getElementById('loadingOverlay').style.display = 'flex';
+                let successCount = 0;
+                let errorCount = 0;
+                const errors = [];
+
+                // Deploy faculty data if changed
+                if (pendingChanges.has('faculty')) {
+                    try {
+                        showToast('Deploying faculty data...', 'info');
+                        
+                        // Get latest faculty data from database
+                        const facultyResponse = await fetch(`${API_BASE}/api/faculty`, { credentials: 'include' });
+                        if (facultyResponse.ok) {
+                            const currentFaculty = await facultyResponse.json();
+
+                            const jsonUpdateResponse = await fetch(`${API_BASE}/api/upload`, {
+                                method: 'POST',
+                                headers: { 'Content-Type': 'application/json' },
+                                credentials: 'include',
+                                body: JSON.stringify({
+                                    filename: 'faculty.json',
+                                    content: btoa(JSON.stringify(currentFaculty, null, 2)),
+                                    path: 'backend'
+                                })
+                            });
+
+                            if (jsonUpdateResponse.ok) {
+                                successCount++;
+                                showToast('✅ Faculty data deployed to GitHub!', 'success');
+                            } else {
+                                throw new Error('Failed to upload faculty.json');
+                            }
+                        } else {
+                            throw new Error('Failed to fetch faculty data');
+                        }
+                    } catch (error) {
+                        console.error('Faculty deploy error:', error);
+                        errorCount++;
+                        errors.push(`Faculty: ${error.message}`);
+                    }
+                }
+
+                // Deploy marquee if changed
+                if (pendingChanges.has('marquee')) {
+                    try {
+                        showToast('Deploying marquee text...', 'info');
+                        const marqueeText = document.getElementById('marqueeText').value;
+                        
+                        const marqueeUpdateResponse = await fetch(`${API_BASE}/api/upload`, {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json' },
+                            credentials: 'include',
+                            body: JSON.stringify({
+                                filename: 'marquee.txt',
+                                content: btoa(marqueeText),
+                                path: 'backend/public'
+                            })
+                        });
+
+                        if (marqueeUpdateResponse.ok) {
+                            successCount++;
+                            showToast('✅ Marquee text deployed to GitHub!', 'success');
+                        } else {
+                            throw new Error('Failed to upload marquee.txt');
+                        }
+                    } catch (error) {
+                        console.error('Marquee deploy error:', error);
+                        errorCount++;
+                        errors.push(`Marquee: ${error.message}`);
+                    }
+                }
+
+                // Deploy faculty images
+                if (pendingFacultyImages.length > 0) {
+                    showToast(`Uploading ${pendingFacultyImages.length} faculty image(s)...`, 'info');
+                    for (const imageData of pendingFacultyImages) {
+                        try {
+                            const uploadResponse = await fetch(`${API_BASE}/api/upload`, {
+                                method: 'POST',
+                                headers: { 'Content-Type': 'application/json' },
+                                credentials: 'include',
+                                body: JSON.stringify({
+                                    filename: imageData.filename,
+                                    content: imageData.base64.split(',')[1], // Remove data:image/... prefix
+                                    path: 'backend/public'
+                                })
+                            });
+
+                            if (uploadResponse.ok) {
+                                successCount++;
+                                console.log(`✅ Uploaded faculty image: ${imageData.filename}`);
+                            } else {
+                                throw new Error(`Failed to upload ${imageData.filename}`);
+                            }
+                        } catch (error) {
+                            console.error('Faculty image upload error:', error);
+                            errorCount++;
+                            errors.push(`Image ${imageData.filename}: ${error.message}`);
+                        }
+                    }
+                    
+                    if (errorCount === 0) {
+                        showToast(`✅ Uploaded ${pendingFacultyImages.length} faculty image(s) to GitHub!`, 'success');
+                        pendingFacultyImages = [];
+                        pendingChanges.delete('facultyImages');
+                    }
+                }
+
+                // Deploy ad uploads
+                if (pendingAdUploads.length > 0) {
+                    showToast(`Uploading ${pendingAdUploads.length} ad(s)...`, 'info');
+                    for (const ad of pendingAdUploads) {
+                        try {
+                            const uploadResponse = await fetch(`${API_BASE}/api/upload`, {
+                                method: 'POST',
+                                headers: { 'Content-Type': 'application/json' },
+                                credentials: 'include',
+                                body: JSON.stringify({
+                                    filename: ad.filename,
+                                    content: ad.base64.split(',')[1], // Remove data:image/... prefix
+                                    path: 'backend/public/ads'
+                                })
+                            });
+
+                            if (uploadResponse.ok) {
+                                successCount++;
+                                console.log(`✅ Uploaded ad: ${ad.originalName}`);
+                            } else {
+                                throw new Error(`Failed to upload ${ad.originalName}`);
+                            }
+                        } catch (error) {
+                            console.error('Ad upload error:', error);
+                            errorCount++;
+                            errors.push(`Ad ${ad.originalName}: ${error.message}`);
+                        }
+                    }
+                    
+                    if (errorCount === 0) {
+                        showToast(`✅ Uploaded ${pendingAdUploads.length} ad(s) to GitHub!`, 'success');
+                    }
+                }
+
+                // Deploy ad deletions
+                if (pendingAdDeletions.length > 0) {
+                    showToast(`Deleting ${pendingAdDeletions.length} ad(s)...`, 'info');
+                    for (const filename of pendingAdDeletions) {
+                        try {
+                            const deleteResponse = await fetch(`${API_BASE}/api/admin/ads/${encodeURIComponent(filename)}`, {
+                                method: 'DELETE',
+                                credentials: 'include'
+                            });
+
+                            if (deleteResponse.ok) {
+                                successCount++;
+                                console.log(`✅ Deleted ad: ${filename}`);
+                            } else {
+                                throw new Error(`Failed to delete ${filename}`);
+                            }
+                        } catch (error) {
+                            console.error('Ad deletion error:', error);
+                            errorCount++;
+                            errors.push(`Delete ${filename}: ${error.message}`);
+                        }
+                    }
+                    
+                    if (errorCount === 0 || (errorCount < pendingAdDeletions.length)) {
+                        showToast(`✅ Deleted ${pendingAdDeletions.length - errorCount} ad(s) from GitHub!`, 'success');
+                    }
+                }
+
+                // Show final status
+                if (successCount > 0 && errorCount === 0) {
+                    showToast(`🎉 Successfully deployed ${successCount} change(s) to GitHub!`, 'success');
+                    clearPendingChanges();
+                    // Clear ad tracking
+                    pendingAdUploads = [];
+                    pendingAdDeletions = [];
+                    // Reload ads to show updated list
+                    await loadAds();
+                } else if (successCount > 0 && errorCount > 0) {
+                    showToast(`Deployed ${successCount} item(s), but ${errorCount} failed. Check console.`, 'warning');
+                    // Only clear successful items
+                    if (pendingAdUploads.length > 0 && errors.every(e => !e.startsWith('Ad '))) {
+                        pendingAdUploads = [];
+                    }
+                    if (pendingAdDeletions.length > 0 && errors.every(e => !e.startsWith('Delete '))) {
+                        pendingAdDeletions = [];
+                    }
+                    await loadAds();
+                } else if (errorCount > 0) {
+                    showToast(`Deployment failed: ${errors.join(', ')}`, 'error');
+                }
+
+            } catch (error) {
+                console.error('Deploy error:', error);
+                showToast('Deployment failed: ' + error.message, 'error');
+            } finally {
+                document.getElementById('loadingOverlay').style.display = 'none';
+            }
+        }
+
         // Replace the loadAds function with this enhanced version
         async function loadAds() {
             try {
@@ -2296,44 +2475,159 @@
                 const container = document.getElementById('adsList');
                 container.innerHTML = '';
 
-                if (ads.length === 0) {
+                // Show pending uploads first
+                pendingAdUploads.forEach((pendingAd, index) => {
+                    const adDiv = document.createElement('div');
+                    adDiv.className = 'ad-item';
+                    adDiv.style.borderColor = '#f59e0b';
+                    adDiv.style.background = '#fef3c7';
+
+                    const badge = document.createElement('div');
+                    badge.style.position = 'absolute';
+                    badge.style.top = '5px';
+                    badge.style.right = '5px';
+                    badge.style.background = '#f59e0b';
+                    badge.style.color = 'white';
+                    badge.style.padding = '2px 6px';
+                    badge.style.borderRadius = '4px';
+                    badge.style.fontSize = '10px';
+                    badge.style.fontWeight = 'bold';
+                    badge.textContent = 'PENDING';
+
+                    const preview = document.createElement(pendingAd.file.type.startsWith('video/') ? 'video' : 'img');
+                    preview.className = 'ad-preview';
+                    preview.src = URL.createObjectURL(pendingAd.file);
+                    if (pendingAd.file.type.startsWith('video/')) {
+                        preview.controls = true;
+                        preview.preload = 'none';
+                    }
+
+                    const filename = document.createElement('div');
+                    filename.className = 'ad-filename';
+                    filename.textContent = pendingAd.originalName;
+                    filename.style.color = '#92400e';
+
+                    const deleteBtn = document.createElement('button');
+                    deleteBtn.className = 'btn btn-danger';
+                    deleteBtn.textContent = 'Remove';
+                    deleteBtn.style.fontSize = '11px';
+                    deleteBtn.style.padding = '4px 8px';
+                    deleteBtn.style.marginTop = '8px';
+                    deleteBtn.onclick = () => deleteAdFile(pendingAd.filename);
+
+                    adDiv.appendChild(badge);
+                    adDiv.appendChild(preview);
+                    adDiv.appendChild(filename);
+                    adDiv.appendChild(deleteBtn);
+                    container.appendChild(adDiv);
+                });
+
+                // Show existing ads
+                if (ads.length === 0 && pendingAdUploads.length === 0) {
                     container.innerHTML = '<p>No ads found. Use the Upload Ads tab to add files.</p>';
                     return;
                 }
 
                 ads.forEach(ad => {
+                    const filename = ad.src.split('/').pop();
+                    const markedForDeletion = pendingAdDeletions.includes(filename);
+
                     const adDiv = document.createElement('div');
                     adDiv.className = 'ad-item';
-
-                    const filename = ad.src.split('/').pop();
-
-                    if (ad.type === 'image') {
-                        adDiv.innerHTML = `
-                            <input type="checkbox" class="ad-checkbox" data-filename="${filename}" onchange="updateSelection()">
-                            <img src="${API_BASE}${ad.src}" class="ad-preview" alt="Ad" loading="lazy">
-                            <div class="ad-filename">${filename}</div>
-                            <div class="btn-group" style="margin-top: 8px;">
-                                <button class="btn btn-danger" onclick="deleteAdFile('${filename}')" style="font-size: 11px; padding: 4px 8px;">Delete</button>
-                            </div>
-                        `;
-                    } else {
-                        adDiv.innerHTML = `
-                            <input type="checkbox" class="ad-checkbox" data-filename="${filename}" onchange="updateSelection()">
-                            <video class="ad-preview" controls preload="none">
-                                <source src="${API_BASE}${ad.src}" type="video/mp4">
-                            </video>
-                            <div class="ad-filename">${filename}</div>
-                            <div class="btn-group" style="margin-top: 8px;">
-                                <button class="btn btn-danger" onclick="deleteAdFile('${filename}')" style="font-size: 11px; padding: 4px 8px;">Delete</button>
-                            </div>
-                        `;
+                    
+                    if (markedForDeletion) {
+                        adDiv.style.borderColor = '#ef4444';
+                        adDiv.style.background = '#fee2e2';
+                        adDiv.style.opacity = '0.6';
                     }
 
+                    const checkbox = document.createElement('input');
+                    checkbox.type = 'checkbox';
+                    checkbox.className = 'ad-checkbox';
+                    checkbox.setAttribute('data-filename', filename);
+                    checkbox.onchange = updateSelection;
+                    if (markedForDeletion) checkbox.disabled = true;
+
+                    if (markedForDeletion) {
+                        const badge = document.createElement('div');
+                        badge.style.position = 'absolute';
+                        badge.style.top = '5px';
+                        badge.style.right = '5px';
+                        badge.style.background = '#ef4444';
+                        badge.style.color = 'white';
+                        badge.style.padding = '2px 6px';
+                        badge.style.borderRadius = '4px';
+                        badge.style.fontSize = '10px';
+                        badge.style.fontWeight = 'bold';
+                        badge.textContent = 'TO DELETE';
+                        adDiv.appendChild(badge);
+                    }
+
+                    let preview;
+                    if (ad.type === 'image') {
+                        preview = document.createElement('img');
+                        preview.className = 'ad-preview';
+                        preview.src = `${API_BASE}${ad.src}`;
+                        preview.alt = 'Ad';
+                        preview.loading = 'lazy';
+                    } else {
+                        preview = document.createElement('video');
+                        preview.className = 'ad-preview';
+                        preview.controls = true;
+                        preview.preload = 'none';
+                        const source = document.createElement('source');
+                        source.src = `${API_BASE}${ad.src}`;
+                        source.type = 'video/mp4';
+                        preview.appendChild(source);
+                    }
+
+                    const filenameDiv = document.createElement('div');
+                    filenameDiv.className = 'ad-filename';
+                    filenameDiv.textContent = filename;
+                    if (markedForDeletion) filenameDiv.style.textDecoration = 'line-through';
+
+                    const btnGroup = document.createElement('div');
+                    btnGroup.className = 'btn-group';
+                    btnGroup.style.marginTop = '8px';
+
+                    const deleteBtn = document.createElement('button');
+                    deleteBtn.className = markedForDeletion ? 'btn btn-secondary' : 'btn btn-danger';
+                    deleteBtn.textContent = markedForDeletion ? 'Undo' : 'Delete';
+                    deleteBtn.style.fontSize = '11px';
+                    deleteBtn.style.padding = '4px 8px';
+                    deleteBtn.onclick = () => {
+                        if (markedForDeletion) {
+                            // Undo deletion
+                            const index = pendingAdDeletions.indexOf(filename);
+                            if (index > -1) {
+                                pendingAdDeletions.splice(index, 1);
+                                if (pendingAdUploads.length === 0 && pendingAdDeletions.length === 0) {
+                                    pendingChanges.delete('ads');
+                                    hasPendingChanges = pendingChanges.size > 0;
+                                    updateDeployButton();
+                                }
+                                showToast(`Unmarked ${filename}`, 'success');
+                                loadAds();
+                            }
+                        } else {
+                            deleteAdFile(filename);
+                        }
+                    };
+
+                    if (!markedForDeletion) adDiv.appendChild(checkbox);
+                    adDiv.appendChild(preview);
+                    adDiv.appendChild(filenameDiv);
+                    btnGroup.appendChild(deleteBtn);
+                    adDiv.appendChild(btnGroup);
                     container.appendChild(adDiv);
                 });
 
                 updateSelection(); // Update button states
-                showToast(`Loaded ${ads.length} ad files`, 'info');
+                
+                const totalCount = ads.length + pendingAdUploads.length;
+                if (totalCount > 0) {
+                    showToast(`Loaded ${totalCount} ad file(s)`, 'info');
+                }
             } catch (error) {
                 showToast('Failed to load ads', 'error');
                 console.error(error);
@@ -2374,6 +2668,59 @@
             if (deleteSelectedBtn) {
                 deleteSelectedBtn.disabled = selectedCount === 0;
                 deleteSelectedBtn.textContent = selectedCount > 0 ? `Delete Selected (${selectedCount})` : 'Delete Selected';
+            }
+        }
+
+        // Manual deploy function - deploys all changes to GitHub
+        async function deployChanges() {
+            if (!confirm('Deploy all changes to GitHub? This will update faculty.json and marquee.txt files.')) {
+                return;
+            }
+
+            try {
+                document.getElementById('loadingOverlay').style.display = 'flex';
+                let successCount = 0;
+                let errorCount = 0;
+
+                // Deploy faculty data if changed
+                if (pendingChanges.has('faculty')) {
+                    try {
+                        await updateFacultyJSON(facultyData);
+                        successCount++;
+                        showToast('Faculty data deployed to GitHub!', 'success');
+                    } catch (error) {
+                        console.error('Faculty deploy error:', error);
+                        errorCount++;
+                        showToast('Failed to deploy faculty data', 'error');
+                    }
+                }
+
+                // Deploy marquee if changed
+                if (pendingChanges.has('marquee')) {
+                    try {
+                        const marqueeText = document.getElementById('marqueeText').value;
+                        await deployMarqueeToGitHub(marqueeText);
+                        successCount++;
+                        showToast('Marquee text deployed to GitHub!', 'success');
+                    } catch (error) {
+                        console.error('Marquee deploy error:', error);
+                        errorCount++;
+                        showToast('Failed to deploy marquee text', 'error');
+                    }
+                }
+
+                if (successCount > 0) {
+                    showToast(`Successfully deployed ${successCount} change(s) to GitHub! 🎉`, 'success');
+                    clearPendingChanges();
+                }
+                
+                if (errorCount > 0) {
+                    showToast(`${errorCount} deployment(s) failed. Check console for details.`, 'error');
+                }
+
+            } catch (error) {
+                console.error('Deploy error:', error);
+                showToast('Deployment failed: ' + error.message, 'error');
             }
         }
 
@@ -2570,39 +2917,13 @@
                     }
                 }
 
-                // Sync to JSON file to ensure persistence
-                try {
-                    const facultyResponse = await fetch(`${API_BASE}/api/faculty`, { credentials: 'include' });
-                    if (facultyResponse.ok) {
-                        const currentFaculty = await facultyResponse.json();
-
-                        const jsonUpdateResponse = await fetch(`${API_BASE}/api/upload`, {
-                            method: 'POST',
-                            headers: { 'Content-Type': 'application/json' },
-                            credentials: 'include',
-                            body: JSON.stringify({
-                                filename: 'faculty.json',
-                                content: btoa(JSON.stringify(currentFaculty, null, 2)),
-                                path: 'backend'
-                            })
-                        });
-
-                        if (jsonUpdateResponse.ok) {
-                            console.log('✅ JSON file updated with new order');
-                        } else {
-                            console.warn('⚠️ JSON file update failed');
-                        }
-                    }
-                } catch (jsonError) {
-                    console.error('JSON update error:', jsonError);
-                }
-
                 modal.remove();
                 
                 // Refresh faculty data from server to ensure we have the latest
                 await loadFaculty();
                 
-                showToast('Display order updated successfully!', 'success');
+                showToast('Display order updated in database!', 'success');
+                markPendingChange('faculty');
 
             } catch (error) {
                 showToast(`Failed to update order: ${error.message}`, 'error');
