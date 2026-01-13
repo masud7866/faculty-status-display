@@ -156,7 +156,7 @@
     },
     "manualOverride": null,
     "overrideExpiry": null,
-    "precedence": 2
+    "precedence": 1
   },
   {
     "name": "Md. Riadul Islam",
@@ -285,7 +285,7 @@
     },
     "manualOverride": null,
     "overrideExpiry": null,
-    "precedence": 3
+    "precedence": 2
   },
   {
     "name": "Md. Tariqul Islam",
@@ -468,7 +468,7 @@
     },
     "manualOverride": null,
     "overrideExpiry": null,
-    "precedence": 4
+    "precedence": 3
   },
   {
     "name": "Md. Masudur Rahman",
@@ -591,7 +591,7 @@
     },
     "manualOverride": null,
     "overrideExpiry": null,
-    "precedence": 5
+    "precedence": 4
   },
   {
     "name": "Md. Zahid Akon",
@@ -740,7 +740,7 @@
     },
     "manualOverride": null,
     "overrideExpiry": null,
-    "precedence": 6
+    "precedence": 5
   },
   {
     "name": "Md. Minhaj Ul Islam",
@@ -911,21 +911,7 @@
     },
     "manualOverride": null,
     "overrideExpiry": null,
-    "precedence": 8
-  },
-  {
-    "name": "Akash Hasnat",
-    "designation": "Lecturer",
-    "contact": "01917204716",
-    "email": "akashhasnat1378@gmail.com",
-    "image": "/images/akashhasnat.jpg",
-    "weekend": [],
-    "officeHours": {},
-    "classTimes": {},
-    "status": "off_duty",
-    "manualOverride": null,
-    "overrideExpiry": null,
-    "precedence": 9
+    "precedence": 6
   },
   {
     "name": "Md. Mehadi Hasan",
@@ -1060,7 +1046,7 @@
     },
     "manualOverride": null,
     "overrideExpiry": null,
-    "precedence": 10
+    "precedence": 7
   },
   {
     "name": "Saif Bashar",
@@ -1195,7 +1181,23 @@
     },
     "manualOverride": null,
     "overrideExpiry": null,
-    "precedence": 11
+    "precedence": 8
+  },
+  {
+    "name": "Akash Hasnat",
+    "designation": "Lecturer",
+    "contact": "01917204716",
+    "email": "akashhasnat1378@gmail.com",
+    "image": "/images/akashhasnat.jpg",
+    "weekend": [],
+    "officeHours": {},
+    "classTimes": {},
+    "status": {
+      "status": "off_duty"
+    },
+    "manualOverride": null,
+    "overrideExpiry": null,
+    "precedence": 9
   },
   {
     "name": "Abdul Aziz",
@@ -1331,7 +1333,7 @@
     },
     "manualOverride": null,
     "overrideExpiry": null,
-    "precedence": 12
+    "precedence": 10
   },
   {
     "name": "Ahad Khan",
@@ -1471,7 +1473,7 @@
     },
     "manualOverride": null,
     "overrideExpiry": null,
-    "precedence": 13
+    "precedence": 11
   },
   {
     "name": "Galib Jaman",
@@ -1573,7 +1575,7 @@
     },
     "manualOverride": null,
     "overrideExpiry": null,
-    "precedence": 14
+    "precedence": 12
   },
   {
     "name": "Md. Sakib Uz Zaman",
@@ -1677,6 +1679,6 @@
     },
     "manualOverride": null,
     "overrideExpiry": null,
-    "precedence": 15
+    "precedence": 13
   }
 ]
