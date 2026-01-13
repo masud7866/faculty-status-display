@@ -187,7 +187,7 @@
     "status": {
       "status": "in_class",
       "room": "B2-303",
-      "batch": "7th-CSE-A"
+      "batch": "7th-CSE-B"
     },
     "manualOverride": null,
     "overrideExpiry": null,
@@ -374,9 +374,7 @@
       ]
     },
     "status": {
-      "status": "in_class",
-      "room": "B2-305",
-      "batch": "3rd-CSE-A"
+      "status": "at_dept"
     },
     "manualOverride": null,
     "overrideExpiry": null,
@@ -582,9 +580,7 @@
       ]
     },
     "status": {
-      "status": "in_class",
-      "room": "B2-102",
-      "batch": "4th-CSE-A"
+      "status": "at_dept"
     },
     "manualOverride": null,
     "overrideExpiry": null,
@@ -928,9 +924,7 @@
       ]
     },
     "status": {
-      "status": "in_class",
-      "room": "B1-402",
-      "batch": "8th-Eng-A"
+      "status": "at_dept"
     },
     "manualOverride": null,
     "overrideExpiry": null,
