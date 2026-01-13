@@ -957,7 +957,7 @@
 
     <script>
         const API_BASE = 'https://faculty-status-display.onrender.com';
-        const days = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
+        const days = ['Saturday', 'Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday'];
         let facultyData = []; // Store faculty data for editing
         let pendingChanges = new Set(); // Track what needs to be deployed
         let hasPendingChanges = false;
@@ -1088,6 +1088,67 @@
         function generateScheduleForms() {
             generateOfficeHours();
             generateClassTimes();
+            attachWeekendListeners();
+        }
+
+        function attachWeekendListeners() {
+            // Add event listeners to all weekend checkboxes
+            document.querySelectorAll('[id^="weekend-"]').forEach(checkbox => {
+                checkbox.addEventListener('change', updateScheduleDisabledState);
+            });
+            // Initial state update
+            updateScheduleDisabledState();
+        }
+
+        function updateScheduleDisabledState() {
+            days.forEach(day => {
+                const weekendCheckbox = document.getElementById(`weekend-${day}`);
+                const isWeekend = weekendCheckbox && weekendCheckbox.checked;
+
+                // Disable/enable office hours inputs (but don't clear values)
+                const officeStart = document.getElementById(`office-${day}-start`);
+                const officeEnd = document.getElementById(`office-${day}-end`);
+                if (officeStart) {
+                    officeStart.disabled = isWeekend;
+                    officeStart.style.opacity = isWeekend ? '0.5' : '1';
+                    officeStart.style.cursor = isWeekend ? 'not-allowed' : 'text';
+                    officeStart.style.backgroundColor = isWeekend ? '#fef2f2' : '#f9fafb';
+                }
+                if (officeEnd) {
+                    officeEnd.disabled = isWeekend;
+                    officeEnd.style.opacity = isWeekend ? '0.5' : '1';
+                    officeEnd.style.cursor = isWeekend ? 'not-allowed' : 'text';
+                    officeEnd.style.backgroundColor = isWeekend ? '#fef2f2' : '#f9fafb';
+                }
+
+                // Disable/enable class time inputs and buttons (but don't clear)
+                const classContainer = document.getElementById(`classes-${day}`);
+                if (classContainer) {
+                    const inputs = classContainer.querySelectorAll('input');
+                    const buttons = classContainer.querySelectorAll('button');
+                    
+                    inputs.forEach(input => {
+                        input.disabled = isWeekend;
+                        input.style.opacity = isWeekend ? '0.5' : '1';
+                        input.style.cursor = isWeekend ? 'not-allowed' : 'text';
+                        input.style.backgroundColor = isWeekend ? '#fef2f2' : '#f9fafb';
+                    });
+                    
+                    buttons.forEach(button => {
+                        button.disabled = isWeekend;
+                        button.style.opacity = isWeekend ? '0.5' : '1';
+                        button.style.cursor = isWeekend ? 'not-allowed' : 'pointer';
+                    });
+                }
+
+                // Disable/enable Add Class button
+                const addClassBtn = classContainer?.parentElement?.querySelector(`button[onclick="addClass('${day}')"]`);
+                if (addClassBtn) {
+                    addClassBtn.disabled = isWeekend;
+                    addClassBtn.style.opacity = isWeekend ? '0.5' : '1';
+                    addClassBtn.style.cursor = isWeekend ? 'not-allowed' : 'pointer';
+                }
+            });
         }
 
         function generateOfficeHours() {
@@ -1132,6 +1193,13 @@
         }
 
         function addClass(day) {
+            // Check if day is marked as weekend
+            const weekendCheckbox = document.getElementById(`weekend-${day}`);
+            if (weekendCheckbox && weekendCheckbox.checked) {
+                showToast(`Cannot add class on ${day} - marked as weekend`, 'error');
+                return;
+            }
+
             const container = document.getElementById(`classes-${day}`);
             const classIndex = container.children.length;
             const classDiv = document.createElement('div');
@@ -1300,6 +1368,9 @@
                     }
                 });
             }
+
+            // Update schedule disabled state based on weekend checkboxes
+            updateScheduleDisabledState();
 
             // Scroll to form
             document.getElementById('facultyFormSection').scrollIntoView({
@@ -1506,8 +1577,13 @@
                 newFacultyData.weekend.push(checkbox.value);
             });
 
-            // Get office hours
+            // Get office hours (skip weekend days)
             days.forEach(day => {
+                const isWeekend = newFacultyData.weekend.includes(day);
+                if (isWeekend) {
+                    // Don't include office hours for weekend days
+                    return;
+                }
                 const start = document.getElementById(`office-${day}-start`).value;
                 const end = document.getElementById(`office-${day}-end`).value;
                 if (start && end) {
@@ -1515,8 +1591,13 @@
                 }
             });
 
-            // Get class times
+            // Get class times (skip weekend days)
             days.forEach(day => {
+                const isWeekend = newFacultyData.weekend.includes(day);
+                if (isWeekend) {
+                    // Don't include class times for weekend days
+                    return;
+                }
                 const classes = [];
                 const container = document.getElementById(`classes-${day}`);
                 Array.from(container.children).forEach((classDiv, index) => {
