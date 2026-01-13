@@ -152,7 +152,7 @@
       ]
     },
     "status": {
-      "status": "off_duty"
+      "status": "at_dept"
     },
     "manualOverride": null,
     "overrideExpiry": null,
@@ -464,7 +464,7 @@
       ]
     },
     "status": {
-      "status": "at_dept"
+      "status": "off_duty"
     },
     "manualOverride": null,
     "overrideExpiry": null,
@@ -587,7 +587,7 @@
       ]
     },
     "status": {
-      "status": "off_duty"
+      "status": "at_dept"
     },
     "manualOverride": null,
     "overrideExpiry": null,
@@ -734,7 +734,9 @@
       ]
     },
     "status": {
-      "status": "off_duty"
+      "status": "in_class",
+      "room": "B2-205",
+      "batch": "1st-CSE-C"
     },
     "manualOverride": null,
     "overrideExpiry": null,
@@ -905,11 +907,25 @@
       ]
     },
     "status": {
-      "status": "on_weekend"
+      "status": "off_duty"
     },
     "manualOverride": null,
     "overrideExpiry": null,
     "precedence": 8
+  },
+  {
+    "name": "Akash Hasnat",
+    "designation": "Lecturer",
+    "contact": "01917204716",
+    "email": "akashhasnat1378@gmail.com",
+    "image": "/images/akashhasnat.jpg",
+    "weekend": [],
+    "officeHours": {},
+    "classTimes": {},
+    "status": "off_duty",
+    "manualOverride": null,
+    "overrideExpiry": null,
+    "precedence": 9
   },
   {
     "name": "Md. Mehadi Hasan",
@@ -1044,7 +1060,7 @@
     },
     "manualOverride": null,
     "overrideExpiry": null,
-    "precedence": 9
+    "precedence": 10
   },
   {
     "name": "Saif Bashar",
@@ -1175,13 +1191,11 @@
       ]
     },
     "status": {
-      "status": "in_class",
-      "room": "B2-203",
-      "batch": "7th-CSE-A"
+      "status": "off_duty"
     },
     "manualOverride": null,
     "overrideExpiry": null,
-    "precedence": 10
+    "precedence": 11
   },
   {
     "name": "Abdul Aziz",
@@ -1311,11 +1325,13 @@
       ]
     },
     "status": {
-      "status": "off_duty"
+      "status": "in_class",
+      "room": "B2-102",
+      "batch": "4th-CSE-A"
     },
     "manualOverride": null,
     "overrideExpiry": null,
-    "precedence": 11
+    "precedence": 12
   },
   {
     "name": "Ahad Khan",
@@ -1455,7 +1471,7 @@
     },
     "manualOverride": null,
     "overrideExpiry": null,
-    "precedence": 12
+    "precedence": 13
   },
   {
     "name": "Galib Jaman",
@@ -1553,11 +1569,11 @@
       ]
     },
     "status": {
-      "status": "off_duty"
+      "status": "at_dept"
     },
     "manualOverride": null,
     "overrideExpiry": null,
-    "precedence": 13
+    "precedence": 14
   },
   {
     "name": "Md. Sakib Uz Zaman",
@@ -1655,10 +1671,12 @@
       ]
     },
     "status": {
-      "status": "off_duty"
+      "status": "in_class",
+      "room": "B1-402",
+      "batch": "1st-BBA-A"
     },
     "manualOverride": null,
     "overrideExpiry": null,
-    "precedence": 14
+    "precedence": 15
   }
 ]
