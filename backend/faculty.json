@@ -58,11 +58,84 @@
     "contact": "01842733104",
     "email": "tariq.ugv@gmail.com",
     "image": "/images/fac4.jpg",
-    "weekend": [],
-    "officeHours": {},
-    "classTimes": {},
+    "weekend": [
+      "Wednesday",
+      "Thursday"
+    ],
+    "officeHours": {
+      "Sunday": [
+        "10:00",
+        "17:00"
+      ],
+      "Monday": [
+        "10:00",
+        "17:00"
+      ],
+      "Tuesday": [
+        "11:00",
+        "17:00"
+      ],
+      "Friday": [
+        "23:00",
+        "22:00"
+      ],
+      "Saturday": [
+        "23:00",
+        "22:00"
+      ]
+    },
+    "classTimes": {
+      "Sunday": [
+        {
+          "start": "14:00",
+          "end": "15:00",
+          "room": "B2-404",
+          "batch": "6th-CSE-A"
+        },
+        {
+          "start": "15:00",
+          "end": "16:00",
+          "room": "B2-404",
+          "batch": "6th-CSE-B"
+        },
+        {
+          "start": "16:00",
+          "end": "17:00",
+          "room": "B2-404",
+          "batch": "6th-CSE-C"
+        }
+      ],
+      "Monday": [
+        {
+          "start": "15:00",
+          "end": "16:00",
+          "room": "B2-404",
+          "batch": "1th-CSE-A"
+        },
+        {
+          "start": "16:00",
+          "end": "17:00",
+          "room": "B2-404",
+          "batch": "1th-CSE-B"
+        }
+      ],
+      "Tuesday": [
+        {
+          "start": "15:00",
+          "end": "16:00",
+          "room": "B2-404",
+          "batch": "1th-CSE-A"
+        },
+        {
+          "start": "16:00",
+          "end": "17:00",
+          "room": "B2-404",
+          "batch": "1th-CSE-B"
+        }
+      ]
+    },
     "status": {
-      "status": "off_duty"
+      "status": "at_dept"
     },
     "manualOverride": null,
     "overrideExpiry": null,
@@ -465,11 +538,190 @@
     "contact": "01303586121",
     "email": "saifbashar2021@gmail.com",
     "image": "/images/fac7.jpg",
-    "weekend": [],
-    "officeHours": {},
-    "classTimes": {},
+    "weekend": [
+      "Tuesday",
+      "Wednesday"
+    ],
+    "officeHours": {
+      "Sunday": [
+        "09:00",
+        "16:00"
+      ],
+      "Monday": [
+        "08:00",
+        "15:00"
+      ],
+      "Thursday": [
+        "13:00",
+        "21:00"
+      ],
+      "Friday": [
+        "11:00",
+        "20:00"
+      ],
+      "Saturday": [
+        "09:00",
+        "18:00"
+      ]
+    },
+    "classTimes": {
+      "Sunday": [
+        {
+          "start": "09:00",
+          "end": "10:00",
+          "room": "B2-304",
+          "batch": "4th - CSE - A - Reg"
+        },
+        {
+          "start": "11:00",
+          "end": "12:00",
+          "room": "B2-303",
+          "batch": "4th - CSE - B - Reg"
+        },
+        {
+          "start": "12:00",
+          "end": "13:00",
+          "room": "B2-306",
+          "batch": "1st - BA in  English - A - Reg"
+        },
+        {
+          "start": "14:00",
+          "end": "15:00",
+          "room": "B2-303",
+          "batch": "2nd - BBA - A - Reg"
+        }
+      ],
+      "Monday": [
+        {
+          "start": "08:00",
+          "end": "09:00",
+          "room": "B2-404",
+          "batch": "4th - CSE - A - Reg"
+        },
+        {
+          "start": "09:00",
+          "end": "10:00",
+          "room": "B2-404",
+          "batch": "4th - CSE - B - Reg"
+        },
+        {
+          "start": "10:00",
+          "end": "11:00",
+          "room": "B2-306",
+          "batch": "1st - BA in  English - A - Reg"
+        },
+        {
+          "start": "12:00",
+          "end": "13:00",
+          "room": "B2-404",
+          "batch": "4th - CSE - A - Reg"
+        },
+        {
+          "start": "14:00",
+          "end": "15:00",
+          "room": "B2-404",
+          "batch": "4th - CSE - B - Reg"
+        }
+      ],
+      "Thursday": [
+        {
+          "start": "13:00",
+          "end": "14:00",
+          "room": "B2-404",
+          "batch": "2nd - BBA - A - Reg"
+        },
+        {
+          "start": "15:00",
+          "end": "16:00",
+          "room": "B2-404",
+          "batch": "5th - CSE - A - Reg"
+        },
+        {
+          "start": "16:00",
+          "end": "17:00",
+          "room": "B2-404",
+          "batch": "5th - CSE - A - Reg"
+        },
+        {
+          "start": "17:00",
+          "end": "18:00",
+          "room": "B2-404",
+          "batch": "4th - CSE - A - Evn"
+        },
+        {
+          "start": "18:00",
+          "end": "19:00",
+          "room": "B2-307",
+          "batch": "5th - CSE - A - Evn"
+        },
+        {
+          "start": "19:00",
+          "end": "20:00",
+          "room": "B2-203",
+          "batch": "4th - CSE - A - Evn"
+        },
+        {
+          "start": "20:00",
+          "end": "21:00",
+          "room": "B2-403",
+          "batch": "5th - CSE - A - Evn"
+        }
+      ],
+      "Friday": [
+        {
+          "start": "11:00",
+          "end": "12:00",
+          "room": "B2-305",
+          "batch": "4th - CSE - A -  Evn"
+        },
+        {
+          "start": "12:00",
+          "end": "13:00",
+          "room": "B2-305",
+          "batch": "4th - CSE - A -  Evn"
+        },
+        {
+          "start": "18:00",
+          "end": "19:00",
+          "room": "B2-304",
+          "batch": "5th - CSE - A -  Evn"
+        },
+        {
+          "start": "19:00",
+          "end": "20:00",
+          "room": "B2-304",
+          "batch": "5th - CSE - A -  Evn"
+        }
+      ],
+      "Saturday": [
+        {
+          "start": "09:00",
+          "end": "10:00",
+          "room": "B2-303",
+          "batch": "5th - CSE -  A - Reg"
+        },
+        {
+          "start": "12:00",
+          "end": "13:00",
+          "room": "B2-404",
+          "batch": "5th - CSE -  A - Reg"
+        },
+        {
+          "start": "14:00",
+          "end": "15:00",
+          "room": "B2-303",
+          "batch": "4th - CSE -  B - Reg"
+        },
+        {
+          "start": "15:00",
+          "end": "16:00",
+          "room": "B2-305",
+          "batch": "4th - CSE -  A - Reg"
+        }
+      ]
+    },
     "status": {
-      "status": "off_duty"
+      "status": "on_weekend"
     },
     "manualOverride": null,
     "overrideExpiry": null,
@@ -507,7 +759,60 @@
         "20:00"
       ]
     },
-    "classTimes": {},
+    "classTimes": {
+      "Sunday": [
+        {
+          "start": "08:00",
+          "end": "09:00",
+          "room": "B2-303",
+          "batch": "4th-CSE-A"
+        },
+        {
+          "start": "09:00",
+          "end": "10:00",
+          "room": "B2-303",
+          "batch": "6th-CSE-A"
+        },
+        {
+          "start": "11:00",
+          "end": "12:00",
+          "room": "B2-303",
+          "batch": "6th-CSE-B"
+        },
+        {
+          "start": "12:00",
+          "end": "01:00",
+          "room": "B2-306",
+          "batch": "6th-CSE-C"
+        },
+        {
+          "start": "01:00",
+          "end": "02:00",
+          "room": "B2-303",
+          "batch": "4th-CSE-B"
+        }
+      ],
+      "Friday": [
+        {
+          "start": "09:00",
+          "end": "10:00",
+          "room": "B2-305",
+          "batch": "2nd - CSE - A - Evn"
+        },
+        {
+          "start": "10:00",
+          "end": "11:00",
+          "room": "B2-405",
+          "batch": "6th - CSE - A - Evn"
+        },
+        {
+          "start": "12:00",
+          "end": "01:00",
+          "room": "B2-203",
+          "batch": "2nd - ME - A - Evn"
+        }
+      ]
+    },
     "status": {
       "status": "at_dept"
     },
