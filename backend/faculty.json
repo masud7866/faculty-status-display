@@ -1189,8 +1189,32 @@
     "contact": "01917204716",
     "email": "akashhasnat1378@gmail.com",
     "image": "/images/akashhasnat.jpg",
-    "weekend": [],
-    "officeHours": {},
+    "weekend": [
+      "Wednesday",
+      "Thursday"
+    ],
+    "officeHours": {
+      "Sunday": [
+        "08:00",
+        "16:00"
+      ],
+      "Monday": [
+        "08:00",
+        "16:00"
+      ],
+      "Tuesday": [
+        "08:00",
+        "16:00"
+      ],
+      "Friday": [
+        "09:00",
+        "13:00"
+      ],
+      "Saturday": [
+        "08:00",
+        "20:00"
+      ]
+    },
     "classTimes": {},
     "status": {
       "status": "off_duty"
