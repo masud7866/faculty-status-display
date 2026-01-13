@@ -386,11 +386,14 @@
     "contact": "01836490950",
     "email": "mehadi.cou106@gmail.com",
     "image": "/images/fac10.jpg",
-    "weekend": [],
+    "weekend": [
+      "Monday",
+      "Tuesday"
+    ],
     "officeHours": {},
     "classTimes": {},
     "status": {
-      "status": "off_duty"
+      "status": "on_weekend"
     },
     "manualOverride": null,
     "overrideExpiry": null,
