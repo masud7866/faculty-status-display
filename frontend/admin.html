@@ -2354,13 +2354,19 @@
                     showToast(`Uploading ${pendingFacultyImages.length} faculty image(s)...`, 'info');
                     for (const imageData of pendingFacultyImages) {
                         try {
+                            // Extract base64 content (remove data:image/...;base64, prefix if present)
+                            let base64Content = imageData.base64;
+                            if (base64Content.includes(',')) {
+                                base64Content = imageData.base64.split(',')[1];
+                            }
+                            
                             const uploadResponse = await fetch(`${API_BASE}/api/upload`, {
                                 method: 'POST',
                                 headers: { 'Content-Type': 'application/json' },
                                 credentials: 'include',
                                 body: JSON.stringify({
                                     filename: imageData.filename,
-                                    content: imageData.base64.split(',')[1], // Remove data:image/... prefix
+                                    content: base64Content,
                                     path: 'backend/public'
                                 })
                             });
@@ -2369,7 +2375,8 @@
                                 successCount++;
                                 console.log(`✅ Uploaded faculty image: ${imageData.filename}`);
                             } else {
-                                throw new Error(`Failed to upload ${imageData.filename}`);
+                                const errorData = await uploadResponse.json();
+                                throw new Error(errorData.error || `Failed to upload ${imageData.filename}`);
                             }
                         } catch (error) {
                             console.error('Faculty image upload error:', error);
@@ -2390,13 +2397,19 @@
                     showToast(`Uploading ${pendingAdUploads.length} ad(s)...`, 'info');
                     for (const ad of pendingAdUploads) {
                         try {
+                            // Extract base64 content (remove data:image/...;base64, prefix if present)
+                            let base64Content = ad.base64;
+                            if (base64Content.includes(',')) {
+                                base64Content = ad.base64.split(',')[1];
+                            }
+                            
                             const uploadResponse = await fetch(`${API_BASE}/api/upload`, {
                                 method: 'POST',
                                 headers: { 'Content-Type': 'application/json' },
                                 credentials: 'include',
                                 body: JSON.stringify({
                                     filename: ad.filename,
-                                    content: ad.base64.split(',')[1], // Remove data:image/... prefix
+                                    content: base64Content,
                                     path: 'backend/public/ads'
                                 })
                             });
@@ -2405,7 +2418,8 @@
                                 successCount++;
                                 console.log(`✅ Uploaded ad: ${ad.originalName}`);
                             } else {
-                                throw new Error(`Failed to upload ${ad.originalName}`);
+                                const errorData = await uploadResponse.json();
+                                throw new Error(errorData.error || `Failed to upload ${ad.originalName}`);
                             }
                         } catch (error) {
                             console.error('Ad upload error:', error);
@@ -2418,6 +2432,8 @@
                         showToast(`✅ Uploaded ${pendingAdUploads.length} ad(s) to GitHub!`, 'success');
                     }
                 }
+
+                // Deploy ad deletions
 
                 // Deploy ad deletions
                 if (pendingAdDeletions.length > 0) {
