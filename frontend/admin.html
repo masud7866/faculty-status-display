@@ -102,6 +102,15 @@
             background: #059669;
         }
 
+        .btn-success:disabled {
+            background: #6b7280;
+            cursor: not-allowed;
+        }
+
+        .btn-success:disabled:hover {
+            background: #6b7280;
+        }
+
         .btn-warning {
             background: #f59e0b;
             color: white;
@@ -676,7 +685,7 @@
         <div class="header">
             <h1>Faculty Admin Panel</h1>
             <div class="nav-buttons">
-                <button id="deployBtn" class="btn btn-success" onclick="deployChanges()" style="display:none;">
+                <button id="deployBtn" class="btn btn-success" onclick="deployChanges()" disabled>
                     📤 Deploy Changes (<span id="changeCount">0</span>)
                 </button>
                 <a href="control.html" class="btn btn-secondary">Control Panel</a>
@@ -1049,10 +1058,13 @@
             const changeCount = document.getElementById('changeCount');
             
             if (hasPendingChanges && pendingChanges.size > 0) {
-                deployBtn.style.display = 'inline-block';
+                deployBtn.disabled = false;
+                deployBtn.style.opacity = '1';
                 changeCount.textContent = pendingChanges.size;
             } else {
-                deployBtn.style.display = 'none';
+                deployBtn.disabled = true;
+                deployBtn.style.opacity = '0.5';
+                changeCount.textContent = '0';
             }
         }
 
