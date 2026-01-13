@@ -354,14 +354,14 @@
       ],
       "Saturday": [
         {
-          "start": "10:00",
-          "end": "11:00",
+          "start": "11:00",
+          "end": "12:00",
           "room": "B2-306",
           "batch": "5th-CSE-A"
         },
         {
-          "start": "11:00",
-          "end": "12:00",
+          "start": "12:00",
+          "end": "01:00",
           "room": "B2-306",
           "batch": "5th-CSE-A"
         },
@@ -390,7 +390,28 @@
       "Monday",
       "Tuesday"
     ],
-    "officeHours": {},
+    "officeHours": {
+      "Sunday": [
+        "08:00",
+        "16:00"
+      ],
+      "Wednesday": [
+        "10:00",
+        "16:00"
+      ],
+      "Thursday": [
+        "13:00",
+        "22:00"
+      ],
+      "Friday": [
+        "10:00",
+        "19:00"
+      ],
+      "Saturday": [
+        "08:00",
+        "16:00"
+      ]
+    },
     "classTimes": {},
     "status": {
       "status": "on_weekend"
