@@ -688,7 +688,7 @@
                 <button id="deployBtn" class="btn btn-success" onclick="deployChanges()" disabled>
                     📤 Deploy Changes (<span id="changeCount">0</span>)
                 </button>
-                <span id="sessionInfo" style="font-size: 11px; color: #6b7280; padding: 8px 12px; background: #f3f4f6; border-radius: 6px; white-space: nowrap;"></span>
+                <span id="sessionInfo" style="font-size: 11px; color: #6b7280; white-space: nowrap;"></span>
                 <a href="control.html" class="btn btn-secondary">Control Panel</a>
                 <button onclick="logout()" class="btn btn-danger">Logout</button>
             </div>
@@ -842,6 +842,9 @@
                             <button type="button" onclick="resetForm()" class="btn btn-secondary">Reset Form</button>
                             <button type="button" onclick="cancelEdit()" class="btn btn-warning hidden" id="cancelEditBtn">Cancel Edit</button>
                         </div>
+                        <div class="file-info" style="margin-top: 15px; background: #fef3c7; border-color: #f59e0b; color: #92400e;">
+                            ⚠️ <strong>Remember:</strong> After adding/updating faculty, click the <strong>"📤 Deploy Changes"</strong> button at the top to push your changes to GitHub.
+                        </div>
                     </form>
                 </div>
             </div>
@@ -872,6 +875,10 @@
                         <button onclick="loadMarquee()" class="btn btn-secondary">Reload from Server</button>
                         <button onclick="previewMarquee()" class="btn btn-secondary">Preview</button>
                         <button onclick="resetMarqueeToDefault()" class="btn btn-warning">Reset to Default</button>
+                    </div>
+
+                    <div class="file-info" style="margin: 15px 0; background: #fef3c7; border-color: #f59e0b; color: #92400e;">
+                        ⚠️ <strong>Remember:</strong> After updating the marquee text, click the <strong>"📤 Deploy Changes"</strong> button at the top to push your changes to GitHub.
                     </div>
 
                     <div id="marqueePreview" class="hidden"
@@ -913,6 +920,10 @@
                             Selected</button>
                     </div>
 
+                    <div class="file-info" style="margin-bottom: 15px; background: #fef3c7; border-color: #f59e0b; color: #92400e;">
+                        ⚠️ <strong>Remember:</strong> After deleting ads, click the <strong>"📤 Deploy Changes"</strong> button at the top to permanently remove them from GitHub.
+                    </div>
+
                     <div id="adsList" class="ads-grid"></div>
                 </div>
             </div>
@@ -942,6 +953,10 @@
                         </div>
 
                         <div id="uploadStatus"></div>
+                    </div>
+
+                    <div class="file-info" style="background: #fef3c7; border-color: #f59e0b; color: #92400e;">
+                        ⚠️ <strong>Remember:</strong> After uploading ads here, click the <strong>"📤 Deploy Changes"</strong> button at the top to push your files to GitHub.
                     </div>
 
                     <div class="file-info">
