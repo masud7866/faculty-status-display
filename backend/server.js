@@ -32,21 +32,25 @@ app.use(compression());
 // Sessions - Temporary in-memory store until MongoDB connects
 app.set("trust proxy", 1);
 
-// Temporary session config (will be upgraded to MongoDB store after connection)
-let sessionMiddleware = session({
-  secret: process.env.SESSION_SECRET || "secret123",
-  resave: false,
-  saveUninitialized: false,
-  rolling: true,
-  cookie: {
-    secure: process.env.NODE_ENV === 'production',
-    sameSite: process.env.NODE_ENV === 'production' ? "none" : "lax",
-    maxAge: 7 * 24 * 60 * 60 * 1000,
-    httpOnly: true
-  }
-});
+// Session configuration function (will be upgraded to MongoDB store after connection)
+function createSessionConfig(store = null) {
+  return {
+    secret: process.env.SESSION_SECRET || "secret123",
+    resave: false,
+    saveUninitialized: false,
+    rolling: true, // Renew session on every request
+    store: store,
+    cookie: {
+      secure: process.env.NODE_ENV === 'production',
+      sameSite: process.env.NODE_ENV === 'production' ? "none" : "lax",
+      maxAge: 8 * 60 * 60 * 1000, // 8 hours (longer than typical work session)
+      httpOnly: true
+    }
+  };
+}
 
-app.use(sessionMiddleware);
+// Start with memory store
+app.use(session(createSessionConfig()));
 
 // === MIDDLEWARE ===
 // Authentication middleware
@@ -249,11 +253,16 @@ app.post("/api/logout", (req, res) => {
 app.get("/api/check-login", (req, res) => {
   if (req.session.loggedIn) {
     // Touch the session to keep it alive (with rolling: true, this resets expiry)
+    req.session.touch(); // Explicitly touch the session
+    
+    const sessionAge = req.session.loginTime ? 
+      Math.floor((Date.now() - new Date(req.session.loginTime)) / 1000 / 60) : 
+      null; // Age in minutes
+    
     res.json({ 
       loggedIn: true,
-      sessionAge: req.session.loginTime ? 
-        Math.floor((Date.now() - new Date(req.session.loginTime)) / 1000 / 60) : 
-        null // Age in minutes
+      sessionAge: sessionAge,
+      maxAge: Math.floor((req.session.cookie.maxAge || 0) / 1000 / 60) // Max age in minutes
     });
   } else {
     res.status(401).json({ loggedIn: false });
@@ -830,15 +839,20 @@ async function startup() {
         client: facultyDB.client,
         dbName: 'faculty_status',
         collectionName: 'sessions',
-        touchAfter: 24 * 3600,
-        ttl: 7 * 24 * 60 * 60,
+        touchAfter: 2 * 60, // Touch session every 2 minutes (shorter than 3-min keep-alive)
+        ttl: 8 * 60 * 60, // 8 hours TTL (matches cookie maxAge)
         autoRemove: 'native',
         crypto: {
           secret: process.env.SESSION_SECRET || 'secret123'
         }
       });
+      
+      // Reconfigure session middleware to use MongoDB store
+      app.use(session(createSessionConfig(sessionStore)));
 
-      console.log("🔐 Session store upgraded to MongoDB (persistent across restarts)");
+      console.log("🔐 Session store upgraded to MongoDB (persistent, 8-hour sessions)");
+      console.log("   - Touch interval: 2 minutes (syncs with keep-alive)");
+      console.log("   - Session TTL: 8 hours");
     } catch (error) {
       console.log("⚠️ MongoDB session store setup failed, using memory store:", error.message);
       console.log("   Sessions will work but won't persist across server restarts");

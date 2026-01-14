@@ -1035,7 +1035,29 @@
         }
 
         // Session keep-alive mechanism
+        // Backend configuration:
+        // - Session max age: 8 hours
+        // - MongoDB touch interval: 2 minutes
+        // - Rolling sessions: enabled (session refreshes on every request)
+        // Frontend configuration:
+        // - Keep-alive checks: every 3 minutes
+        // - Activity tracking: monitors user interactions
         let keepAliveInterval = null;
+        let lastActivityTime = Date.now();
+        let sessionWarningShown = false;
+        
+        // Track user activity
+        function trackUserActivity() {
+            lastActivityTime = Date.now();
+            sessionWarningShown = false; // Reset warning flag on activity
+        }
+        
+        // Set up activity listeners
+        document.addEventListener('DOMContentLoaded', () => {
+            ['mousedown', 'keydown', 'scroll', 'touchstart'].forEach(event => {
+                document.addEventListener(event, trackUserActivity, { passive: true });
+            });
+        });
         
         function startSessionKeepAlive() {
             // Clear any existing interval
@@ -1043,31 +1065,39 @@
                 clearInterval(keepAliveInterval);
             }
             
-            // Refresh session every 5 minutes (more frequent for better UX)
+            // Refresh session every 3 minutes (more frequent to prevent expiration)
             keepAliveInterval = setInterval(async () => {
                 try {
                     const response = await fetch(`${API_BASE}/api/check-login`, {
                         credentials: 'include',
-                        headers: { 'Accept': 'application/json' }
+                        headers: { 'Accept': 'application/json' },
+                        cache: 'no-cache' // Prevent caching of session checks
                     });
                     
-                    const data = await response.json();
-                    if (!response.ok || !data.loggedIn) {
-                        clearInterval(keepAliveInterval);
-                        showToast('⚠️ Session expired. Please save your work and login again.', 'error');
-                        setTimeout(() => redirectToLogin(), 3000);
-                    } else {
-                        // Update session info display
-                        updateSessionInfo(data.sessionAge);
-                        console.log(`✅ Session alive (${data.sessionAge || 0} min)`);
+                    if (!response.ok) {
+                        throw new Error(`HTTP ${response.status}`);
                     }
+                    
+                    const data = await response.json();
+                    if (!data.loggedIn) {
+                        clearInterval(keepAliveInterval);
+                        showToast('⚠️ Session expired. Redirecting to login...', 'error');
+                        setTimeout(() => redirectToLogin(), 2000);
+                        return;
+                    }
+                    
+                    // Update session info display
+                    updateSessionInfo(data.sessionAge);
+                    console.log(`✅ Session alive (${data.sessionAge || 0} min)`);
+                    
                 } catch (error) {
                     console.error('Session keep-alive failed:', error);
                     // Don't redirect on network errors - might be temporary
+                    // But show warning if session checks fail repeatedly
                 }
-            }, 5 * 60 * 1000); // Every 5 minutes
+            }, 3 * 60 * 1000); // Every 3 minutes (more frequent)
             
-            console.log('🔐 Session keep-alive started (checks every 5 min)');
+            console.log('🔐 Session keep-alive started (checks every 3 min)');
         }
         
         function stopSessionKeepAlive() {
@@ -1092,9 +1122,23 @@
                 if (hours >= 6) {
                     sessionInfo.style.background = '#fef3c7';
                     sessionInfo.style.color = '#92400e';
+                    sessionInfo.style.padding = '4px 8px';
+                    sessionInfo.style.borderRadius = '4px';
+                    
+                    if (!sessionWarningShown) {
+                        showToast('⚠️ Session is 6+ hours old. Consider saving and refreshing.', 'info');
+                        sessionWarningShown = true;
+                    }
+                } else if (hours >= 4) {
+                    sessionInfo.style.background = '#fef9c3';
+                    sessionInfo.style.color = '#854d0e';
+                    sessionInfo.style.padding = '4px 8px';
+                    sessionInfo.style.borderRadius = '4px';
                 } else {
-                    sessionInfo.style.background = '#f3f4f6';
+                    sessionInfo.style.background = '';
                     sessionInfo.style.color = '#6b7280';
+                    sessionInfo.style.padding = '';
+                    sessionInfo.style.borderRadius = '';
                 }
             }
         }
