@@ -534,6 +534,10 @@
       "Tuesday"
     ],
     "officeHours": {
+      "Saturday": [
+        "08:00",
+        "16:00"
+      ],
       "Sunday": [
         "08:00",
         "16:00"
@@ -549,10 +553,6 @@
       "Friday": [
         "10:00",
         "19:00"
-      ],
-      "Saturday": [
-        "08:00",
-        "16:00"
       ]
     },
     "classTimes": {
@@ -593,10 +593,26 @@
           "room": "B2-306",
           "batch": "6th-CSE-B"
         }
+      ],
+      "Wednesday": [
+        {
+          "start": "11:11",
+          "end": "12:00",
+          "room": "B2-402",
+          "batch": "3rd-CSE-B"
+        },
+        {
+          "start": "13:00",
+          "end": "13:00",
+          "room": "B2-307",
+          "batch": "3rd-CSE-A"
+        }
       ]
     },
     "status": {
-      "status": "at_dept"
+      "status": "in_class",
+      "room": "B2-402",
+      "batch": "3rd-CSE-B"
     },
     "manualOverride": null,
     "overrideExpiry": null,
