@@ -29,16 +29,24 @@ app.use(express.json({
 app.use(express.urlencoded({ limit: '10mb', extended: true }));
 app.use(compression());
 
-// Sessions - Setup will happen after MongoDB connects
+// Sessions - Temporary in-memory store until MongoDB connects
 app.set("trust proxy", 1);
 
-// Placeholder - will be replaced after DB connection
-app.use((req, res, next) => {
-  if (!sessionStore) {
-    return res.status(503).json({ error: "Server initializing, please retry" });
+// Temporary session config (will be upgraded to MongoDB store after connection)
+let sessionMiddleware = session({
+  secret: process.env.SESSION_SECRET || "secret123",
+  resave: false,
+  saveUninitialized: false,
+  rolling: true,
+  cookie: {
+    secure: process.env.NODE_ENV === 'production',
+    sameSite: process.env.NODE_ENV === 'production' ? "none" : "lax",
+    maxAge: 7 * 24 * 60 * 60 * 1000,
+    httpOnly: true
   }
-  next();
 });
+
+app.use(sessionMiddleware);
 
 // === MIDDLEWARE ===
 // Authentication middleware
@@ -816,40 +824,30 @@ async function startup() {
     updateStatuses();
     setInterval(updateStatuses, 3000);
     
-    // Setup session middleware with MongoDB store (after DB connection)
-    sessionStore = MongoStore.create({
-      client: facultyDB.client,
-      dbName: 'faculty_status',
-      collectionName: 'sessions',
-      touchAfter: 24 * 3600, // Lazy session update - only update once per 24h
-      ttl: 7 * 24 * 60 * 60, // 7 days - sessions expire after 7 days of inactivity
-      autoRemove: 'native', // Let MongoDB handle expired session cleanup
-      crypto: {
-        secret: process.env.SESSION_SECRET || 'secret123'
-      }
-    });
+    // Upgrade to MongoDB session store (for persistence across restarts)
+    try {
+      sessionStore = MongoStore.create({
+        client: facultyDB.client,
+        dbName: 'faculty_status',
+        collectionName: 'sessions',
+        touchAfter: 24 * 3600,
+        ttl: 7 * 24 * 60 * 60,
+        autoRemove: 'native',
+        crypto: {
+          secret: process.env.SESSION_SECRET || 'secret123'
+        }
+      });
 
-    // Initialize session middleware
-    app.use(session({
-      store: sessionStore,
-      secret: process.env.SESSION_SECRET || "secret123",
-      resave: false,
-      saveUninitialized: false,
-      rolling: true, // Reset expiry on every request
-      cookie: {
-        secure: process.env.NODE_ENV === 'production',
-        sameSite: process.env.NODE_ENV === 'production' ? "none" : "lax",
-        maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
-        httpOnly: true
-      }
-    }));
-
-    console.log("🔐 Session store initialized (MongoDB - persistent across restarts)");
+      console.log("🔐 Session store upgraded to MongoDB (persistent across restarts)");
+    } catch (error) {
+      console.log("⚠️ MongoDB session store setup failed, using memory store:", error.message);
+      console.log("   Sessions will work but won't persist across server restarts");
+    }
     
     app.listen(PORT, () => {
       console.log(`✅ Server running on http://localhost:${PORT}`);
       console.log("💾 Database: MongoDB Atlas (with file sync)");
-      console.log("🔐 Sessions: Persistent (survives server restarts)");
+      console.log("🔐 Sessions: " + (sessionStore ? "Persistent (MongoDB)" : "Memory (temporary)"));
       console.log("📄 Edit faculty.json or marquee.txt to update data");
       console.log("🟢 Status: Ready");
     });
