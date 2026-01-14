@@ -328,7 +328,9 @@
       ]
     },
     "status": {
-      "status": "at_dept"
+      "status": "in_class",
+      "room": "B2-303",
+      "batch": "8th-CSE-B"
     },
     "manualOverride": null,
     "overrideExpiry": null,
@@ -517,7 +519,7 @@
     "status": {
       "status": "in_class",
       "room": "B2-306",
-      "batch": "3rd-CSE-A"
+      "batch": "5th-CSE-A"
     },
     "manualOverride": null,
     "overrideExpiry": null,
@@ -603,16 +605,14 @@
         },
         {
           "start": "13:00",
-          "end": "13:00",
+          "end": "14:00",
           "room": "B2-307",
           "batch": "3rd-CSE-A"
         }
       ]
     },
     "status": {
-      "status": "in_class",
-      "room": "B2-402",
-      "batch": "3rd-CSE-B"
+      "status": "at_dept"
     },
     "manualOverride": null,
     "overrideExpiry": null,
@@ -1156,7 +1156,9 @@
       ]
     },
     "status": {
-      "status": "at_dept"
+      "status": "in_class",
+      "room": "B2-505",
+      "batch": "5th-CSE-B"
     },
     "manualOverride": null,
     "overrideExpiry": null,
@@ -1356,9 +1358,7 @@
       ]
     },
     "status": {
-      "status": "in_class",
-      "room": "B1-402",
-      "batch": "7th-Eng-A"
+      "status": "at_dept"
     },
     "manualOverride": null,
     "overrideExpiry": null,
