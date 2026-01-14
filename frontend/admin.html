@@ -688,6 +688,7 @@
                 <button id="deployBtn" class="btn btn-success" onclick="deployChanges()" disabled>
                     📤 Deploy Changes (<span id="changeCount">0</span>)
                 </button>
+                <span id="sessionInfo" style="font-size: 11px; color: #6b7280; padding: 8px 12px; background: #f3f4f6; border-radius: 6px; white-space: nowrap;"></span>
                 <a href="control.html" class="btn btn-secondary">Control Panel</a>
                 <button onclick="logout()" class="btn btn-danger">Logout</button>
             </div>
@@ -703,6 +704,24 @@
 
             <!-- Faculty Management Tab -->
             <div id="faculty-tab" class="tab-content active">
+                <!-- Existing Faculty Section - Shown First -->
+                <div class="section">
+                    <h2>Existing Faculty</h2>
+                    <div class="btn-group" style="margin-bottom: 15px;">
+                        <button onclick="loadFaculty()" class="btn btn-primary">Refresh List</button>
+                        <button onclick="exportFaculty()" class="btn btn-secondary">Export JSON</button>
+                        <button onclick="syncDatabaseToJSON()" class="btn btn-warning">Sync to JSON File</button>
+                        <button onclick="showPriorityManager()" class="btn btn-success">🔢 Set Display Order</button>
+                    </div>
+                    <div class="file-info" style="margin-bottom: 15px;">
+                        <strong>Persistence:</strong> Faculty changes are now automatically saved to both database and JSON file.<br>
+                        <strong>Manual Sync:</strong> Use "Sync to JSON File" button if you suspect data is out of sync.<br>
+                        <strong>File Location:</strong> backend/faculty.json (updated automatically)
+                    </div>
+                    <div id="facultyList"></div>
+                </div>
+
+                <!-- Add/Edit Faculty Form - Shown Second -->
                 <div class="section" id="facultyFormSection">
                     <h2 id="facultyFormTitle">Add New Faculty</h2>
                     <form id="addFacultyForm">
@@ -824,22 +843,6 @@
                             <button type="button" onclick="cancelEdit()" class="btn btn-warning hidden" id="cancelEditBtn">Cancel Edit</button>
                         </div>
                     </form>
-                </div>
-
-                <div class="section">
-                    <h2>Existing Faculty</h2>
-                    <div class="btn-group" style="margin-bottom: 15px;">
-                        <button onclick="loadFaculty()" class="btn btn-primary">Refresh List</button>
-                        <button onclick="exportFaculty()" class="btn btn-secondary">Export JSON</button>
-                        <button onclick="syncDatabaseToJSON()" class="btn btn-warning">Sync to JSON File</button>
-                        <button onclick="showPriorityManager()" class="btn btn-success">🔢 Set Display Order</button>
-                    </div>
-                    <div class="file-info" style="margin-bottom: 15px;">
-                        <strong>Persistence:</strong> Faculty changes are now automatically saved to both database and JSON file.<br>
-                        <strong>Manual Sync:</strong> Use "Sync to JSON File" button if you suspect data is out of sync.<br>
-                        <strong>File Location:</strong> backend/faculty.json (updated automatically)
-                    </div>
-                    <div id="facultyList"></div>
                 </div>
             </div>
 
@@ -1013,6 +1016,72 @@
             checkMarqueeStatus(); // Add this line
             loadAds();
             setupFileUpload();
+            startSessionKeepAlive(); // Keep session active during editing
+        }
+
+        // Session keep-alive mechanism
+        let keepAliveInterval = null;
+        
+        function startSessionKeepAlive() {
+            // Clear any existing interval
+            if (keepAliveInterval) {
+                clearInterval(keepAliveInterval);
+            }
+            
+            // Refresh session every 5 minutes (more frequent for better UX)
+            keepAliveInterval = setInterval(async () => {
+                try {
+                    const response = await fetch(`${API_BASE}/api/check-login`, {
+                        credentials: 'include',
+                        headers: { 'Accept': 'application/json' }
+                    });
+                    
+                    const data = await response.json();
+                    if (!response.ok || !data.loggedIn) {
+                        clearInterval(keepAliveInterval);
+                        showToast('⚠️ Session expired. Please save your work and login again.', 'error');
+                        setTimeout(() => redirectToLogin(), 3000);
+                    } else {
+                        // Update session info display
+                        updateSessionInfo(data.sessionAge);
+                        console.log(`✅ Session alive (${data.sessionAge || 0} min)`);
+                    }
+                } catch (error) {
+                    console.error('Session keep-alive failed:', error);
+                    // Don't redirect on network errors - might be temporary
+                }
+            }, 5 * 60 * 1000); // Every 5 minutes
+            
+            console.log('🔐 Session keep-alive started (checks every 5 min)');
+        }
+        
+        function stopSessionKeepAlive() {
+            if (keepAliveInterval) {
+                clearInterval(keepAliveInterval);
+                keepAliveInterval = null;
+            }
+        }
+
+        function updateSessionInfo(ageInMinutes) {
+            const sessionInfo = document.getElementById('sessionInfo');
+            if (sessionInfo && ageInMinutes !== null) {
+                const hours = Math.floor(ageInMinutes / 60);
+                const mins = ageInMinutes % 60;
+                if (hours > 0) {
+                    sessionInfo.textContent = `🔐 Session: ${hours}h ${mins}m`;
+                } else {
+                    sessionInfo.textContent = `🔐 Session: ${mins}m`;
+                }
+                
+                // Visual warning if session is old
+                if (hours >= 6) {
+                    sessionInfo.style.background = '#fef3c7';
+                    sessionInfo.style.color = '#92400e';
+                } else {
+                    sessionInfo.style.background = '#f3f4f6';
+                    sessionInfo.style.color = '#6b7280';
+                }
+            }
         }
 
         document.getElementById('displayPosition').addEventListener('change', function() {
@@ -1486,6 +1555,24 @@
         // Faculty Management - Form submission
         document.getElementById('addFacultyForm').addEventListener('submit', async function (e) {
             e.preventDefault();
+
+            // Verify session is still active before submitting
+            try {
+                const sessionCheck = await fetch(`${API_BASE}/api/check-login`, {
+                    credentials: 'include',
+                    headers: { 'Accept': 'application/json' }
+                });
+                
+                const sessionData = await sessionCheck.json();
+                if (!sessionData.loggedIn) {
+                    showToast('Session expired. Please login again.', 'error');
+                    setTimeout(() => redirectToLogin(), 2000);
+                    return;
+                }
+            } catch (error) {
+                showToast('Cannot verify session. Please check your connection.', 'error');
+                return;
+            }
 
             const isEditMode = document.getElementById('editMode').value === 'true';
             const originalName = document.getElementById('originalName').value;
@@ -2322,6 +2409,7 @@
         }
 
         function logout() {
+            stopSessionKeepAlive(); // Stop keep-alive when logging out
             fetch(`${API_BASE}/api/logout`, {
                 method: 'POST',
                 credentials: 'include'

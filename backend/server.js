@@ -1,5 +1,6 @@
 const express = require("express");
 const session = require("express-session");
+const MongoStore = require("connect-mongo");
 const cors = require("cors");
 const path = require("path");
 const fs = require("fs");
@@ -11,6 +12,7 @@ const PORT = process.env.PORT || 3000;
 
 // Initialize database
 let facultyDB;
+let sessionStore;
 
 // Allow frontend access
 app.use(cors({
@@ -27,18 +29,16 @@ app.use(express.json({
 app.use(express.urlencoded({ limit: '10mb', extended: true }));
 app.use(compression());
 
-// Sessions
+// Sessions - Setup will happen after MongoDB connects
 app.set("trust proxy", 1);
-app.use(session({
-  secret: process.env.SESSION_SECRET || "secret123",
-  resave: false,
-  saveUninitialized: false,
-  cookie: {
-    secure: process.env.NODE_ENV === 'production',
-    sameSite: process.env.NODE_ENV === 'production' ? "none" : "lax",
-    maxAge: 24 * 60 * 60 * 1000
+
+// Placeholder - will be replaced after DB connection
+app.use((req, res, next) => {
+  if (!sessionStore) {
+    return res.status(503).json({ error: "Server initializing, please retry" });
   }
-}));
+  next();
+});
 
 // === MIDDLEWARE ===
 // Authentication middleware
@@ -200,7 +200,18 @@ app.post("/api/login", (req, res) => {
   const { username, password } = req.body;
   if (username === "admin" && password === "admin123") {
     req.session.loggedIn = true;
-    res.status(200).json({ success: true });
+    req.session.loginTime = new Date().toISOString();
+    req.session.userAgent = req.headers['user-agent'];
+    
+    // Save session explicitly to ensure it's written to MongoDB
+    req.session.save((err) => {
+      if (err) {
+        console.error('Session save error:', err);
+        return res.status(500).json({ error: "Session creation failed" });
+      }
+      console.log(`✅ New admin session created (ID: ${req.sessionID.substring(0, 8)}...)`);
+      res.status(200).json({ success: true });
+    });
   } else {
     res.status(401).json({ error: "Invalid credentials" });
   }
@@ -229,7 +240,13 @@ app.post("/api/logout", (req, res) => {
 
 app.get("/api/check-login", (req, res) => {
   if (req.session.loggedIn) {
-    res.json({ loggedIn: true });
+    // Touch the session to keep it alive (with rolling: true, this resets expiry)
+    res.json({ 
+      loggedIn: true,
+      sessionAge: req.session.loginTime ? 
+        Math.floor((Date.now() - new Date(req.session.loginTime)) / 1000 / 60) : 
+        null // Age in minutes
+    });
   } else {
     res.status(401).json({ loggedIn: false });
   }
@@ -799,9 +816,40 @@ async function startup() {
     updateStatuses();
     setInterval(updateStatuses, 3000);
     
+    // Setup session middleware with MongoDB store (after DB connection)
+    sessionStore = MongoStore.create({
+      client: facultyDB.client,
+      dbName: 'faculty_status',
+      collectionName: 'sessions',
+      touchAfter: 24 * 3600, // Lazy session update - only update once per 24h
+      ttl: 7 * 24 * 60 * 60, // 7 days - sessions expire after 7 days of inactivity
+      autoRemove: 'native', // Let MongoDB handle expired session cleanup
+      crypto: {
+        secret: process.env.SESSION_SECRET || 'secret123'
+      }
+    });
+
+    // Initialize session middleware
+    app.use(session({
+      store: sessionStore,
+      secret: process.env.SESSION_SECRET || "secret123",
+      resave: false,
+      saveUninitialized: false,
+      rolling: true, // Reset expiry on every request
+      cookie: {
+        secure: process.env.NODE_ENV === 'production',
+        sameSite: process.env.NODE_ENV === 'production' ? "none" : "lax",
+        maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
+        httpOnly: true
+      }
+    }));
+
+    console.log("🔐 Session store initialized (MongoDB - persistent across restarts)");
+    
     app.listen(PORT, () => {
       console.log(`✅ Server running on http://localhost:${PORT}`);
       console.log("💾 Database: MongoDB Atlas (with file sync)");
+      console.log("🔐 Sessions: Persistent (survives server restarts)");
       console.log("📄 Edit faculty.json or marquee.txt to update data");
       console.log("🟢 Status: Ready");
     });
@@ -814,6 +862,14 @@ async function startup() {
 // Graceful shutdown
 process.on('SIGINT', async () => {
   console.log('🛑 Shutting down gracefully...');
+  
+  // Close session store
+  if (sessionStore) {
+    await sessionStore.close();
+    console.log('🔐 Session store closed');
+  }
+  
+  // Close database
   if (facultyDB) {
     await facultyDB.close();
   }
