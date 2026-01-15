@@ -31,7 +31,22 @@
         "21:00"
       ]
     },
-    "classTimes": {},
+    "classTimes": {
+      "Saturday": [
+        {
+          "start": "10:00",
+          "end": "11:00",
+          "room": "B2-404",
+          "batch": "4th-CSE-A"
+        },
+        {
+          "start": "11:00",
+          "end": "12:00",
+          "room": "B2-404",
+          "batch": "4th-CSE-B"
+        }
+      ]
+    },
     "status": {
       "status": "at_dept"
     },
@@ -73,7 +88,7 @@
     },
     "classTimes": {},
     "status": {
-      "status": "off_duty"
+      "status": "at_dept"
     },
     "manualOverride": null,
     "overrideExpiry": null,
@@ -135,25 +150,25 @@
           "start": "17:00",
           "end": "18:00",
           "room": "B2-304",
-          "batch": "1th-CSE-EVN"
+          "batch": "1th-CSE-Evn"
         },
         {
           "start": "18:00",
           "end": "19:00",
           "room": "B2-304",
-          "batch": "6th-CSE-EVN"
+          "batch": "6th-CSE-Evn"
         },
         {
           "start": "19:00",
           "end": "20:00",
           "room": "B2-003",
-          "batch": "8th-CSE-EVN"
+          "batch": "8th-CSE-Evn"
         },
         {
           "start": "20:00",
           "end": "21:00",
           "room": "B2-304",
-          "batch": "M.Sc. in CSE"
+          "batch": "1st-CSE-MSc"
         }
       ],
       "Sunday": [
@@ -209,25 +224,25 @@
           "start": "17:00",
           "end": "18:00",
           "room": "B2-304",
-          "batch": "8th-CSE-EVN"
+          "batch": "8th-CSE-Evn"
         },
         {
           "start": "18:00",
           "end": "19:00",
           "room": "B2-304",
-          "batch": "6th-CSE-EVN"
+          "batch": "6th-CSE-Evn"
         },
         {
           "start": "19:00",
           "end": "20:00",
           "room": "B2-304",
-          "batch": "1st-CSE-EVN"
+          "batch": "1st-CSE-Evn"
         },
         {
           "start": "20:00",
           "end": "21:00",
           "room": "B2-304",
-          "batch": "M.Sc. in CSE"
+          "batch": "1st-CSE-MSc"
         }
       ]
     },
@@ -245,8 +260,8 @@
     "email": "masud7866@gmail.com",
     "image": "/images/fac5.jpg",
     "weekend": [
-      "Sunday",
-      "Saturday"
+      "Saturday",
+      "Sunday"
     ],
     "officeHours": {
       "Monday": [
@@ -297,6 +312,12 @@
           "end": "13:00",
           "room": "B2-303",
           "batch": "7th-CSE-B"
+        },
+        {
+          "start": "13:00",
+          "end": "14:00",
+          "room": "B2-303",
+          "batch": "1st-CSE-MSc"
         }
       ],
       "Wednesday": [
@@ -311,6 +332,12 @@
           "end": "16:00",
           "room": "B2-303",
           "batch": "8th-CSE-B"
+        },
+        {
+          "start": "11:00",
+          "end": "12:00",
+          "room": "B2-303",
+          "batch": "1st-CSE-MSc"
         }
       ],
       "Thursday": [
@@ -355,7 +382,9 @@
       ]
     },
     "status": {
-      "status": "at_dept"
+      "status": "in_class",
+      "room": "B2-303",
+      "batch": "7th-CSE-A"
     },
     "manualOverride": null,
     "overrideExpiry": null,
@@ -412,6 +441,10 @@
       "Monday"
     ],
     "officeHours": {
+      "Saturday": [
+        "10:00",
+        "16:00"
+      ],
       "Tuesday": [
         "10:00",
         "17:00"
@@ -427,13 +460,29 @@
       "Friday": [
         "11:00",
         "20:00"
-      ],
-      "Saturday": [
-        "10:00",
-        "16:00"
       ]
     },
     "classTimes": {
+      "Saturday": [
+        {
+          "start": "11:00",
+          "end": "12:00",
+          "room": "B2-306",
+          "batch": "5th-CSE-A"
+        },
+        {
+          "start": "12:00",
+          "end": "01:00",
+          "room": "B2-306",
+          "batch": "5th-CSE-A"
+        },
+        {
+          "start": "14:00",
+          "end": "15:00",
+          "room": "B2-306",
+          "batch": "1st-CSE-MSc"
+        }
+      ],
       "Tuesday": [
         {
           "start": "10:00",
@@ -503,7 +552,7 @@
           "start": "16:00",
           "end": "17:00",
           "room": "B2-306",
-          "batch": "1st-MSc-CSE-A"
+          "batch": "1st-CSE-MSc"
         },
         {
           "start": "18:00",
@@ -542,26 +591,6 @@
           "end": "17:00",
           "room": "B2-306",
           "batch": "3rd-CSE-A-Evn"
-        }
-      ],
-      "Saturday": [
-        {
-          "start": "11:00",
-          "end": "12:00",
-          "room": "B2-306",
-          "batch": "5th-CSE-A"
-        },
-        {
-          "start": "12:00",
-          "end": "01:00",
-          "room": "B2-306",
-          "batch": "5th-CSE-A"
-        },
-        {
-          "start": "14:00",
-          "end": "15:00",
-          "room": "B2-306",
-          "batch": "1st-MSc-CSE-A"
         }
       ]
     },
