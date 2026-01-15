@@ -44,6 +44,98 @@
           "end": "12:00",
           "room": "B2-404",
           "batch": "4th-CSE-B"
+        },
+        {
+          "start": "17:00",
+          "end": "18:00",
+          "room": "B3-303",
+          "batch": "1st-CSE-MSc"
+        },
+        {
+          "start": "18:00",
+          "end": "19:00",
+          "room": "B2-402",
+          "batch": "4th-CSE-Evn"
+        },
+        {
+          "start": "19:00",
+          "end": "20:00",
+          "room": "B2-402",
+          "batch": "4th-CSE-Evn"
+        },
+        {
+          "start": "20:00",
+          "end": "21:00",
+          "room": "B3-303",
+          "batch": "7th-CSE-Evn"
+        }
+      ],
+      "Sunday": [
+        {
+          "start": "10:00",
+          "end": "11:00",
+          "room": "B2-404",
+          "batch": "4th-CSE-B"
+        },
+        {
+          "start": "11:00",
+          "end": "12:00",
+          "room": "B2-304",
+          "batch": "4th-CSE-A"
+        }
+      ],
+      "Wednesday": [
+        {
+          "start": "10:00",
+          "end": "11:00",
+          "room": "B2-405",
+          "batch": "7th-CSE-A"
+        },
+        {
+          "start": "11:00",
+          "end": "00:00",
+          "room": "B2-406",
+          "batch": "7th-CSE-B"
+        }
+      ],
+      "Thursday": [
+        {
+          "start": "10:00",
+          "end": "11:00",
+          "room": "B2-405",
+          "batch": "7th-CSE-A"
+        },
+        {
+          "start": "11:00",
+          "end": "12:00",
+          "room": "B2-307",
+          "batch": "7th-CSE-B"
+        }
+      ],
+      "Friday": [
+        {
+          "start": "17:00",
+          "end": "18:00",
+          "room": "B3-303",
+          "batch": "1st-CSE-MSc"
+        },
+        {
+          "start": "18:00",
+          "end": "19:00",
+          "room": "B2-404",
+          "batch": "4th-CSE-Evn"
+        },
+        {
+          "start": "19:00",
+          "end": "20:00",
+          "room": "B2-402",
+          "batch": "7th-CSE-Evn"
+        },
+        {
+          "start": "20:00",
+          "end": "21:00",
+          "room": "B3-304",
+          "batch": "4th-CSE-Evn"
         }
       ]
     },
@@ -86,7 +178,102 @@
         "20:00"
       ]
     },
-    "classTimes": {},
+    "classTimes": {
+      "Saturday": [
+        {
+          "start": "11:00",
+          "end": "12:00",
+          "room": "B2-305",
+          "batch": "6th-CSE-A"
+        },
+        {
+          "start": "12:00",
+          "end": "13:00",
+          "room": "B2-405",
+          "batch": "6th-CSE-B"
+        },
+        {
+          "start": "13:00",
+          "end": "14:00",
+          "room": "B2-305",
+          "batch": "6th-CSE-C"
+        },
+        {
+          "start": "16:00",
+          "end": "17:00",
+          "room": "B2-305",
+          "batch": "1st-CSE-MSc"
+        },
+        {
+          "start": "17:00",
+          "end": "18:00",
+          "room": "B2-305",
+          "batch": "6th-CSE-Evn"
+        }
+      ],
+      "Sunday": [
+        {
+          "start": "16:00",
+          "end": "17:00",
+          "room": "B2-305",
+          "batch": "1st-CSE-MSc"
+        }
+      ],
+      "Monday": [
+        {
+          "start": "09:00",
+          "end": "10:00",
+          "room": "B2-307",
+          "batch": "2nd-EEE-A"
+        },
+        {
+          "start": "10:00",
+          "end": "11:00",
+          "room": "B2-405",
+          "batch": "6th-CSE-B"
+        },
+        {
+          "start": "11:00",
+          "end": "12:00",
+          "room": "B2-404",
+          "batch": "6th-CSE-A"
+        },
+        {
+          "start": "12:00",
+          "end": "13:00",
+          "room": "B2-305",
+          "batch": "6th-CSE-C"
+        }
+      ],
+      "Thursday": [
+        {
+          "start": "12:00",
+          "end": "13:00",
+          "room": "B2-307",
+          "batch": "2nd-EEE-A"
+        },
+        {
+          "start": "17:00",
+          "end": "18:00",
+          "room": "B2-307",
+          "batch": "2nd-EEE-Evn"
+        }
+      ],
+      "Friday": [
+        {
+          "start": "11:00",
+          "end": "12:00",
+          "room": "B2-307",
+          "batch": "6th-CSE-Evn"
+        },
+        {
+          "start": "12:00",
+          "end": "13:00",
+          "room": "B2-307",
+          "batch": "2nd-EEE-Evn"
+        }
+      ]
+    },
     "status": {
       "status": "at_dept"
     },
@@ -150,7 +337,7 @@
           "start": "17:00",
           "end": "18:00",
           "room": "B2-304",
-          "batch": "1th-CSE-Evn"
+          "batch": "1st-CSE-Evn"
         },
         {
           "start": "18:00",
@@ -196,13 +383,13 @@
           "start": "15:00",
           "end": "16:00",
           "room": "B2-404",
-          "batch": "1th-CSE-A"
+          "batch": "1st-CSE-A"
         },
         {
           "start": "16:00",
           "end": "17:00",
           "room": "B2-404",
-          "batch": "1th-CSE-B"
+          "batch": "1st-CSE-B"
         }
       ],
       "Tuesday": [
@@ -210,13 +397,13 @@
           "start": "15:00",
           "end": "16:00",
           "room": "B2-404",
-          "batch": "1th-CSE-A"
+          "batch": "1st-CSE-A"
         },
         {
           "start": "16:00",
           "end": "17:00",
           "room": "B2-404",
-          "batch": "1th-CSE-B"
+          "batch": "1st-CSE-B"
         }
       ],
       "Friday": [
@@ -382,9 +569,7 @@
       ]
     },
     "status": {
-      "status": "in_class",
-      "room": "B2-303",
-      "batch": "7th-CSE-A"
+      "status": "at_dept"
     },
     "manualOverride": null,
     "overrideExpiry": null,
@@ -422,7 +607,138 @@
         "19:00"
       ]
     },
-    "classTimes": {},
+    "classTimes": {
+      "Saturday": [
+        {
+          "start": "13:00",
+          "end": "14:00",
+          "room": "B2-406",
+          "batch": "2nd-CSE-A"
+        },
+        {
+          "start": "14:00",
+          "end": "15:00",
+          "room": "B2-304",
+          "batch": "2nd-CSE-B"
+        },
+        {
+          "start": "15:00",
+          "end": "16:00",
+          "room": "B2-304",
+          "batch": "2nd-CSE-C"
+        }
+      ],
+      "Tuesday": [
+        {
+          "start": "10:00",
+          "end": "11:00",
+          "room": "B2-304",
+          "batch": "1st-CSE-A"
+        },
+        {
+          "start": "12:00",
+          "end": "13:00",
+          "room": "B2-305",
+          "batch": "7th-CSE-A"
+        },
+        {
+          "start": "13:00",
+          "end": "14:00",
+          "room": "B2-305",
+          "batch": "7th-CSE-B"
+        },
+        {
+          "start": "14:00",
+          "end": "15:00",
+          "room": "B2-304",
+          "batch": "1st-CSE-B"
+        }
+      ],
+      "Wednesday": [
+        {
+          "start": "09:00",
+          "end": "10:00",
+          "room": "B2-304",
+          "batch": "1st-CSE-B"
+        },
+        {
+          "start": "10:00",
+          "end": "11:00",
+          "room": "B2-304",
+          "batch": "1st-CSE-A"
+        },
+        {
+          "start": "13:00",
+          "end": "14:00",
+          "room": "B2-305",
+          "batch": "7th-CSE-A"
+        },
+        {
+          "start": "15:00",
+          "end": "16:00",
+          "room": "B2-305",
+          "batch": "7th-CSE-B"
+        }
+      ],
+      "Thursday": [
+        {
+          "start": "11:00",
+          "end": "12:00",
+          "room": "B2-304",
+          "batch": "2nd-CSE-A"
+        },
+        {
+          "start": "12:00",
+          "end": "13:00",
+          "room": "B2-304",
+          "batch": "2nd-CSE-C"
+        },
+        {
+          "start": "13:00",
+          "end": "14:00",
+          "room": "B2-304",
+          "batch": "2nd-CSE-B"
+        },
+        {
+          "start": "18:00",
+          "end": "19:00",
+          "room": "B2-304",
+          "batch": "2nd-CSE-Evn"
+        },
+        {
+          "start": "19:00",
+          "end": "20:00",
+          "room": "B2-304",
+          "batch": "1st-CSE-Evn"
+        },
+        {
+          "start": "20:00",
+          "end": "21:00",
+          "room": "B2-304",
+          "batch": "7th-CSE-Evn"
+        }
+      ],
+      "Friday": [
+        {
+          "start": "12:00",
+          "end": "13:00",
+          "room": "B2-304",
+          "batch": "1st-CSE-Evn"
+        },
+        {
+          "start": "15:00",
+          "end": "16:00",
+          "room": "B2-304",
+          "batch": "2nd-CSE-Evn"
+        },
+        {
+          "start": "16:00",
+          "end": "17:00",
+          "room": "B2-304",
+          "batch": "7th-CSE-Evn"
+        }
+      ]
+    },
     "status": {
       "status": "at_dept"
     },
@@ -558,19 +874,19 @@
           "start": "18:00",
           "end": "19:00",
           "room": "B2-306",
-          "batch": "3rd-CSE-A-Evn"
+          "batch": "3rd-CSE-Evn"
         },
         {
           "start": "19:00",
           "end": "20:00",
           "room": "B2-306",
-          "batch": "5th-CSE-A-Evn"
+          "batch": "5th-CSE-Evn"
         },
         {
           "start": "20:00",
           "end": "21:00",
           "room": "B2-306",
-          "batch": "3rd-CSE-A-Evn"
+          "batch": "3rd-CSE-Evn"
         }
       ],
       "Friday": [
@@ -578,26 +894,24 @@
           "start": "11:00",
           "end": "12:00",
           "room": "B2-306",
-          "batch": "3rd-CSE-A-Evn"
+          "batch": "3rd-CSE-Evn"
         },
         {
           "start": "15:00",
           "end": "16:00",
           "room": "B2-306",
-          "batch": "5th-CSE-A-Evn"
+          "batch": "5th-CSE-Evn"
         },
         {
           "start": "16:00",
           "end": "17:00",
           "room": "B2-306",
-          "batch": "3rd-CSE-A-Evn"
+          "batch": "3rd-CSE-Evn"
         }
       ]
     },
     "status": {
-      "status": "in_class",
-      "room": "B2-306",
-      "batch": "3rd-CSE-B"
+      "status": "at_dept"
     },
     "manualOverride": null,
     "overrideExpiry": null,
@@ -636,6 +950,44 @@
       ]
     },
     "classTimes": {
+      "Saturday": [
+        {
+          "start": "08:00",
+          "end": "09:00",
+          "room": "B2-303",
+          "batch": "6th-CSE-C"
+        },
+        {
+          "start": "09:00",
+          "end": "10:00",
+          "room": "B2-307",
+          "batch": "6th-CSE-B"
+        },
+        {
+          "start": "10:00",
+          "end": "11:00",
+          "room": "B2-307",
+          "batch": "6th-CSE-A"
+        },
+        {
+          "start": "12:00",
+          "end": "13:00",
+          "room": "B2-203",
+          "batch": "6th-CSE-A"
+        },
+        {
+          "start": "13:00",
+          "end": "14:00",
+          "room": "B2-306",
+          "batch": "6th-CSE-B"
+        },
+        {
+          "start": "14:00",
+          "end": "15:00",
+          "room": "B2-405",
+          "batch": "6th-CSE-C"
+        }
+      ],
       "Sunday": [
         {
           "start": "08:00",
@@ -650,8 +1002,8 @@
           "batch": "6th-CSE-B"
         },
         {
-          "start": "11:00",
-          "end": "12:00",
+          "start": "10:00",
+          "end": "11:00",
           "room": "B2-405",
           "batch": "6th-CSE-A"
         },
@@ -676,7 +1028,7 @@
       ],
       "Wednesday": [
         {
-          "start": "11:11",
+          "start": "11:00",
           "end": "12:00",
           "room": "B2-402",
           "batch": "3rd-CSE-B"
@@ -690,7 +1042,7 @@
       ]
     },
     "status": {
-      "status": "off_duty"
+      "status": "at_dept"
     },
     "manualOverride": null,
     "overrideExpiry": null,
@@ -707,6 +1059,10 @@
       "Wednesday"
     ],
     "officeHours": {
+      "Saturday": [
+        "09:00",
+        "18:00"
+      ],
       "Sunday": [
         "09:00",
         "16:00"
@@ -722,37 +1078,59 @@
       "Friday": [
         "11:00",
         "20:00"
-      ],
-      "Saturday": [
-        "09:00",
-        "18:00"
       ]
     },
     "classTimes": {
-      "Sunday": [
+      "Saturday": [
         {
           "start": "09:00",
           "end": "10:00",
-          "room": "B2-304",
-          "batch": "4th - CSE - A - Reg"
-        },
-        {
-          "start": "11:00",
-          "end": "12:00",
           "room": "B2-303",
-          "batch": "4th - CSE - B - Reg"
+          "batch": "5th-CSE-A"
         },
         {
           "start": "12:00",
           "end": "13:00",
-          "room": "B2-306",
-          "batch": "1st - BA in  English - A - Reg"
+          "room": "B2-404",
+          "batch": "5th-CSE-A"
         },
         {
           "start": "14:00",
           "end": "15:00",
           "room": "B2-303",
-          "batch": "2nd - BBA - A - Reg"
+          "batch": "4th-CSE-B"
+        },
+        {
+          "start": "15:00",
+          "end": "16:00",
+          "room": "B2-305",
+          "batch": "4th-CSE-A"
+        }
+      ],
+      "Sunday": [
+        {
+          "start": "09:00",
+          "end": "10:00",
+          "room": "B2-304",
+          "batch": "4th-CSE-A"
+        },
+        {
+          "start": "11:00",
+          "end": "12:00",
+          "room": "B2-303",
+          "batch": "4th-CSE-B"
+        },
+        {
+          "start": "12:00",
+          "end": "13:00",
+          "room": "B2-306",
+          "batch": "1st-English-A"
+        },
+        {
+          "start": "14:00",
+          "end": "15:00",
+          "room": "B2-303",
+          "batch": "2nd-BBA-A"
         }
       ],
       "Monday": [
@@ -760,31 +1138,31 @@
           "start": "08:00",
           "end": "09:00",
           "room": "B2-404",
-          "batch": "4th - CSE - A - Reg"
+          "batch": "4th-CSE-A"
         },
         {
           "start": "09:00",
           "end": "10:00",
           "room": "B2-404",
-          "batch": "4th - CSE - B - Reg"
+          "batch": "4th-CSE-B"
         },
         {
           "start": "10:00",
           "end": "11:00",
           "room": "B2-306",
-          "batch": "1st - BA in  English - A - Reg"
+          "batch": "1st-English-A"
         },
         {
           "start": "12:00",
           "end": "13:00",
           "room": "B2-404",
-          "batch": "4th - CSE - A - Reg"
+          "batch": "4th-CSE-A"
         },
         {
           "start": "14:00",
           "end": "15:00",
           "room": "B2-404",
-          "batch": "4th - CSE - B - Reg"
+          "batch": "4th-CSE-B"
         }
       ],
       "Thursday": [
@@ -792,43 +1170,43 @@
           "start": "13:00",
           "end": "14:00",
           "room": "B2-404",
-          "batch": "2nd - BBA - A - Reg"
+          "batch": "2nd-BBA-A"
         },
         {
           "start": "15:00",
           "end": "16:00",
           "room": "B2-404",
-          "batch": "5th - CSE - A - Reg"
+          "batch": "5th-CSE-A"
         },
         {
           "start": "16:00",
           "end": "17:00",
           "room": "B2-404",
-          "batch": "5th - CSE - A - Reg"
+          "batch": "5th-CSE-A"
         },
         {
           "start": "17:00",
           "end": "18:00",
           "room": "B2-404",
-          "batch": "4th - CSE - A - Evn"
+          "batch": "4th-CSE-A"
         },
         {
           "start": "18:00",
           "end": "19:00",
           "room": "B2-307",
-          "batch": "5th - CSE - A - Evn"
+          "batch": "5th-CSE-A"
         },
         {
           "start": "19:00",
           "end": "20:00",
           "room": "B2-203",
-          "batch": "4th - CSE - A - Evn"
+          "batch": "4th-CSE-A"
         },
         {
           "start": "20:00",
           "end": "21:00",
           "room": "B2-403",
-          "batch": "5th - CSE - A - Evn"
+          "batch": "5th-CSE-A"
         }
       ],
       "Friday": [
@@ -836,56 +1214,30 @@
           "start": "11:00",
           "end": "12:00",
           "room": "B2-305",
-          "batch": "4th - CSE - A -  Evn"
+          "batch": "4th-CSE-A"
         },
         {
           "start": "12:00",
           "end": "13:00",
           "room": "B2-305",
-          "batch": "4th - CSE - A -  Evn"
+          "batch": "4th-CSE-Evn"
         },
         {
           "start": "18:00",
           "end": "19:00",
           "room": "B2-304",
-          "batch": "5th - CSE - A -  Evn"
+          "batch": "5th-CSE-Evn"
         },
         {
           "start": "19:00",
           "end": "20:00",
           "room": "B2-304",
-          "batch": "5th - CSE - A -  Evn"
-        }
-      ],
-      "Saturday": [
-        {
-          "start": "09:00",
-          "end": "10:00",
-          "room": "B2-303",
-          "batch": "5th - CSE -  A - Reg"
-        },
-        {
-          "start": "12:00",
-          "end": "13:00",
-          "room": "B2-404",
-          "batch": "5th - CSE -  A - Reg"
-        },
-        {
-          "start": "14:00",
-          "end": "15:00",
-          "room": "B2-303",
-          "batch": "4th - CSE -  B - Reg"
-        },
-        {
-          "start": "15:00",
-          "end": "16:00",
-          "room": "B2-305",
-          "batch": "4th - CSE -  A - Reg"
+          "batch": "5th-CSE-Evn"
         }
       ]
     },
     "status": {
-      "status": "off_duty"
+      "status": "at_dept"
     },
     "manualOverride": null,
     "overrideExpiry": null,
@@ -902,6 +1254,10 @@
       "Thursday"
     ],
     "officeHours": {
+      "Saturday": [
+        "08:00",
+        "20:00"
+      ],
       "Sunday": [
         "08:00",
         "16:00"
@@ -917,10 +1273,6 @@
       "Friday": [
         "09:00",
         "13:00"
-      ],
-      "Saturday": [
-        "08:00",
-        "20:00"
       ]
     },
     "classTimes": {
@@ -961,19 +1313,19 @@
           "start": "09:00",
           "end": "10:00",
           "room": "B2-305",
-          "batch": "2nd - CSE - A - Evn"
+          "batch": "2nd-CSE-Evn"
         },
         {
           "start": "10:00",
           "end": "11:00",
           "room": "B2-405",
-          "batch": "6th - CSE - A - Evn"
+          "batch": "6th-CSE-Evn"
         },
         {
           "start": "12:00",
           "end": "01:00",
           "room": "B2-203",
-          "batch": "2nd - ME - A - Evn"
+          "batch": "2nd-ME-Evn"
         }
       ]
     },
@@ -994,6 +1346,10 @@
       "Thursday"
     ],
     "officeHours": {
+      "Saturday": [
+        "21:00",
+        "20:00"
+      ],
       "Sunday": [
         "09:00",
         "18:00"
@@ -1013,13 +1369,29 @@
       "Friday": [
         "16:00",
         "19:00"
-      ],
-      "Saturday": [
-        "21:00",
-        "20:00"
       ]
     },
     "classTimes": {
+      "Saturday": [
+        {
+          "start": "09:00",
+          "end": "18:00",
+          "room": "B2-102",
+          "batch": "1st-CSE"
+        },
+        {
+          "start": "16:00",
+          "end": "17:00",
+          "room": "B2-102",
+          "batch": "2nd-CSE"
+        },
+        {
+          "start": "19:00",
+          "end": "20:00",
+          "room": "B2-102",
+          "batch": "6th-EEE & 4th-CE"
+        }
+      ],
       "Sunday": [
         {
           "start": "09:00",
@@ -1057,7 +1429,7 @@
           "start": "16:00",
           "end": "17:00",
           "room": "B2-102",
-          "batch": "1st-CSE EVE"
+          "batch": "1st-CSE-Eve"
         },
         {
           "start": "17:00",
@@ -1070,26 +1442,6 @@
           "end": "20:00",
           "room": "B2-102",
           "batch": "3rd-CSE"
-        }
-      ],
-      "Saturday": [
-        {
-          "start": "09:00",
-          "end": "18:00",
-          "room": "B2-102",
-          "batch": "1st-CSE"
-        },
-        {
-          "start": "16:00",
-          "end": "17:00",
-          "room": "B2-102",
-          "batch": "2nd-CSE"
-        },
-        {
-          "start": "19:00",
-          "end": "20:00",
-          "room": "B2-102",
-          "batch": "6th-EEE & 4th-CE"
         }
       ]
     },
@@ -1235,8 +1587,8 @@
     },
     "status": {
       "status": "in_class",
-      "room": "B2-003",
-      "batch": "5th-CSE-A"
+      "room": "B2-505",
+      "batch": "5th-CSE-C"
     },
     "manualOverride": null,
     "overrideExpiry": null,
@@ -1252,6 +1604,10 @@
       "Wednesday"
     ],
     "officeHours": {
+      "Saturday": [
+        "09:00",
+        "17:00"
+      ],
       "Sunday": [
         "09:00",
         "17:00"
@@ -1271,13 +1627,17 @@
       "Friday": [
         "09:00",
         "17:00"
-      ],
-      "Saturday": [
-        "09:00",
-        "17:00"
       ]
     },
     "classTimes": {
+      "Saturday": [
+        {
+          "start": "09:00",
+          "end": "17:00",
+          "room": "B2-204",
+          "batch": "CSE-8th"
+        }
+      ],
       "Sunday": [
         {
           "start": "09:00",
@@ -1315,21 +1675,13 @@
           "start": "09:00",
           "end": "10:00",
           "room": "B2-204",
-          "batch": "CSE-6th-EVE"
+          "batch": "CSE-6th-Eve"
         },
         {
           "start": "12:00",
           "end": "13:00",
           "room": "B2-204",
-          "batch": "CSE-6th-EVE"
-        }
-      ],
-      "Saturday": [
-        {
-          "start": "09:00",
-          "end": "17:00",
-          "room": "B2-204",
-          "batch": "CSE-8th"
+          "batch": "CSE-6th-Eve"
         }
       ]
     },
@@ -1438,9 +1790,7 @@
       ]
     },
     "status": {
-      "status": "in_class",
-      "room": "B1-402",
-      "batch": "8th-BBA-A"
+      "status": "at_dept"
     },
     "manualOverride": null,
     "overrideExpiry": null,
