@@ -5,11 +5,35 @@
     "contact": "01842611852",
     "email": "riadnwu@gmail.com",
     "image": "/images/fac3.jpg",
-    "weekend": [],
-    "officeHours": {},
+    "weekend": [
+      "Monday",
+      "Tuesday"
+    ],
+    "officeHours": {
+      "Saturday": [
+        "10:00",
+        "21:00"
+      ],
+      "Sunday": [
+        "10:00",
+        "17:00"
+      ],
+      "Wednesday": [
+        "10:00",
+        "17:00"
+      ],
+      "Thursday": [
+        "10:00",
+        "19:00"
+      ],
+      "Friday": [
+        "15:00",
+        "21:00"
+      ]
+    },
     "classTimes": {},
     "status": {
-      "status": "off_duty"
+      "status": "at_dept"
     },
     "manualOverride": null,
     "overrideExpiry": null,
@@ -21,32 +45,35 @@
     "contact": "01926203351",
     "email": "parthosarker93@gmail.com",
     "image": "/images/fac2.jpg",
-    "weekend": [],
+    "weekend": [
+      "Tuesday",
+      "Wednesday"
+    ],
     "officeHours": {
+      "Saturday": [
+        "10:00",
+        "18:00"
+      ],
       "Sunday": [
-        "11:00",
+        "09:00",
         "17:00"
       ],
       "Monday": [
         "09:00",
-        "17:00"
-      ],
-      "Tuesday": [
-        "09:00",
-        "17:00"
-      ],
-      "Wednesday": [
-        "10:00",
-        "18:00"
+        "15:00"
       ],
       "Thursday": [
-        "10:00",
+        "11:00",
         "19:00"
+      ],
+      "Friday": [
+        "10:00",
+        "20:00"
       ]
     },
     "classTimes": {},
     "status": {
-      "status": "at_dept"
+      "status": "off_duty"
     },
     "manualOverride": null,
     "overrideExpiry": null,
@@ -340,11 +367,35 @@
     "contact": "01703436278",
     "email": "akonzahid0713@gmail.com",
     "image": "/images/fac6.jpg",
-    "weekend": [],
-    "officeHours": {},
+    "weekend": [
+      "Sunday",
+      "Monday"
+    ],
+    "officeHours": {
+      "Saturday": [
+        "10:00",
+        "16:00"
+      ],
+      "Tuesday": [
+        "10:00",
+        "17:00"
+      ],
+      "Wednesday": [
+        "09:00",
+        "17:00"
+      ],
+      "Thursday": [
+        "10:00",
+        "21:00"
+      ],
+      "Friday": [
+        "11:00",
+        "19:00"
+      ]
+    },
     "classTimes": {},
     "status": {
-      "status": "off_duty"
+      "status": "at_dept"
     },
     "manualOverride": null,
     "overrideExpiry": null,
