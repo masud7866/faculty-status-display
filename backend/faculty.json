@@ -1,5 +1,21 @@
 [
   {
+    "name": "Md. Riadul Islam",
+    "designation": "Head & Assistant Professor",
+    "contact": "01842611852",
+    "email": "riadnwu@gmail.com",
+    "image": "/images/fac3.jpg",
+    "weekend": [],
+    "officeHours": {},
+    "classTimes": {},
+    "status": {
+      "status": "off_duty"
+    },
+    "manualOverride": null,
+    "overrideExpiry": null,
+    "precedence": 1
+  },
+  {
     "name": "Partho Sarathi Sarker",
     "designation": "Deputy Head & Assistant Professor",
     "contact": "01926203351",
@@ -31,22 +47,6 @@
     "classTimes": {},
     "status": {
       "status": "at_dept"
-    },
-    "manualOverride": null,
-    "overrideExpiry": null,
-    "precedence": 1
-  },
-  {
-    "name": "Md. Riadul Islam",
-    "designation": "Additional Head & Assistant Professor",
-    "contact": "01842611852",
-    "email": "riadnwu@gmail.com",
-    "image": "/images/fac3.jpg",
-    "weekend": [],
-    "officeHours": {},
-    "classTimes": {},
-    "status": {
-      "status": "off_duty"
     },
     "manualOverride": null,
     "overrideExpiry": null,
@@ -328,9 +328,7 @@
       ]
     },
     "status": {
-      "status": "in_class",
-      "room": "B2-303",
-      "batch": "8th-CSE-B"
+      "status": "at_dept"
     },
     "manualOverride": null,
     "overrideExpiry": null,
@@ -519,7 +517,7 @@
     "status": {
       "status": "in_class",
       "room": "B2-306",
-      "batch": "5th-CSE-A"
+      "batch": "3rd-CSE-B"
     },
     "manualOverride": null,
     "overrideExpiry": null,
@@ -612,7 +610,7 @@
       ]
     },
     "status": {
-      "status": "at_dept"
+      "status": "off_duty"
     },
     "manualOverride": null,
     "overrideExpiry": null,
@@ -807,7 +805,7 @@
       ]
     },
     "status": {
-      "status": "on_weekend"
+      "status": "off_duty"
     },
     "manualOverride": null,
     "overrideExpiry": null,
@@ -1016,7 +1014,7 @@
       ]
     },
     "status": {
-      "status": "at_dept"
+      "status": "on_weekend"
     },
     "manualOverride": null,
     "overrideExpiry": null,
@@ -1157,8 +1155,8 @@
     },
     "status": {
       "status": "in_class",
-      "room": "B2-505",
-      "batch": "5th-CSE-B"
+      "room": "B2-003",
+      "batch": "5th-CSE-A"
     },
     "manualOverride": null,
     "overrideExpiry": null,
@@ -1256,7 +1254,9 @@
       ]
     },
     "status": {
-      "status": "on_weekend"
+      "status": "in_class",
+      "room": "B2-204",
+      "batch": "CSE-6th"
     },
     "manualOverride": null,
     "overrideExpiry": null,
@@ -1358,7 +1358,9 @@
       ]
     },
     "status": {
-      "status": "at_dept"
+      "status": "in_class",
+      "room": "B1-402",
+      "batch": "8th-BBA-A"
     },
     "manualOverride": null,
     "overrideExpiry": null,
