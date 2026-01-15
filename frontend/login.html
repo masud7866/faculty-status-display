@@ -314,7 +314,7 @@
       <div class="error" id="errorMsg" aria-live="assertive"></div>
       <div class="success" id="successMsg" aria-live="polite"></div>
       <div id="redirectInfo" class="redirect-info hidden"></div>
-      <div class="footer-note">Session based secure access.</div>
+      <div class="footer-note">Token-based secure access (supports multiple concurrent users).</div>
     </form>
   </div>
 
@@ -369,17 +369,26 @@
     document.addEventListener("DOMContentLoaded", () => {
       showRedirectInfo();
       
-      fetch("https://faculty-status-display.onrender.com/api/check-login", {
-        credentials: "include"
-      })
-        .then(r => r.ok ? r.json() : Promise.reject())
-        .then(d => {
-          if (d.loggedIn) {
-            const destination = getRedirectDestination();
-            window.location.href = destination;
+      // Check if JWT token exists and is valid
+      const token = localStorage.getItem('faculty_jwt_token');
+      if (token) {
+        fetch("https://faculty-status-display.onrender.com/api/check-login", {
+          headers: {
+            'Authorization': `Bearer ${token}`
           }
         })
-        .catch(() => { });
+          .then(r => r.ok ? r.json() : Promise.reject())
+          .then(d => {
+            if (d.loggedIn) {
+              const destination = getRedirectDestination();
+              window.location.href = destination;
+            }
+          })
+          .catch(() => {
+            // Token invalid or expired, remove it
+            localStorage.removeItem('faculty_jwt_token');
+          });
+      }
         
       if (localStorage.getItem("fsu_remember_user")) {
         usernameEl.value = localStorage.getItem("fsu_remember_user");
@@ -441,20 +450,27 @@
       
       fetch("https://faculty-status-display.onrender.com/api/login", {
         method: "POST",
-        credentials: "include",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ username, password })
       })
         .then(res => {
           if (res.ok) {
-            // Don't store destination preference - let each login be independent
-            showSuccess(`Login successful. Redirecting to ${destination === 'admin' ? 'Admin Panel' : 'Control Panel'}...`);
-            setTimeout(() => window.location.href = destination, 600);
+            return res.json();
           } else {
-            showError("Invalid credentials.");
+            throw new Error("Invalid credentials");
           }
         })
-        .catch(() => showError("Network error. Try again."))
+        .then(data => {
+          // Store JWT token in localStorage
+          localStorage.setItem('faculty_jwt_token', data.token);
+          
+          // Don't store destination preference - let each login be independent
+          showSuccess(`Login successful. Redirecting to ${destination === 'admin' ? 'Admin Panel' : 'Control Panel'}...`);
+          setTimeout(() => window.location.href = destination, 600);
+        })
+        .catch((error) => {
+          showError(error.message || "Network error. Try again.");
+        })
         .finally(() => setLoading(false));
     });
   </script>

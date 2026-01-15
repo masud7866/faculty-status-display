@@ -1279,10 +1279,44 @@
       }
     }
 
+    // JWT Token Helper Functions
+    function getAuthToken() {
+      return localStorage.getItem('faculty_jwt_token');
+    }
+    
+    function getAuthHeaders() {
+      const token = getAuthToken();
+      const headers = {
+        'Content-Type': 'application/json'
+      };
+      if (token) {
+        headers['Authorization'] = `Bearer ${token}`;
+      }
+      return headers;
+    }
+    
+    function clearAuthToken() {
+      localStorage.removeItem('faculty_jwt_token');
+    }
+
     async function fetchWithSessionCheck(url, options) {
-      const res = await fetch(url, options);
-      if (res.status === 403) {
+      const token = getAuthToken();
+      if (!token) {
         alert("Session expired. Redirecting to login...");
+        clearAuthToken();
+        window.location.href = "login";
+        throw new Error("No token");
+      }
+      
+      // Add Authorization header to options
+      options = options || {};
+      options.headers = options.headers || {};
+      options.headers['Authorization'] = `Bearer ${token}`;
+      
+      const res = await fetch(url, options);
+      if (res.status === 401 || res.status === 403) {
+        alert("Session expired. Redirecting to login...");
+        clearAuthToken();
         window.location.href = "login";
         throw new Error("Session expired");
       }
@@ -1295,7 +1329,7 @@
     async function fetchFacultyData() {
       try {
         const res = await fetchWithSessionCheck("https://faculty-status-display.onrender.com/api/faculty", {
-          credentials: "include"
+          headers: getAuthHeaders()
         });
         const data = await res.json();
 
@@ -1313,7 +1347,7 @@
         console.log("Fetched and sorted facultyData:", sortedData);
         return sortedData;
       } catch (err) {
-        if (err.message !== "Session expired") {
+        if (err.message !== "Session expired" && err.message !== "No token") {
           showMessage("Failed to fetch faculty data.", true);
           console.error(err);
         }
@@ -1325,7 +1359,7 @@
       try {
         await fetchWithSessionCheck("https://faculty-status-display.onrender.com/api/update", {
           method: "POST",
-          credentials: "include",
+          headers: getAuthHeaders(),
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify(updates)
         });
@@ -1762,9 +1796,14 @@
 
     function logout() {
       showMessage("Logging out...", false, true);
+      
+      // Clear token
+      clearAuthToken();
+      
+      // Call logout endpoint (optional, for server-side logging)
       fetch("https://faculty-status-display.onrender.com/api/logout", {
         method: "POST",
-        credentials: "include"
+        headers: getAuthHeaders()
       })
         .then(res => {
           if (res.ok) {
@@ -1774,10 +1813,16 @@
               window.location.href = "login.html"; // Use .html extension for consistency
             }, 300);
           } else {
-            showMessage("Logout failed.", true);
+            // Redirect anyway since token is cleared
+            localStorage.removeItem('lastVisitedPage');
+            window.location.href = "login.html";
           }
         })
-        .catch(() => showMessage("Logout error.", true));
+        .catch(() => {
+          // Redirect anyway since token is cleared
+          localStorage.removeItem('lastVisitedPage');
+          window.location.href = "login.html";
+        });
     }
 
     function startPolling() {

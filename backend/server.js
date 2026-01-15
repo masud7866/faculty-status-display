@@ -1,11 +1,16 @@
 const express = require("express");
 const session = require("express-session");
 const MongoStore = require("connect-mongo");
+const jwt = require("jsonwebtoken");
 const cors = require("cors");
 const path = require("path");
 const fs = require("fs");
 const FacultyDB = require("./db/faculty");
 const compression = require('compression');
+
+// JWT configuration
+const JWT_SECRET = process.env.JWT_SECRET || "jwt_secret_key_change_in_production";
+const JWT_EXPIRES_IN = "8h"; // 8 hours
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -53,12 +58,27 @@ function createSessionConfig(store = null) {
 app.use(session(createSessionConfig()));
 
 // === MIDDLEWARE ===
-// Authentication middleware
+// JWT Authentication middleware
 function requireAuth(req, res, next) {
-  if (!req.session.loggedIn) {
-    return res.status(403).json({ error: "Unauthorized" });
+  // Check for token in Authorization header
+  const authHeader = req.headers.authorization;
+  
+  if (!authHeader || !authHeader.startsWith('Bearer ')) {
+    return res.status(401).json({ error: "No token provided" });
   }
-  next();
+  
+  const token = authHeader.substring(7); // Remove 'Bearer ' prefix
+  
+  try {
+    const decoded = jwt.verify(token, JWT_SECRET);
+    req.user = decoded; // Attach user info to request
+    next();
+  } catch (error) {
+    if (error.name === 'TokenExpiredError') {
+      return res.status(401).json({ error: "Token expired" });
+    }
+    return res.status(401).json({ error: "Invalid token" });
+  }
 }
 
 // Serve images
@@ -211,18 +231,20 @@ app.get("/api/faculty", async (req, res) => {
 app.post("/api/login", (req, res) => {
   const { username, password } = req.body;
   if (username === "admin" && password === "admin123") {
-    req.session.loggedIn = true;
-    req.session.loginTime = new Date().toISOString();
-    req.session.userAgent = req.headers['user-agent'];
+    // Generate JWT token
+    const payload = {
+      username: username,
+      loginTime: new Date().toISOString(),
+      userAgent: req.headers['user-agent']
+    };
     
-    // Save session explicitly to ensure it's written to MongoDB
-    req.session.save((err) => {
-      if (err) {
-        console.error('Session save error:', err);
-        return res.status(500).json({ error: "Session creation failed" });
-      }
-      console.log(`✅ New admin session created (ID: ${req.sessionID.substring(0, 8)}...)`);
-      res.status(200).json({ success: true });
+    const token = jwt.sign(payload, JWT_SECRET, { expiresIn: JWT_EXPIRES_IN });
+    
+    console.log(`✅ New JWT token generated for ${username}`);
+    res.status(200).json({ 
+      success: true,
+      token: token,
+      expiresIn: JWT_EXPIRES_IN
     });
   } else {
     res.status(401).json({ error: "Invalid credentials" });
@@ -243,29 +265,37 @@ app.post("/api/update", requireAuth, async (req, res) => {
 });
 
 app.post("/api/logout", (req, res) => {
-  req.session.destroy(err => {
-    if (err) return res.status(500).json({ success: false });
-    res.clearCookie("connect.sid");
-    res.json({ success: true });
-  });
+  // With JWT, logout is handled client-side by removing the token
+  // No server-side session to destroy
+  res.json({ success: true, message: "Logged out successfully" });
 });
 
 app.get("/api/check-login", (req, res) => {
-  if (req.session.loggedIn) {
-    // Touch the session to keep it alive (with rolling: true, this resets expiry)
-    req.session.touch(); // Explicitly touch the session
+  const authHeader = req.headers.authorization;
+  
+  if (!authHeader || !authHeader.startsWith('Bearer ')) {
+    return res.status(401).json({ loggedIn: false });
+  }
+  
+  const token = authHeader.substring(7);
+  
+  try {
+    const decoded = jwt.verify(token, JWT_SECRET);
     
-    const sessionAge = req.session.loginTime ? 
-      Math.floor((Date.now() - new Date(req.session.loginTime)) / 1000 / 60) : 
+    const sessionAge = decoded.loginTime ? 
+      Math.floor((Date.now() - new Date(decoded.loginTime)) / 1000 / 60) : 
       null; // Age in minutes
+    
+    // Calculate remaining time from exp (expiration timestamp in seconds)
+    const remainingMinutes = Math.floor((decoded.exp - Date.now() / 1000) / 60);
     
     res.json({ 
       loggedIn: true,
       sessionAge: sessionAge,
-      maxAge: Math.floor((req.session.cookie.maxAge || 0) / 1000 / 60) // Max age in minutes
+      remainingMinutes: remainingMinutes
     });
-  } else {
-    res.status(401).json({ loggedIn: false });
+  } catch (error) {
+    res.status(401).json({ loggedIn: false, error: error.message });
   }
 });
 

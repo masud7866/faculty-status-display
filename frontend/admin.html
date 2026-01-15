@@ -983,9 +983,29 @@
         let pendingAdDeletions = []; // Store ad filenames waiting to be deleted
         let pendingFacultyImages = []; // Store faculty images waiting to be uploaded: [{filename, base64, facultyName}]
 
+        // JWT Token Helper Functions
+        function getAuthToken() {
+            return localStorage.getItem('faculty_jwt_token');
+        }
+        
+        function getAuthHeaders() {
+            const token = getAuthToken();
+            const headers = {
+                'Content-Type': 'application/json'
+            };
+            if (token) {
+                headers['Authorization'] = `Bearer ${token}`;
+            }
+            return headers;
+        }
+        
+        function clearAuthToken() {
+            localStorage.removeItem('faculty_jwt_token');
+        }
+
         // Function to redirect to login with proper parameters
         function redirectToLogin() {
-            // Don't set lastVisitedPage here - let login page handle redirect logic
+            clearAuthToken();
             window.location.href = 'login.html?redirect=admin';
         }
 
@@ -996,13 +1016,21 @@
 
         async function checkAuth() {
             try {
+                const token = getAuthToken();
+                if (!token) {
+                    console.log('No token found, redirecting to login...');
+                    redirectToLogin();
+                    return;
+                }
+                
                 const response = await fetch(`${API_BASE}/api/check-login`, {
-                    credentials: 'include',
-                    timeout: 10000
+                    headers: {
+                        'Authorization': `Bearer ${token}`
+                    }
                 });
 
                 if (!response.ok) {
-                    throw new Error('Network response was not ok');
+                    throw new Error('Token validation failed');
                 }
 
                 const data = await response.json();
@@ -1034,11 +1062,10 @@
             startSessionKeepAlive(); // Keep session active during editing
         }
 
-        // Session keep-alive mechanism
+        // Session keep-alive mechanism (now using JWT tokens)
         // Backend configuration:
-        // - Session max age: 8 hours
-        // - MongoDB touch interval: 2 minutes
-        // - Rolling sessions: enabled (session refreshes on every request)
+        // - JWT expiration: 8 hours
+        // - Token-based (stateless) authentication
         // Frontend configuration:
         // - Keep-alive checks: every 3 minutes
         // - Activity tracking: monitors user interactions
@@ -1065,13 +1092,23 @@
                 clearInterval(keepAliveInterval);
             }
             
-            // Refresh session every 3 minutes (more frequent to prevent expiration)
+            // Check token validity every 3 minutes
             keepAliveInterval = setInterval(async () => {
                 try {
+                    const token = getAuthToken();
+                    if (!token) {
+                        clearInterval(keepAliveInterval);
+                        showToast('⚠️ Session expired. Redirecting to login...', 'error');
+                        setTimeout(() => redirectToLogin(), 2000);
+                        return;
+                    }
+                    
                     const response = await fetch(`${API_BASE}/api/check-login`, {
-                        credentials: 'include',
-                        headers: { 'Accept': 'application/json' },
-                        cache: 'no-cache' // Prevent caching of session checks
+                        headers: {
+                            'Authorization': `Bearer ${token}`,
+                            'Accept': 'application/json'
+                        },
+                        cache: 'no-cache' // Prevent caching of token checks
                     });
                     
                     if (!response.ok) {
@@ -1081,23 +1118,23 @@
                     const data = await response.json();
                     if (!data.loggedIn) {
                         clearInterval(keepAliveInterval);
-                        showToast('⚠️ Session expired. Redirecting to login...', 'error');
+                        clearAuthToken();
+                        showToast('⚠️ Token expired. Redirecting to login...', 'error');
                         setTimeout(() => redirectToLogin(), 2000);
                         return;
                     }
                     
                     // Update session info display
-                    updateSessionInfo(data.sessionAge);
-                    console.log(`✅ Session alive (${data.sessionAge || 0} min)`);
+                    updateSessionInfo(data.sessionAge, data.remainingMinutes);
+                    console.log(`✅ Token valid (age: ${data.sessionAge || 0} min, remaining: ${data.remainingMinutes || 0} min)`);
                     
                 } catch (error) {
-                    console.error('Session keep-alive failed:', error);
+                    console.error('Token check failed:', error);
                     // Don't redirect on network errors - might be temporary
-                    // But show warning if session checks fail repeatedly
                 }
-            }, 3 * 60 * 1000); // Every 3 minutes (more frequent)
+            }, 3 * 60 * 1000); // Every 3 minutes
             
-            console.log('🔐 Session keep-alive started (checks every 3 min)');
+            console.log('🔐 Token validity checks started (every 3 min)');
         }
         
         function stopSessionKeepAlive() {
@@ -1107,29 +1144,49 @@
             }
         }
 
-        function updateSessionInfo(ageInMinutes) {
+        function updateSessionInfo(ageInMinutes, remainingMinutes = null) {
             const sessionInfo = document.getElementById('sessionInfo');
             if (sessionInfo && ageInMinutes !== null) {
                 const hours = Math.floor(ageInMinutes / 60);
                 const mins = ageInMinutes % 60;
+                let displayText = '';
+                
                 if (hours > 0) {
-                    sessionInfo.textContent = `🔐 Session: ${hours}h ${mins}m`;
+                    displayText = `🔐 Token: ${hours}h ${mins}m`;
                 } else {
-                    sessionInfo.textContent = `🔐 Session: ${mins}m`;
+                    displayText = `🔐 Token: ${mins}m`;
                 }
                 
-                // Visual warning if session is old
-                if (hours >= 6) {
-                    sessionInfo.style.background = '#fef3c7';
-                    sessionInfo.style.color = '#92400e';
+                // Add remaining time if available
+                if (remainingMinutes !== null && remainingMinutes >= 0) {
+                    const remHours = Math.floor(remainingMinutes / 60);
+                    const remMins = remainingMinutes % 60;
+                    if (remHours > 0) {
+                        displayText += ` (expires in ${remHours}h ${remMins}m)`;
+                    } else {
+                        displayText += ` (expires in ${remMins}m)`;
+                    }
+                }
+                
+                sessionInfo.textContent = displayText;
+                
+                // Visual warning if token is expiring soon
+                if (remainingMinutes !== null && remainingMinutes < 30) {
+                    sessionInfo.style.background = '#fee2e2';
+                    sessionInfo.style.color = '#991b1b';
                     sessionInfo.style.padding = '4px 8px';
                     sessionInfo.style.borderRadius = '4px';
                     
                     if (!sessionWarningShown) {
-                        showToast('⚠️ Session is 6+ hours old. Consider saving and refreshing.', 'info');
+                        showToast('⚠️ Token expiring soon. Please save and re-login.', 'warning');
                         sessionWarningShown = true;
                     }
-                } else if (hours >= 4) {
+                } else if (remainingMinutes !== null && remainingMinutes < 60) {
+                    sessionInfo.style.background = '#fef3c7';
+                    sessionInfo.style.color = '#92400e';
+                    sessionInfo.style.padding = '4px 8px';
+                    sessionInfo.style.borderRadius = '4px';
+                } else if (hours >= 6) {
                     sessionInfo.style.background = '#fef9c3';
                     sessionInfo.style.color = '#854d0e';
                     sessionInfo.style.padding = '4px 8px';
@@ -1557,8 +1614,7 @@
 
                 const response = await fetch(`${API_BASE}/api/upload`, {
                     method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    credentials: 'include',
+                    headers: getAuthHeaders(),
                     body: JSON.stringify({
                         filename: filename,
                         content: await fileToBase64(file),
@@ -1618,8 +1674,10 @@
             // Verify session is still active before submitting
             try {
                 const sessionCheck = await fetch(`${API_BASE}/api/check-login`, {
-                    credentials: 'include',
-                    headers: { 'Accept': 'application/json' }
+                    headers: {
+                        ...getAuthHeaders(),
+                        'Accept': 'application/json'
+                    }
                 });
                 
                 const sessionData = await sessionCheck.json();
@@ -1681,8 +1739,7 @@
                         const newPrecedence = (f.precedence || 50) + 1;
                         return fetch(`${API_BASE}/api/admin/faculty/${encodeURIComponent(f.name)}`, {
                             method: 'PUT',
-                            headers: { 'Content-Type': 'application/json' },
-                            credentials: 'include',
+                            headers: getAuthHeaders(),
                             body: JSON.stringify({ precedence: newPrecedence })
                         });
                     });
@@ -1701,8 +1758,7 @@
                             const newPrecedence = (f.precedence || 50) + 1;
                             return fetch(`${API_BASE}/api/admin/faculty/${encodeURIComponent(f.name)}`, {
                                 method: 'PUT',
-                                headers: { 'Content-Type': 'application/json' },
-                                credentials: 'include',
+                                headers: getAuthHeaders(),
                                 body: JSON.stringify({ precedence: newPrecedence })
                             });
                         });
@@ -1778,8 +1834,7 @@
 
                 response = await fetch(url, {
                     method: method,
-                    headers: { 'Content-Type': 'application/json' },
-                    credentials: 'include',
+                    headers: getAuthHeaders(),
                     body: JSON.stringify(newFacultyData)
                 });
 
@@ -1908,7 +1963,7 @@
             try {
                 const response = await fetch(`${API_BASE}/api/admin/faculty/${encodeURIComponent(name)}`, {
                     method: 'DELETE',
-                    credentials: 'include'
+                    headers: getAuthHeaders()
                 });
 
                 if (!response.ok) {
@@ -1984,8 +2039,7 @@
                 // Update faculty.json file on GitHub
                 const jsonUpdateResponse = await fetch(`${API_BASE}/api/upload`, {
                     method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    credentials: 'include',
+                    headers: getAuthHeaders(),
                     body: JSON.stringify({
                         filename: 'faculty.json',
                         content: btoa(JSON.stringify(currentFaculty, null, 2)),
@@ -2035,8 +2089,7 @@
 
                 const response = await fetch(`${API_BASE}/api/admin/marquee`, {
                     method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    credentials: 'include',
+                    headers: getAuthHeaders(),
                     body: JSON.stringify({ text: text.trim() })
                 });
 
@@ -2156,7 +2209,7 @@
                 try {
                     const response = await fetch(`${API_BASE}/api/admin/ads/${encodeURIComponent(filename)}`, {
                         method: 'DELETE',
-                        credentials: 'include'
+                        headers: getAuthHeaders()
                     });
 
                     if (response.ok) {
@@ -2271,8 +2324,10 @@
             // Check authentication first
             try {
                 const authResponse = await fetch(`${API_BASE}/api/check-login`, {
-                    credentials: 'include',
-                    headers: { 'Accept': 'application/json' }
+                    headers: {
+                        ...getAuthHeaders(),
+                        'Accept': 'application/json'
+                    }
                 });
 
                 if (!authResponse.ok) {
@@ -2382,8 +2437,7 @@
 
                 const response = await fetch(`${API_BASE}/api/upload`, {
                     method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    credentials: 'include',
+                    headers: getAuthHeaders(),
                     body: JSON.stringify({
                         filename: processedFile.name,
                         content: await fileToBase64(processedFile),
@@ -2469,16 +2523,16 @@
 
         function logout() {
             stopSessionKeepAlive(); // Stop keep-alive when logging out
+            
+            // Clear token from localStorage
+            clearAuthToken();
+            
+            // Call logout endpoint (optional, for server-side logging)
             fetch(`${API_BASE}/api/logout`, {
                 method: 'POST',
-                credentials: 'include'
-            }).then(() => {
+                headers: getAuthHeaders()
+            }).finally(() => {
                 // Clear any stored preferences to ensure clean logout
-                localStorage.removeItem('lastVisitedPage');
-                window.location.href = 'login.html';
-            }).catch(() => {
-
-                // Clear preferences even if logout request fails
                 localStorage.removeItem('lastVisitedPage');
                 window.location.href = 'login.html';
             });
@@ -2522,8 +2576,7 @@
 
                             const jsonUpdateResponse = await fetch(`${API_BASE}/api/upload`, {
                                 method: 'POST',
-                                headers: { 'Content-Type': 'application/json' },
-                                credentials: 'include',
+                                headers: getAuthHeaders(),
                                 body: JSON.stringify({
                                     filename: 'faculty.json',
                                     content: btoa(JSON.stringify(currentFaculty, null, 2)),
@@ -2555,8 +2608,7 @@
                         
                         const marqueeUpdateResponse = await fetch(`${API_BASE}/api/upload`, {
                             method: 'POST',
-                            headers: { 'Content-Type': 'application/json' },
-                            credentials: 'include',
+                            headers: getAuthHeaders(),
                             body: JSON.stringify({
                                 filename: 'marquee.txt',
                                 content: btoa(marqueeText),
@@ -2590,8 +2642,7 @@
                             
                             const uploadResponse = await fetch(`${API_BASE}/api/upload`, {
                                 method: 'POST',
-                                headers: { 'Content-Type': 'application/json' },
-                                credentials: 'include',
+                                headers: getAuthHeaders(),
                                 body: JSON.stringify({
                                     filename: imageData.filename,
                                     content: base64Content,
@@ -2633,8 +2684,7 @@
                             
                             const uploadResponse = await fetch(`${API_BASE}/api/upload`, {
                                 method: 'POST',
-                                headers: { 'Content-Type': 'application/json' },
-                                credentials: 'include',
+                                headers: getAuthHeaders(),
                                 body: JSON.stringify({
                                     filename: ad.filename,
                                     content: base64Content,
@@ -2670,7 +2720,7 @@
                         try {
                             const deleteResponse = await fetch(`${API_BASE}/api/admin/ads/${encodeURIComponent(filename)}`, {
                                 method: 'DELETE',
-                                credentials: 'include'
+                                headers: getAuthHeaders()
                             });
 
                             if (deleteResponse.ok) {
@@ -3070,8 +3120,7 @@
                         // Send update to server
                         const response = await fetch(`${API_BASE}/api/admin/faculty/${encodeURIComponent(update.name)}`, {
                             method: 'PUT',
-                            headers: { 'Content-Type': 'application/json' },
-                            credentials: 'include',
+                            headers: getAuthHeaders(),
                             body: JSON.stringify({ 
                                 precedence: update.precedence,
                                 // Include other existing data to prevent overwrites
