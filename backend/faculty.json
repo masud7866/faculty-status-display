@@ -140,7 +140,7 @@
       ]
     },
     "status": {
-      "status": "at_dept"
+      "status": "off_duty"
     },
     "manualOverride": null,
     "overrideExpiry": null,
@@ -434,7 +434,7 @@
       ]
     },
     "status": {
-      "status": "on_weekend"
+      "status": "off_duty"
     },
     "manualOverride": null,
     "overrideExpiry": null,
@@ -569,7 +569,9 @@
       ]
     },
     "status": {
-      "status": "at_dept"
+      "status": "in_class",
+      "room": "B2-303",
+      "batch": "7th-CSE-Evn"
     },
     "manualOverride": null,
     "overrideExpiry": null,
@@ -740,7 +742,7 @@
       ]
     },
     "status": {
-      "status": "at_dept"
+      "status": "off_duty"
     },
     "manualOverride": null,
     "overrideExpiry": null,
@@ -911,7 +913,7 @@
       ]
     },
     "status": {
-      "status": "at_dept"
+      "status": "off_duty"
     },
     "manualOverride": null,
     "overrideExpiry": null,
@@ -1118,7 +1120,9 @@
       ]
     },
     "status": {
-      "status": "at_dept"
+      "status": "in_class",
+      "room": "B2-303",
+      "batch": "3rd-CSE-Evn"
     },
     "manualOverride": null,
     "overrideExpiry": null,
@@ -1313,9 +1317,7 @@
       ]
     },
     "status": {
-      "status": "in_class",
-      "room": "B2-404",
-      "batch": "5th-CSE-A"
+      "status": "off_duty"
     },
     "manualOverride": null,
     "overrideExpiry": null,
@@ -1456,7 +1458,7 @@
           "batch": "6th-CSE-A"
         },
         {
-          "start": "11:10",
+          "start": "11:00",
           "end": "12:00",
           "room": "B2-306",
           "batch": "4th-CSE-B"
@@ -1534,7 +1536,9 @@
       ]
     },
     "status": {
-      "status": "on_weekend"
+      "status": "in_class",
+      "room": "B2-405",
+      "batch": "6th-CSE-Evn"
     },
     "manualOverride": null,
     "overrideExpiry": null,
@@ -1650,7 +1654,7 @@
       ]
     },
     "status": {
-      "status": "on_weekend"
+      "status": "off_duty"
     },
     "manualOverride": null,
     "overrideExpiry": null,
@@ -1662,135 +1666,11 @@
     "contact": "01765447491",
     "email": "ugv.ahadkhan@gmail.com",
     "image": "/images/fac12.jpg",
-    "weekend": [
-      "Friday"
-    ],
-    "officeHours": {
-      "Saturday": [
-        "09:00",
-        "18:00"
-      ],
-      "Sunday": [
-        "09:00",
-        "17:00"
-      ],
-      "Monday": [
-        "09:00",
-        "17:00"
-      ],
-      "Tuesday": [
-        "10:00",
-        "17:00"
-      ],
-      "Wednesday": [
-        "10:00",
-        "17:00"
-      ],
-      "Thursday": [
-        "09:00",
-        "18:00"
-      ]
-    },
-    "classTimes": {
-      "Saturday": [
-        {
-          "start": "09:00",
-          "end": "11:00",
-          "room": "B2-003",
-          "batch": "5th-CSE-C"
-        },
-        {
-          "start": "13:00",
-          "end": "16:00",
-          "room": "B2-505",
-          "batch": "5th-CSE-B"
-        },
-        {
-          "start": "16:00",
-          "end": "17:00",
-          "room": "B2-505",
-          "batch": "6th-CSE-Evn"
-        },
-        {
-          "start": "17:00",
-          "end": "18:00",
-          "room": "B2-003",
-          "batch": "5th-CSE-Evn"
-        }
-      ],
-      "Sunday": [
-        {
-          "start": "10:00",
-          "end": "13:00",
-          "room": "B2-505",
-          "batch": "6th-CSE-B"
-        },
-        {
-          "start": "14:00",
-          "end": "17:00",
-          "room": "B2-003",
-          "batch": "6th-CSE-A"
-        }
-      ],
-      "Monday": [
-        {
-          "start": "10:00",
-          "end": "13:00",
-          "room": "B2-505",
-          "batch": "6th-CSE-A"
-        },
-        {
-          "start": "14:00",
-          "end": "17:00",
-          "room": "B2-003",
-          "batch": "6th-CSE-B"
-        }
-      ],
-      "Tuesday": [
-        {
-          "start": "10:00",
-          "end": "13:00",
-          "room": "B2-003",
-          "batch": "5th-CSE-A"
-        }
-      ],
-      "Wednesday": [
-        {
-          "start": "14:00",
-          "end": "17:00",
-          "room": "B2-505",
-          "batch": "5th-CSE-B"
-        }
-      ],
-      "Thursday": [
-        {
-          "start": "09:00",
-          "end": "12:00",
-          "room": "B2-003",
-          "batch": "5th-CSE-A"
-        },
-        {
-          "start": "12:00",
-          "end": "15:00",
-          "room": "B2-505",
-          "batch": "5th-CSE-C"
-        },
-        {
-          "start": "16:00",
-          "end": "17:00",
-          "room": "B2-003",
-          "batch": "6th-CSE-Evn"
-        },
-        {
-          "start": "17:00",
-          "end": "18:00",
-          "room": "B2-505",
-          "batch": "5th-CSE-Evn"
-        }
-      ]
-    },
+    "weekend": [],
+    "officeHours": {},
+    "classTimes": {},
     "status": {
-      "status": "at_dept"
+      "status": "off_duty"
     },
     "manualOverride": null,
     "overrideExpiry": null,
@@ -1888,9 +1768,7 @@
       ]
     },
     "status": {
-      "status": "in_class",
-      "room": "B2-204",
-      "batch": "CSE-6th"
+      "status": "at_dept"
     },
     "manualOverride": null,
     "overrideExpiry": null,
@@ -1902,97 +1780,11 @@
     "contact": "01896287005",
     "email": "sakibzaman.ugv@gmail.com",
     "image": "/images/md.sakibuzzaman.jpg",
-    "weekend": [
-      "Friday"
-    ],
-    "officeHours": {
-      "Sunday": [
-        "09:00",
-        "17:00"
-      ],
-      "Monday": [
-        "09:00",
-        "17:00"
-      ],
-      "Tuesday": [
-        "09:00",
-        "17:00"
-      ],
-      "Wednesday": [
-        "09:00",
-        "17:00"
-      ],
-      "Thursday": [
-        "09:00",
-        "17:00"
-      ],
-      "Saturday": [
-        "09:00",
-        "17:00"
-      ]
-    },
-    "classTimes": {
-      "Monday": [
-        {
-          "start": "14:00",
-          "end": "16:00",
-          "room": "B1-402",
-          "batch": "1st-Eng-A"
-        }
-      ],
-      "Tuesday": [
-        {
-          "start": "08:00",
-          "end": "10:00",
-          "room": "B1-402",
-          "batch": "1st-BBA-A"
-        },
-        {
-          "start": "10:00",
-          "end": "12:00",
-          "room": "B1-402",
-          "batch": "8th-Eng-A"
-        }
-      ],
-      "Wednesday": [
-        {
-          "start": "08:00",
-          "end": "10:00",
-          "room": "B1-402",
-          "batch": "1st-Eng-B"
-        },
-        {
-          "start": "10:00",
-          "end": "12:00",
-          "room": "B1-402",
-          "batch": "7th-Eng-A"
-        }
-      ],
-      "Thursday": [
-        {
-          "start": "10:00",
-          "end": "12:00",
-          "room": "B1-402",
-          "batch": "8th-BBA-A"
-        }
-      ],
-      "Saturday": [
-        {
-          "start": "08:00",
-          "end": "10:00",
-          "room": "B1-402",
-          "batch": "7th-BBA-A"
-        },
-        {
-          "start": "10:00",
-          "end": "12:00",
-          "room": "B1-402",
-          "batch": "1st-BBA-B"
-        }
-      ]
-    },
+    "weekend": [],
+    "officeHours": {},
+    "classTimes": {},
     "status": {
-      "status": "at_dept"
+      "status": "off_duty"
     },
     "manualOverride": null,
     "overrideExpiry": null,
