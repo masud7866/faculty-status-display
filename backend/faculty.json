@@ -140,7 +140,7 @@
       ]
     },
     "status": {
-      "status": "off_duty"
+      "status": "at_dept"
     },
     "manualOverride": null,
     "overrideExpiry": null,
@@ -434,7 +434,7 @@
       ]
     },
     "status": {
-      "status": "off_duty"
+      "status": "at_dept"
     },
     "manualOverride": null,
     "overrideExpiry": null,
@@ -569,9 +569,7 @@
       ]
     },
     "status": {
-      "status": "in_class",
-      "room": "B2-303",
-      "batch": "7th-CSE-Evn"
+      "status": "on_weekend"
     },
     "manualOverride": null,
     "overrideExpiry": null,
@@ -742,7 +740,7 @@
       ]
     },
     "status": {
-      "status": "off_duty"
+      "status": "on_weekend"
     },
     "manualOverride": null,
     "overrideExpiry": null,
@@ -913,7 +911,7 @@
       ]
     },
     "status": {
-      "status": "off_duty"
+      "status": "on_weekend"
     },
     "manualOverride": null,
     "overrideExpiry": null,
@@ -1122,7 +1120,7 @@
     "status": {
       "status": "in_class",
       "room": "B2-303",
-      "batch": "3rd-CSE-Evn"
+      "batch": "6th-CSE-C"
     },
     "manualOverride": null,
     "overrideExpiry": null,
@@ -1317,7 +1315,7 @@
       ]
     },
     "status": {
-      "status": "off_duty"
+      "status": "at_dept"
     },
     "manualOverride": null,
     "overrideExpiry": null,
@@ -1536,9 +1534,7 @@
       ]
     },
     "status": {
-      "status": "in_class",
-      "room": "B2-405",
-      "batch": "6th-CSE-Evn"
+      "status": "at_dept"
     },
     "manualOverride": null,
     "overrideExpiry": null,
@@ -1654,7 +1650,9 @@
       ]
     },
     "status": {
-      "status": "off_duty"
+      "status": "in_class",
+      "room": "B2-102",
+      "batch": "2nd-CSE"
     },
     "manualOverride": null,
     "overrideExpiry": null,
@@ -1664,13 +1662,115 @@
     "name": "Ahad Khan",
     "designation": "Lab Instructor",
     "contact": "01765447491",
-    "email": "ugv.ahadkhan@gmail.com",
-    "image": "/images/fac12.jpg",
-    "weekend": [],
-    "officeHours": {},
-    "classTimes": {},
+    "email": "ahadkhan.ugv@gmail.com",
+    "image": "/images/ahadkhan.jpg",
+    "weekend": [
+      "Thursday"
+    ],
+    "officeHours": {
+      "Saturday": [
+        "09:00",
+        "18:00"
+      ],
+      "Sunday": [
+        "09:00",
+        "18:00"
+      ],
+      "Monday": [
+        "09:00",
+        "18:00"
+      ],
+      "Tuesday": [
+        "09:00",
+        "18:00"
+      ],
+      "Wednesday": [
+        "09:00",
+        "18:00"
+      ],
+      "Friday": [
+        "03:00",
+        "18:00"
+      ]
+    },
+    "classTimes": {
+      "Saturday": [
+        {
+          "start": "09:00",
+          "end": "14:00",
+          "room": "B2-003",
+          "batch": "CSE-7th"
+        },
+        {
+          "start": "15:00",
+          "end": "16:00",
+          "room": "B2-003",
+          "batch": "CSE-5th EVE"
+        },
+        {
+          "start": "16:00",
+          "end": "17:00",
+          "room": "B2-003",
+          "batch": "CSE=6th EVE"
+        }
+      ],
+      "Sunday": [
+        {
+          "start": "09:00",
+          "end": "18:00",
+          "room": "B2-003",
+          "batch": "CSE-1st"
+        }
+      ],
+      "Monday": [
+        {
+          "start": "09:00",
+          "end": "06:00",
+          "room": "B2-003",
+          "batch": "CSE-5th, EEE- 5th & 8th"
+        }
+      ],
+      "Tuesday": [
+        {
+          "start": "09:00",
+          "end": "06:00",
+          "room": "B2-003",
+          "batch": "CSE-6th"
+        }
+      ],
+      "Wednesday": [
+        {
+          "start": "09:00",
+          "end": "06:00",
+          "room": "B2-505",
+          "batch": "CSE-6th"
+        }
+      ],
+      "Friday": [
+        {
+          "start": "15:00",
+          "end": "16:00",
+          "room": "B2-003",
+          "batch": "CSE-1st EVE"
+        },
+        {
+          "start": "16:00",
+          "end": "17:00",
+          "room": "B2-003",
+          "batch": "CSE- 5th EVE"
+        },
+        {
+          "start": "17:00",
+          "end": "18:00",
+          "room": "B2-003",
+          "batch": "CSE- 5th EVE"
+        }
+      ]
+    },
     "status": {
-      "status": "off_duty"
+      "status": "in_class",
+      "room": "B2-003",
+      "batch": "CSE-1st"
     },
     "manualOverride": null,
     "overrideExpiry": null,
@@ -1768,7 +1868,9 @@
       ]
     },
     "status": {
-      "status": "at_dept"
+      "status": "in_class",
+      "room": "B2-204",
+      "batch": "CSE-7th"
     },
     "manualOverride": null,
     "overrideExpiry": null,
