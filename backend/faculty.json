@@ -1882,11 +1882,38 @@
     "contact": "01896287005",
     "email": "sakibzaman.ugv@gmail.com",
     "image": "/images/md.sakibuzzaman.jpg",
-    "weekend": [],
-    "officeHours": {},
+    "weekend": [
+      "Friday"
+    ],
+    "officeHours": {
+      "Saturday": [
+        "09:00",
+        "17:00"
+      ],
+      "Sunday": [
+        "09:00",
+        "17:00"
+      ],
+      "Monday": [
+        "09:00",
+        "17:00"
+      ],
+      "Tuesday": [
+        "09:00",
+        "17:00"
+      ],
+      "Wednesday": [
+        "09:00",
+        "17:00"
+      ],
+      "Thursday": [
+        "09:00",
+        "17:00"
+      ]
+    },
     "classTimes": {},
     "status": {
-      "status": "off_duty"
+      "status": "at_dept"
     },
     "manualOverride": null,
     "overrideExpiry": null,
