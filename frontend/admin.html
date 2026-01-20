@@ -1003,6 +1003,14 @@
             localStorage.removeItem('faculty_jwt_token');
         }
 
+        // Unicode-safe base64 encoding function
+        function base64Encode(str) {
+            // Convert string to UTF-8 bytes, then to base64
+            return btoa(encodeURIComponent(str).replace(/%([0-9A-F]{2})/g, function(match, p1) {
+                return String.fromCharCode('0x' + p1);
+            }));
+        }
+
         // Function to redirect to login with proper parameters
         function redirectToLogin() {
             clearAuthToken();
@@ -2042,7 +2050,7 @@
                     headers: getAuthHeaders(),
                     body: JSON.stringify({
                         filename: 'faculty.json',
-                        content: btoa(JSON.stringify(currentFaculty, null, 2)),
+                        content: base64Encode(JSON.stringify(currentFaculty, null, 2)),
                         path: 'backend'
                     })
                 });
@@ -2579,7 +2587,7 @@
                                 headers: getAuthHeaders(),
                                 body: JSON.stringify({
                                     filename: 'faculty.json',
-                                    content: btoa(JSON.stringify(currentFaculty, null, 2)),
+                                    content: base64Encode(JSON.stringify(currentFaculty, null, 2)),
                                     path: 'backend'
                                 })
                             });
@@ -2611,11 +2619,7 @@
                             headers: getAuthHeaders(),
                             body: JSON.stringify({
                                 filename: 'marquee.txt',
-                                content: btoa(marqueeText),
-                                path: 'backend/public'
-                            })
-                        });
-
+                            content: base64Encode(marqueeText),
                         if (marqueeUpdateResponse.ok) {
                             successCount++;
                             showToast('✅ Marquee text deployed to GitHub!', 'success');
