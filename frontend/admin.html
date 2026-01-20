@@ -2619,7 +2619,10 @@
                             headers: getAuthHeaders(),
                             body: JSON.stringify({
                                 filename: 'marquee.txt',
-                            content: base64Encode(marqueeText),
+                                content: base64Encode(marqueeText),
+                            })
+                        });
+                        
                         if (marqueeUpdateResponse.ok) {
                             successCount++;
                             showToast('✅ Marquee text deployed to GitHub!', 'success');
