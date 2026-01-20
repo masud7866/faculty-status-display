@@ -140,7 +140,7 @@
       ]
     },
     "status": {
-      "status": "at_dept"
+      "status": "on_weekend"
     },
     "manualOverride": null,
     "overrideExpiry": null,
@@ -275,7 +275,7 @@
       ]
     },
     "status": {
-      "status": "at_dept"
+      "status": "on_weekend"
     },
     "manualOverride": null,
     "overrideExpiry": null,
@@ -434,7 +434,7 @@
       ]
     },
     "status": {
-      "status": "at_dept"
+      "status": "off_duty"
     },
     "manualOverride": null,
     "overrideExpiry": null,
@@ -569,7 +569,7 @@
       ]
     },
     "status": {
-      "status": "on_weekend"
+      "status": "at_dept"
     },
     "manualOverride": null,
     "overrideExpiry": null,
@@ -740,7 +740,7 @@
       ]
     },
     "status": {
-      "status": "on_weekend"
+      "status": "off_duty"
     },
     "manualOverride": null,
     "overrideExpiry": null,
@@ -911,7 +911,7 @@
       ]
     },
     "status": {
-      "status": "on_weekend"
+      "status": "off_duty"
     },
     "manualOverride": null,
     "overrideExpiry": null,
@@ -1118,9 +1118,7 @@
       ]
     },
     "status": {
-      "status": "in_class",
-      "room": "B2-303",
-      "batch": "6th-CSE-C"
+      "status": "on_weekend"
     },
     "manualOverride": null,
     "overrideExpiry": null,
@@ -1315,7 +1313,7 @@
       ]
     },
     "status": {
-      "status": "at_dept"
+      "status": "on_weekend"
     },
     "manualOverride": null,
     "overrideExpiry": null,
@@ -1534,7 +1532,9 @@
       ]
     },
     "status": {
-      "status": "at_dept"
+      "status": "in_class",
+      "room": "B2-305",
+      "batch": "2nd-CSE-B"
     },
     "manualOverride": null,
     "overrideExpiry": null,
@@ -1652,7 +1652,7 @@
     "status": {
       "status": "in_class",
       "room": "B2-102",
-      "batch": "2nd-CSE"
+      "batch": "2nd-ME"
     },
     "manualOverride": null,
     "overrideExpiry": null,
@@ -1768,9 +1768,7 @@
       ]
     },
     "status": {
-      "status": "in_class",
-      "room": "B2-003",
-      "batch": "CSE-1st"
+      "status": "at_dept"
     },
     "manualOverride": null,
     "overrideExpiry": null,
@@ -1870,7 +1868,7 @@
     "status": {
       "status": "in_class",
       "room": "B2-204",
-      "batch": "CSE-7th"
+      "batch": "EEE-2nd"
     },
     "manualOverride": null,
     "overrideExpiry": null,
@@ -1891,5 +1889,48 @@
     "manualOverride": null,
     "overrideExpiry": null,
     "precedence": 13
+  },
+  {
+    "name": "Fazri Islam",
+    "designation": "Lab Assistant",
+    "contact": "01533375382",
+    "email": "fazriislam111@gmail.com",
+    "image": "/images/fazriislam.jpg",
+    "weekend": [
+      "Saturday"
+    ],
+    "officeHours": {
+      "Sunday": [
+        "09:00",
+        "17:00"
+      ],
+      "Monday": [
+        "09:00",
+        "17:00"
+      ],
+      "Tuesday": [
+        "09:00",
+        "17:00"
+      ],
+      "Wednesday": [
+        "09:00",
+        "17:00"
+      ],
+      "Thursday": [
+        "09:00",
+        "17:00"
+      ],
+      "Friday": [
+        "09:00",
+        "17:00"
+      ]
+    },
+    "classTimes": {},
+    "status": {
+      "status": "at_dept"
+    },
+    "manualOverride": null,
+    "overrideExpiry": null,
+    "precedence": 14
   }
 ]
