@@ -434,7 +434,7 @@
       ]
     },
     "status": {
-      "status": "off_duty"
+      "status": "at_dept"
     },
     "manualOverride": null,
     "overrideExpiry": null,
@@ -499,12 +499,6 @@
           "end": "13:00",
           "room": "B2-303",
           "batch": "7th-CSE-B"
-        },
-        {
-          "start": "13:00",
-          "end": "14:00",
-          "room": "B2-303",
-          "batch": "1st-CSE-MSc"
         }
       ],
       "Wednesday": [
@@ -519,12 +513,6 @@
           "end": "16:00",
           "room": "B2-303",
           "batch": "8th-CSE-B"
-        },
-        {
-          "start": "11:00",
-          "end": "12:00",
-          "room": "B2-303",
-          "batch": "1st-CSE-MSc"
         }
       ],
       "Thursday": [
@@ -551,6 +539,12 @@
           "end": "20:00",
           "room": "B2-303",
           "batch": "7th-CSE-Evn"
+        },
+        {
+          "start": "15:00",
+          "end": "16:00",
+          "room": "B2-304",
+          "batch": "1st-CSE-MSc"
         }
       ],
       "Friday": [
@@ -565,6 +559,12 @@
           "end": "13:00",
           "room": "7th-CSE-Evn",
           "batch": "8th-CSE-Evn"
+        },
+        {
+          "start": "14:00",
+          "end": "15:00",
+          "room": "B2-303",
+          "batch": "1st-CSE-MSc"
         }
       ]
     },
@@ -741,8 +741,8 @@
     },
     "status": {
       "status": "in_class",
-      "room": "B2-304",
-      "batch": "1st-CSE-A"
+      "room": "B2-305",
+      "batch": "7th-CSE-B"
     },
     "manualOverride": null,
     "overrideExpiry": null,
@@ -914,8 +914,8 @@
     },
     "status": {
       "status": "in_class",
-      "room": "B2-305",
-      "batch": "3rd-CSE-A"
+      "room": "B2-306",
+      "batch": "3rd-CSE-B"
     },
     "manualOverride": null,
     "overrideExpiry": null,
@@ -1537,8 +1537,8 @@
     },
     "status": {
       "status": "in_class",
-      "room": "B2-403",
-      "batch": "2nd-CSE-C"
+      "room": "B2-405",
+      "batch": "8th-CSE-B"
     },
     "manualOverride": null,
     "overrideExpiry": null,
