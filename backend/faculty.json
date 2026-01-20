@@ -1955,6 +1955,68 @@
           "room": "B1-402",
           "batch": "BBA-7th"
         }
+      ],
+      "Monday": [
+        {
+          "start": "09:00",
+          "end": "10:00",
+          "room": "B1-402",
+          "batch": "English-1st (A)"
+        },
+        {
+          "start": "14:00",
+          "end": "15:30",
+          "room": "B1-402",
+          "batch": "BBA-2nd (A)"
+        },
+        {
+          "start": "15:30",
+          "end": "17:00",
+          "room": "B1-402",
+          "batch": "BBA-2nd (B)"
+        }
+      ],
+      "Tuesday": [
+        {
+          "start": "11:00",
+          "end": "13:00",
+          "room": "B1-402",
+          "batch": "BBA-8th"
+        }
+      ],
+      "Wednesday": [
+        {
+          "start": "09:00",
+          "end": "11:00",
+          "room": "B1-402",
+          "batch": "English-1st (A)"
+        },
+        {
+          "start": "11:00",
+          "end": "12:00",
+          "room": "B1-402",
+          "batch": "English-1st (B)"
+        },
+        {
+          "start": "12:00",
+          "end": "13:00",
+          "room": "B1-402",
+          "batch": "BBA-1st (A)"
+        },
+        {
+          "start": "13:00",
+          "end": "14:00",
+          "room": "B1-402",
+          "batch": "BBA-1st (B)"
+        }
+      ],
+      "Thursday": [
+        {
+          "start": "09:00",
+          "end": "17:00",
+          "room": "B1-402",
+          "batch": "CIVIL"
+        }
       ]
     },
     "status": {
