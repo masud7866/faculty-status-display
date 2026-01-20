@@ -1725,7 +1725,7 @@
       "Monday": [
         {
           "start": "09:00",
-          "end": "06:00",
+          "end": "18:00",
           "room": "B2-003",
           "batch": "CSE-5th, EEE- 5th & 8th"
         }
@@ -1733,7 +1733,7 @@
       "Tuesday": [
         {
           "start": "09:00",
-          "end": "06:00",
+          "end": "18:00",
           "room": "B2-003",
           "batch": "CSE-6th"
         }
@@ -1741,7 +1741,7 @@
       "Wednesday": [
         {
           "start": "09:00",
-          "end": "06:00",
+          "end": "18:00",
           "room": "B2-505",
           "batch": "CSE-6th"
         }
@@ -1768,7 +1768,9 @@
       ]
     },
     "status": {
-      "status": "at_dept"
+      "status": "in_class",
+      "room": "B2-003",
+      "batch": "CSE-6th"
     },
     "manualOverride": null,
     "overrideExpiry": null,
