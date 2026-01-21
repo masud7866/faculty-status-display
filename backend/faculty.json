@@ -140,7 +140,7 @@
       ]
     },
     "status": {
-      "status": "on_weekend"
+      "status": "off_duty"
     },
     "manualOverride": null,
     "overrideExpiry": null,
@@ -434,7 +434,7 @@
       ]
     },
     "status": {
-      "status": "at_dept"
+      "status": "on_weekend"
     },
     "manualOverride": null,
     "overrideExpiry": null,
@@ -741,8 +741,8 @@
     },
     "status": {
       "status": "in_class",
-      "room": "B2-305",
-      "batch": "7th-CSE-B"
+      "room": "B2-304",
+      "batch": "1st-CSE-B"
     },
     "manualOverride": null,
     "overrideExpiry": null,
@@ -913,9 +913,7 @@
       ]
     },
     "status": {
-      "status": "in_class",
-      "room": "B2-306",
-      "batch": "3rd-CSE-B"
+      "status": "off_duty"
     },
     "manualOverride": null,
     "overrideExpiry": null,
@@ -1122,7 +1120,7 @@
       ]
     },
     "status": {
-      "status": "on_weekend"
+      "status": "off_duty"
     },
     "manualOverride": null,
     "overrideExpiry": null,
@@ -1536,9 +1534,7 @@
       ]
     },
     "status": {
-      "status": "in_class",
-      "room": "B2-405",
-      "batch": "8th-CSE-B"
+      "status": "on_weekend"
     },
     "manualOverride": null,
     "overrideExpiry": null,
@@ -1654,9 +1650,7 @@
       ]
     },
     "status": {
-      "status": "in_class",
-      "room": "B2-102",
-      "batch": "2nd-ME"
+      "status": "at_dept"
     },
     "manualOverride": null,
     "overrideExpiry": null,
@@ -1773,7 +1767,7 @@
     },
     "status": {
       "status": "in_class",
-      "room": "B2-003",
+      "room": "B2-505",
       "batch": "CSE-6th"
     },
     "manualOverride": null,
@@ -1872,9 +1866,7 @@
       ]
     },
     "status": {
-      "status": "in_class",
-      "room": "B2-204",
-      "batch": "EEE-2nd"
+      "status": "on_weekend"
     },
     "manualOverride": null,
     "overrideExpiry": null,
@@ -2020,7 +2012,9 @@
       ]
     },
     "status": {
-      "status": "at_dept"
+      "status": "in_class",
+      "room": "B1-402",
+      "batch": "English-1st (A)"
     },
     "manualOverride": null,
     "overrideExpiry": null,
@@ -2061,7 +2055,98 @@
         "17:00"
       ]
     },
-    "classTimes": {},
+    "classTimes": {
+      "Sunday": [
+        {
+          "start": "10:00",
+          "end": "13:00",
+          "room": "B2-205",
+          "batch": "5th-CSE"
+        }
+      ],
+      "Monday": [
+        {
+          "start": "09:00",
+          "end": "17:00",
+          "room": "B2-205",
+          "batch": "4th-5th-CSE"
+        }
+      ],
+      "Tuesday": [
+        {
+          "start": "10:00",
+          "end": "12:00",
+          "room": "B2-205",
+          "batch": "4th-CSE-A"
+        },
+        {
+          "start": "12:00",
+          "end": "14:00",
+          "room": "B2-205",
+          "batch": "4th-CSE-B"
+        },
+        {
+          "start": "14:00",
+          "end": "16:00",
+          "room": "B2-205",
+          "batch": "5th-CSE"
+        }
+      ],
+      "Wednesday": [
+        {
+          "start": "10:00",
+          "end": "12:00",
+          "room": "B2-205",
+          "batch": "4th-CSE-A"
+        },
+        {
+          "start": "12:00",
+          "end": "14:00",
+          "room": "B2-205",
+          "batch": "4th-CSE-B"
+        }
+      ],
+      "Thursday": [
+        {
+          "start": "10:00",
+          "end": "12:00",
+          "room": "B2-205",
+          "batch": "4th-CSE-A"
+        },
+        {
+          "start": "12:00",
+          "end": "14:00",
+          "room": "B2-205",
+          "batch": "4th-CSE-B"
+        }
+      ],
+      "Friday": [
+        {
+          "start": "09:00",
+          "end": "10:00",
+          "room": "B2-205",
+          "batch": "4th-CSE-A-Evn"
+        },
+        {
+          "start": "10:00",
+          "end": "11:00",
+          "room": "B2-205",
+          "batch": "5th-CSE-A-Evn"
+        },
+        {
+          "start": "15:00",
+          "end": "16:00",
+          "room": "B2-205",
+          "batch": "4th-CSE-A-Evn"
+        },
+        {
+          "start": "17:00",
+          "end": "18:00",
+          "room": "B2-205",
+          "batch": "4th-CSE-A-Evn"
+        }
+      ]
+    },
     "status": {
       "status": "at_dept"
     },
