@@ -140,7 +140,7 @@
       ]
     },
     "status": {
-      "status": "at_dept"
+      "status": "on_weekend"
     },
     "manualOverride": null,
     "overrideExpiry": null,
@@ -275,7 +275,9 @@
       ]
     },
     "status": {
-      "status": "on_weekend"
+      "status": "in_class",
+      "room": "B2-404",
+      "batch": "6th-CSE-A"
     },
     "manualOverride": null,
     "overrideExpiry": null,
@@ -434,7 +436,7 @@
       ]
     },
     "status": {
-      "status": "on_weekend"
+      "status": "at_dept"
     },
     "manualOverride": null,
     "overrideExpiry": null,
@@ -740,7 +742,7 @@
       ]
     },
     "status": {
-      "status": "at_dept"
+      "status": "on_weekend"
     },
     "manualOverride": null,
     "overrideExpiry": null,
@@ -911,9 +913,7 @@
       ]
     },
     "status": {
-      "status": "in_class",
-      "room": "B2-306",
-      "batch": "3rd-CSE-A"
+      "status": "on_weekend"
     },
     "manualOverride": null,
     "overrideExpiry": null,
@@ -1120,9 +1120,7 @@
       ]
     },
     "status": {
-      "status": "in_class",
-      "room": "B2-402",
-      "batch": "3rd-CSE-B"
+      "status": "on_weekend"
     },
     "manualOverride": null,
     "overrideExpiry": null,
@@ -1317,7 +1315,7 @@
       ]
     },
     "status": {
-      "status": "on_weekend"
+      "status": "at_dept"
     },
     "manualOverride": null,
     "overrideExpiry": null,
@@ -1536,7 +1534,9 @@
       ]
     },
     "status": {
-      "status": "on_weekend"
+      "status": "in_class",
+      "room": "B2-306",
+      "batch": "4th-CSE-B"
     },
     "manualOverride": null,
     "overrideExpiry": null,
@@ -1652,7 +1652,9 @@
       ]
     },
     "status": {
-      "status": "at_dept"
+      "status": "in_class",
+      "room": "B2-102",
+      "batch": "3rd-CSE"
     },
     "manualOverride": null,
     "overrideExpiry": null,
@@ -1769,8 +1771,8 @@
     },
     "status": {
       "status": "in_class",
-      "room": "B2-505",
-      "batch": "CSE-6th"
+      "room": "B2-003",
+      "batch": "CSE-5th, EEE- 5th & 8th"
     },
     "manualOverride": null,
     "overrideExpiry": null,
@@ -1868,7 +1870,9 @@
       ]
     },
     "status": {
-      "status": "on_weekend"
+      "status": "in_class",
+      "room": "B2-204",
+      "batch": "CSE-7th"
     },
     "manualOverride": null,
     "overrideExpiry": null,
@@ -1912,33 +1916,15 @@
     "classTimes": {
       "Saturday": [
         {
-          "start": "09:00",
-          "end": "11:00",
-          "room": "B1-402",
-          "batch": "BBA-1st (B)"
-        },
-        {
-          "start": "11:00",
+          "start": "10:00",
           "end": "13:00",
-          "room": "B1-402",
-          "batch": "English-1st (B)"
-        },
-        {
-          "start": "13:00",
-          "end": "14:00",
           "room": "B1-402",
           "batch": "English-8th"
         }
       ],
       "Sunday": [
         {
-          "start": "09:00",
-          "end": "11:00",
-          "room": "B1-402",
-          "batch": "BBA-1st (A)"
-        },
-        {
-          "start": "11:00",
+          "start": "10:00",
           "end": "13:00",
           "room": "B1-402",
           "batch": "English-7th"
@@ -2014,9 +2000,7 @@
       ]
     },
     "status": {
-      "status": "in_class",
-      "room": "B1-402",
-      "batch": "English-1st (B)"
+      "status": "at_dept"
     },
     "manualOverride": null,
     "overrideExpiry": null,
@@ -2152,7 +2136,7 @@
     "status": {
       "status": "in_class",
       "room": "B2-205",
-      "batch": "4th-CSE-A"
+      "batch": "4th-5th-CSE"
     },
     "manualOverride": null,
     "overrideExpiry": null,
