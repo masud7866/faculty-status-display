@@ -2204,38 +2204,39 @@
 
             const filenames = Array.from(selectedCheckboxes).map(cb => cb.dataset.filename);
 
-            if (!confirm(`Are you sure you want to delete ${filenames.length} advertisement(s)?\n\nFiles: ${filenames.join(', ')}\n\nThis action cannot be undone.`)) {
+            if (!confirm(`Mark ${filenames.length} advertisement(s) for deletion?\n\nFiles: ${filenames.join(', ')}\n\nThey will be permanently deleted when you click Deploy Changes.`)) {
                 return;
             }
 
-            let deletedCount = 0;
-            let errorCount = 0;
-
-            showToast(`Deleting ${filenames.length} advertisements...`, 'info');
+            let markedCount = 0;
 
             for (const filename of filenames) {
-                try {
-                    const response = await fetch(`${API_BASE}/api/admin/ads/${encodeURIComponent(filename)}`, {
-                        method: 'DELETE',
-                        headers: getAuthHeaders()
-                    });
-
-                    if (response.ok) {
-                        deletedCount++;
-                    } else {
-                        errorCount++;
-                        console.error(`Failed to delete ${filename}`);
+                // Check if this is a pending upload - if so, just remove it from pending list
+                const uploadIndex = pendingAdUploads.findIndex(ad => ad.filename === filename || ad.originalName === filename);
+                if (uploadIndex !== -1) {
+                    pendingAdUploads.splice(uploadIndex, 1);
+                    markedCount++;
+                } else {
+                    // Mark existing ad for deletion
+                    if (!pendingAdDeletions.includes(filename)) {
+                        pendingAdDeletions.push(filename);
+                        markedCount++;
                     }
-                } catch (error) {
-                    errorCount++;
-                    console.error(`Error deleting ${filename}:`, error);
                 }
             }
 
-            if (deletedCount > 0) {
-                showToast(`Successfully deleted ${deletedCount} advertisement(s)${errorCount > 0 ? ` (${errorCount} failed)` : ''}!`);
-            } else {
-                showToast('Failed to delete advertisements', 'error');
+            if (markedCount > 0) {
+                // If we have pending deletions or uploads, mark ads as changed
+                if (pendingAdUploads.length > 0 || pendingAdDeletions.length > 0) {
+                    markPendingChange('ads');
+                } else {
+                    // If no more pending ads, remove from changes
+                    pendingChanges.delete('ads');
+                    hasPendingChanges = pendingChanges.size > 0;
+                    updateDeployButton();
+                }
+
+                showToast(`${markedCount} ad(s) marked for deletion. Click Deploy Changes to apply.`, 'success');
             }
 
             loadAds(); // Refresh the list
