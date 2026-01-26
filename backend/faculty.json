@@ -1920,6 +1920,12 @@
           "end": "13:00",
           "room": "B1-402",
           "batch": "English-8th"
+        },
+        {
+          "start": "14:00",
+          "end": "17:00",
+          "room": "B1-402",
+          "batch": "CIVIL"
         }
       ],
       "Sunday": [
@@ -1942,6 +1948,12 @@
           "end": "15:30",
           "room": "B1-402",
           "batch": "BBA-2nd (A)"
+        },
+        {
+          "start": "10:00",
+          "end": "13:00",
+          "room": "B1-402",
+          "batch": "CIVIL"
         }
       ],
       "Tuesday": [
@@ -1950,6 +1962,12 @@
           "end": "13:00",
           "room": "B1-402",
           "batch": "BBA-8th"
+        },
+        {
+          "start": "14:00",
+          "end": "17:00",
+          "room": "B1-402",
+          "batch": "CIVIL"
         }
       ],
       "Wednesday": [
@@ -1964,6 +1982,12 @@
           "end": "13:00",
           "room": "B1-402",
           "batch": "BBA-1st"
+        },
+        {
+          "start": "14:00",
+          "end": "17:00",
+          "room": "B1-402",
+          "batch": "CIVIL"
         }
       ],
       "Thursday": [
@@ -1976,7 +2000,9 @@
       ]
     },
     "status": {
-      "status": "at_dept"
+      "status": "in_class",
+      "room": "B1-402",
+      "batch": "CIVIL"
     },
     "manualOverride": null,
     "overrideExpiry": null,
