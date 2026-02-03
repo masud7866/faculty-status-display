@@ -1545,6 +1545,38 @@
     "precedence": 9
   },
   {
+    "name": "Hasanat Nihal",
+    "designation": "Lecturer",
+    "contact": "01701086164",
+    "email": "nihal.200117@s.pust.ac.bd",
+    "image": "/images/hasanatnihal.jpg",
+    "weekend": [],
+    "officeHours": {},
+    "classTimes": {},
+    "status": {
+      "status": "off_duty"
+    },
+    "manualOverride": null,
+    "overrideExpiry": null,
+    "precedence": 10
+  },
+  {
+    "name": "Syed Mahfuzur Rahman",
+    "designation": "Lecturer",
+    "contact": "01751051683",
+    "email": "mahfuzrahman129@gmail.com",
+    "image": "/images/syedmahfuzurrahman.jpg",
+    "weekend": [],
+    "officeHours": {},
+    "classTimes": {},
+    "status": {
+      "status": "off_duty"
+    },
+    "manualOverride": null,
+    "overrideExpiry": null,
+    "precedence": 11
+  },
+  {
     "name": "Abdul Aziz",
     "designation": "Lab Instructor",
     "contact": "01877774031",
@@ -1660,23 +1692,7 @@
     },
     "manualOverride": null,
     "overrideExpiry": null,
-    "precedence": 10
-  },
-  {
-    "name": "Hasanat Nihal",
-    "designation": "Lecturer",
-    "contact": "01701086164",
-    "email": "nihal.200117@s.pust.ac.bd",
-    "image": "/images/hasanatnihal.jpg",
-    "weekend": [],
-    "officeHours": {},
-    "classTimes": {},
-    "status": {
-      "status": "off_duty"
-    },
-    "manualOverride": null,
-    "overrideExpiry": null,
-    "precedence": 10
+    "precedence": 12
   },
   {
     "name": "Ahad Khan",
@@ -1794,23 +1810,7 @@
     },
     "manualOverride": null,
     "overrideExpiry": null,
-    "precedence": 11
-  },
-  {
-    "name": "Syed Mahfuzur Rahman",
-    "designation": "Lecturer",
-    "contact": "01751051683",
-    "email": "mahfuzrahman129@gmail.com",
-    "image": "/images/syedmahfuzurrahman.jpg",
-    "weekend": [],
-    "officeHours": {},
-    "classTimes": {},
-    "status": {
-      "status": "off_duty"
-    },
-    "manualOverride": null,
-    "overrideExpiry": null,
-    "precedence": 11
+    "precedence": 13
   },
   {
     "name": "Galib Jaman",
@@ -1910,7 +1910,7 @@
     },
     "manualOverride": null,
     "overrideExpiry": null,
-    "precedence": 12
+    "precedence": 14
   },
   {
     "name": "Md. Sakib Uz Zaman",
@@ -2038,7 +2038,7 @@
     },
     "manualOverride": null,
     "overrideExpiry": null,
-    "precedence": 13
+    "precedence": 15
   },
   {
     "name": "Fazri Islam",
@@ -2174,6 +2174,6 @@
     },
     "manualOverride": null,
     "overrideExpiry": null,
-    "precedence": 14
+    "precedence": 16
   }
 ]
