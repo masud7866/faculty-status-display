@@ -140,7 +140,7 @@
       ]
     },
     "status": {
-      "status": "on_weekend"
+      "status": "at_dept"
     },
     "manualOverride": null,
     "overrideExpiry": null,
@@ -275,7 +275,7 @@
       ]
     },
     "status": {
-      "status": "on_weekend"
+      "status": "at_dept"
     },
     "manualOverride": null,
     "overrideExpiry": null,
@@ -283,7 +283,7 @@
   },
   {
     "name": "Md. Tariqul Islam",
-    "designation": "Assistant Proctor & Assistant Professor",
+    "designation": "Asst. Proctor & Asst. Professor",
     "contact": "01842733104",
     "email": "tariq.ugv@gmail.com",
     "image": "/images/fac4.jpg",
@@ -434,7 +434,7 @@
       ]
     },
     "status": {
-      "status": "at_dept"
+      "status": "on_weekend"
     },
     "manualOverride": null,
     "overrideExpiry": null,
@@ -740,9 +740,7 @@
       ]
     },
     "status": {
-      "status": "in_class",
-      "room": "B2-305",
-      "batch": "7th-CSE-B"
+      "status": "at_dept"
     },
     "manualOverride": null,
     "overrideExpiry": null,
@@ -915,7 +913,7 @@
     "status": {
       "status": "in_class",
       "room": "B2-306",
-      "batch": "3rd-CSE-B"
+      "batch": "1st-CSE-MSc"
     },
     "manualOverride": null,
     "overrideExpiry": null,
@@ -1122,7 +1120,9 @@
       ]
     },
     "status": {
-      "status": "on_weekend"
+      "status": "in_class",
+      "room": "B2-305",
+      "batch": "6th-CSE-Evn"
     },
     "manualOverride": null,
     "overrideExpiry": null,
@@ -1317,7 +1317,9 @@
       ]
     },
     "status": {
-      "status": "on_weekend"
+      "status": "in_class",
+      "room": "B2-404",
+      "batch": "5th-CSE-A"
     },
     "manualOverride": null,
     "overrideExpiry": null,
@@ -1536,9 +1538,7 @@
       ]
     },
     "status": {
-      "status": "in_class",
-      "room": "B2-405",
-      "batch": "8th-CSE-B"
+      "status": "on_weekend"
     },
     "manualOverride": null,
     "overrideExpiry": null,
@@ -1686,9 +1686,7 @@
       ]
     },
     "status": {
-      "status": "in_class",
-      "room": "B2-102",
-      "batch": "2nd-ME"
+      "status": "on_weekend"
     },
     "manualOverride": null,
     "overrideExpiry": null,
@@ -1804,9 +1802,7 @@
       ]
     },
     "status": {
-      "status": "in_class",
-      "room": "B2-003",
-      "batch": "CSE-6th"
+      "status": "on_weekend"
     },
     "manualOverride": null,
     "overrideExpiry": null,
@@ -1906,7 +1902,7 @@
     "status": {
       "status": "in_class",
       "room": "B2-204",
-      "batch": "EEE-2nd"
+      "batch": "CSE-6th"
     },
     "manualOverride": null,
     "overrideExpiry": null,
@@ -2034,7 +2030,9 @@
       ]
     },
     "status": {
-      "status": "at_dept"
+      "status": "in_class",
+      "room": "B1-402",
+      "batch": "CIVIL"
     },
     "manualOverride": null,
     "overrideExpiry": null,
@@ -2168,9 +2166,7 @@
       ]
     },
     "status": {
-      "status": "in_class",
-      "room": "B2-205",
-      "batch": "4th-CSE-B"
+      "status": "at_dept"
     },
     "manualOverride": null,
     "overrideExpiry": null,
