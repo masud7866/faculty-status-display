@@ -100,7 +100,7 @@
     .card h3 {
       color: #2563eb;
       font-weight: 600;
-      margin-bottom: 0.1em;
+      margin: 0.2em 0 0.1em 0;
       text-align: center;
       width: 100%;
       overflow-wrap: break-word;
@@ -115,6 +115,7 @@
       font-weight: 500;
       text-align: center;
       width: 100%;
+      margin: 0.1em 0;
     }
 
     .card .designation {
@@ -124,6 +125,7 @@
       overflow-wrap: break-word;
       word-wrap: break-word;
       hyphens: auto;
+      margin: 0.1em 0;
     }
 
     .card .contact-info {
@@ -138,6 +140,8 @@
       gap: 0.3em;
       padding: 0 0.2em;
       white-space: normal;
+      margin: 0.1em 0;
+      min-height: 1.3em;
     }
 
     .card .contact-info span {
@@ -520,6 +524,11 @@
             grid.style.gridTemplateColumns = `repeat(${columns}, 1fr)`;
 
             sortedData.forEach(f => {
+              // Debug: Log first faculty member to check data structure
+              if (sortedData.indexOf(f) === 0) {
+                console.log("Sample faculty data:", f);
+              }
+
               let statusObj = f.manualOverride ?? f.status;
               let statusStr, room, batch;
 
