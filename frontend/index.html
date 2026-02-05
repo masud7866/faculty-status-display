@@ -130,7 +130,7 @@
     }
 
     .card .contact-info {
-      font-size: 0.75em;
+      font-size: 0.72em;
       line-height: 1.2;
       width: 100%;
       text-align: center;
@@ -144,8 +144,11 @@
     }
 
     .card .contact-info span {
-      display: inline-block;
-      max-width: 80%;
+      flex: 1;
+      min-width: 0;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
     }
 
     .status {
