@@ -1552,9 +1552,152 @@
     "contact": "01701086164",
     "email": "nihal.200117@s.pust.ac.bd",
     "image": "/images/hasanatnihal.jpg",
-    "weekend": [],
-    "officeHours": {},
-    "classTimes": {},
+    "weekend": [
+      "Sunday",
+      "Monday"
+    ],
+    "officeHours": {
+      "Saturday": [
+        "12:00",
+        "20:00"
+      ],
+      "Tuesday": [
+        "09:00",
+        "17:00"
+      ],
+      "Wednesday": [
+        "09:00",
+        "17:00"
+      ],
+      "Thursday": [
+        "10:00",
+        "19:00"
+      ],
+      "Friday": [
+        "02:00",
+        "21:00"
+      ]
+    },
+    "classTimes": {
+      "Saturday": [
+        {
+          "start": "15:00",
+          "end": "16:00",
+          "room": "B2-303",
+          "batch": "5th-CSE-A"
+        },
+        {
+          "start": "17:00",
+          "end": "18:00",
+          "room": "B2-206",
+          "batch": "7th-CSE-A"
+        },
+        {
+          "start": "18:00",
+          "end": "19:00",
+          "room": "B2-304",
+          "batch": "6th-CSE-A"
+        },
+        {
+          "start": "19:00",
+          "end": "20:00",
+          "room": "B2-304",
+          "batch": "8th-CSE-A"
+        }
+      ],
+      "Tuesday": [
+        {
+          "start": "13:00",
+          "end": "14:00",
+          "room": "B2-405",
+          "batch": "8th-CSE-B"
+        },
+        {
+          "start": "15:00",
+          "end": "16:00",
+          "room": "B2-406",
+          "batch": "8th-CSE-A"
+        }
+      ],
+      "Wednesday": [
+        {
+          "start": "10:00",
+          "end": "11:00",
+          "room": "B2-405",
+          "batch": "7th-CSE-A"
+        },
+        {
+          "start": "12:00",
+          "end": "13:00",
+          "room": "B1-307",
+          "batch": "8th-CSE-B"
+        },
+        {
+          "start": "13:00",
+          "end": "14:00",
+          "room": "B2-303",
+          "batch": "7th-CSE-B"
+        },
+        {
+          "start": "14:00",
+          "end": "15:00",
+          "room": "B2-304",
+          "batch": "8th-CSE-A"
+        }
+      ],
+      "Thursday": [
+        {
+          "start": "10:00",
+          "end": "11:00",
+          "room": "B2-405",
+          "batch": "7th-CSE-A"
+        },
+        {
+          "start": "13:00",
+          "end": "14:00",
+          "room": "B2-303",
+          "batch": "7th-CSE-B"
+        },
+        {
+          "start": "16:00",
+          "end": "17:00",
+          "room": "B2-404",
+          "batch": "5th-CSE-A"
+        },
+        {
+          "start": "18:00",
+          "end": "19:00",
+          "room": "B2-307",
+          "batch": "5th-CSE-Evn"
+        }
+      ],
+      "Friday": [
+        {
+          "start": "17:00",
+          "end": "18:00",
+          "room": "B2-406",
+          "batch": "8th-CSE-Evn"
+        },
+        {
+          "start": "18:00",
+          "end": "19:00",
+          "room": "B2-304",
+          "batch": "5th-CSE-Evn"
+        },
+        {
+          "start": "19:00",
+          "end": "20:00",
+          "room": "B2-402",
+          "batch": "7th-CSE-Evn"
+        },
+        {
+          "start": "20:00",
+          "end": "21:00",
+          "room": "B2-306",
+          "batch": "6th-CSE-Evn"
+        }
+      ]
+    },
     "status": {
       "status": "off_duty"
     },
