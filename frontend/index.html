@@ -79,11 +79,12 @@
       display: flex;
       flex-direction: column;
       align-items: center;
-      justify-content: space-around;
+      justify-content: flex-start;
+      gap: 0.3vh;
       font-size: 1.6vh;
       overflow: hidden;
       box-sizing: border-box;
-      padding: 0.7vh 0.4vw;
+      padding: 0.7vh 0.5vw;
       contain: layout style;
     }
 
@@ -129,28 +130,25 @@
     }
 
     .card .contact-info {
-      font-size: 0.85em;
-      line-height: 1.3;
-      width: 100%;
+      font-size: 0.8em;
+      line-height: 1.2;
+      width: 95%;
       text-align: center;
-      display: flex;
+      display: inline-flex;
       flex-direction: row;
       align-items: center;
       justify-content: center;
-      gap: 0.3em;
-      padding: 0 0.2em;
-      white-space: normal;
-      margin: 0.1em 0;
-      min-height: 1.3em;
+      gap: 0.4em;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
     }
 
     .card .contact-info span {
-      overflow-wrap: break-word;
-      word-wrap: break-word;
-      word-break: normal;
-      min-width: 0;
-      max-width: 100%;
-      white-space: normal;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+      max-width: 85%;
     }
 
     .status {
