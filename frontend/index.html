@@ -80,11 +80,11 @@
       flex-direction: column;
       align-items: center;
       justify-content: flex-start;
-      gap: 0.3vh;
-      font-size: 1.6vh;
+      gap: 0.2vh;
+      font-size: 1.5vh;
       overflow: hidden;
       box-sizing: border-box;
-      padding: 0.7vh 0.5vw;
+      padding: 0.5vh 0.5vw;
       contain: layout style;
     }
 
@@ -92,21 +92,23 @@
       border-radius: 12px;
       box-shadow: 0 2px 8px rgba(16, 34, 74, .10);
       border: 2px solid #2563eb;
-      width: 5vh;
-      height: 5vh;
+      width: 4.5vh;
+      height: 4.5vh;
       object-fit: cover;
-      margin-bottom: 0.5vh;
+      margin-bottom: 0.2vh;
     }
 
     .card h3 {
       color: #2563eb;
       font-weight: 600;
-      margin: 0.2em 0 0.1em 0;
+      margin: 0;
       text-align: center;
       width: 100%;
       overflow-wrap: break-word;
       word-wrap: break-word;
       hyphens: auto;
+      font-size: 1.05em;
+      line-height: 1.2;
     }
 
     .card div,
@@ -116,22 +118,23 @@
       font-weight: 500;
       text-align: center;
       width: 100%;
-      margin: 0.1em 0;
+      margin: 0;
     }
 
     .card .designation {
-      font-size: 0.9em;
-      line-height: 1.2;
+      font-size: 0.85em;
+      line-height: 1.1;
       max-width: 100%;
       overflow-wrap: break-word;
       word-wrap: break-word;
       hyphens: auto;
-      margin: 0.1em 0;
+      margin: 0;
+      padding: 0.1em 0;
     }
 
     .card .contact-info {
-      font-size: 0.7em;
-      line-height: 1.3;
+      font-size: 0.75em;
+      line-height: 1.15;
       width: 100%;
       text-align: center;
       display: flex;
@@ -139,7 +142,7 @@
       align-items: center;
       justify-content: center;
       gap: 0.3em;
-      padding: 0 0.2em;
+      padding: 0.05em 0.2em;
       box-sizing: border-box;
       flex-wrap: wrap;
     }
@@ -149,14 +152,17 @@
       min-width: 0;
       word-break: break-word;
       overflow-wrap: break-word;
+      max-width: 85%;
     }
 
     .status {
       border-radius: 8px;
-      padding: 0.2em 0.7em;
-      font-size: 1em;
+      padding: 0.25em 0.6em;
+      font-size: 0.9em;
       box-shadow: 0 2px 8px rgba(16, 34, 74, .08);
       display: inline-block;
+      margin-top: 0.15em;
+      line-height: 1.2;
     }
 
     .status.in_class {
@@ -222,12 +228,13 @@
 
     .icon-phone,
     .icon-email {
-      font-size: 1em;
+      font-size: 0.95em;
       color: #2563eb;
       flex-shrink: 0;
       display: inline-block;
-      width: 1em;
+      width: auto;
       text-align: center;
+      line-height: 1;
     }
 
     @media (max-width: 700px) {
