@@ -295,7 +295,7 @@
     ],
     "officeHours": {
       "Saturday": [
-        "23:00",
+        "11:00",
         "22:00"
       ],
       "Sunday": [
@@ -311,7 +311,7 @@
         "17:00"
       ],
       "Friday": [
-        "23:00",
+        "11:00",
         "22:00"
       ]
     },
@@ -436,7 +436,7 @@
       ]
     },
     "status": {
-      "status": "off_duty"
+      "status": "at_dept"
     },
     "manualOverride": null,
     "overrideExpiry": null,
