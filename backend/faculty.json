@@ -140,7 +140,7 @@
       ]
     },
     "status": {
-      "status": "off_duty"
+      "status": "at_dept"
     },
     "manualOverride": null,
     "overrideExpiry": null,
@@ -275,7 +275,7 @@
       ]
     },
     "status": {
-      "status": "off_duty"
+      "status": "on_weekend"
     },
     "manualOverride": null,
     "overrideExpiry": null,
@@ -434,7 +434,7 @@
       ]
     },
     "status": {
-      "status": "at_dept"
+      "status": "on_weekend"
     },
     "manualOverride": null,
     "overrideExpiry": null,
@@ -569,7 +569,7 @@
       ]
     },
     "status": {
-      "status": "on_weekend"
+      "status": "at_dept"
     },
     "manualOverride": null,
     "overrideExpiry": null,
@@ -740,7 +740,7 @@
       ]
     },
     "status": {
-      "status": "off_duty"
+      "status": "at_dept"
     },
     "manualOverride": null,
     "overrideExpiry": null,
@@ -911,7 +911,7 @@
       ]
     },
     "status": {
-      "status": "off_duty"
+      "status": "at_dept"
     },
     "manualOverride": null,
     "overrideExpiry": null,
@@ -1277,7 +1277,7 @@
       ]
     },
     "status": {
-      "status": "off_duty"
+      "status": "on_weekend"
     },
     "manualOverride": null,
     "overrideExpiry": null,
@@ -1496,7 +1496,7 @@
       ]
     },
     "status": {
-      "status": "off_duty"
+      "status": "on_weekend"
     },
     "manualOverride": null,
     "overrideExpiry": null,
@@ -1655,7 +1655,7 @@
       ]
     },
     "status": {
-      "status": "off_duty"
+      "status": "at_dept"
     },
     "manualOverride": null,
     "overrideExpiry": null,
@@ -1826,7 +1826,7 @@
       ]
     },
     "status": {
-      "status": "on_weekend"
+      "status": "at_dept"
     },
     "manualOverride": null,
     "overrideExpiry": null,
@@ -1942,7 +1942,7 @@
       ]
     },
     "status": {
-      "status": "off_duty"
+      "status": "at_dept"
     },
     "manualOverride": null,
     "overrideExpiry": null,
@@ -2058,7 +2058,9 @@
       ]
     },
     "status": {
-      "status": "off_duty"
+      "status": "in_class",
+      "room": "B2-505",
+      "batch": "CSE-6th"
     },
     "manualOverride": null,
     "overrideExpiry": null,
@@ -2156,7 +2158,7 @@
       ]
     },
     "status": {
-      "status": "off_duty"
+      "status": "on_weekend"
     },
     "manualOverride": null,
     "overrideExpiry": null,
@@ -2284,7 +2286,9 @@
       ]
     },
     "status": {
-      "status": "off_duty"
+      "status": "in_class",
+      "room": "B1-402",
+      "batch": "CIVIL"
     },
     "manualOverride": null,
     "overrideExpiry": null,
@@ -2418,7 +2422,9 @@
       ]
     },
     "status": {
-      "status": "on_weekend"
+      "status": "in_class",
+      "room": "B2-205",
+      "batch": "4th-CSE-B"
     },
     "manualOverride": null,
     "overrideExpiry": null,
