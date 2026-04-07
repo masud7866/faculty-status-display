@@ -908,7 +908,7 @@
                     <h2>Ads Management</h2>
                     <div class="file-info">
                         <strong>Upload Location:</strong> backend/public/ads/<br>
-                        <strong>Supported Formats:</strong> .jpg, .jpeg, .png, .gif, .mp4, .webm<br>
+                        <strong>Supported Formats:</strong> .jpg, .jpeg, .png, .gif, .webp, .mp4, .webm<br>
                         <strong>Instructions:</strong> Use the Upload Ads tab to add new files or click Delete to remove
                         individual files.
                     </div>
@@ -943,7 +943,7 @@
                             <div>📁 Click here or drag advertisement files to upload</div>
                             <div style="font-size: 12px; color: #6b7280; margin-top: 5px;">
                                 Max file size: 25MB per file<br>
-                                Supported: JPG, PNG, GIF, MP4, WEBM
+                                Supported: JPG, JPEG, PNG, GIF, WEBP, MP4, WEBM
                             </div>
                         </div>
                         <input type="file" id="fileInput" multiple accept="image/*,video/*" style="display: none;">
@@ -982,6 +982,12 @@
         let pendingAdUploads = []; // Store ads waiting to be uploaded: [{file, base64, filename}]
         let pendingAdDeletions = []; // Store ad filenames waiting to be deleted
         let pendingFacultyImages = []; // Store faculty images waiting to be uploaded: [{filename, base64, facultyName}]
+        const SUPPORTED_AD_EXTENSIONS = ['jpg', 'jpeg', 'png', 'gif', 'webp', 'mp4', 'webm'];
+
+        function getFileExtension(filename) {
+            const parts = filename.split('.');
+            return parts.length > 1 ? parts.pop().toLowerCase() : '';
+        }
 
         // JWT Token Helper Functions
         function getAuthToken() {
@@ -2363,10 +2369,23 @@
             progressDiv.classList.remove('hidden');
 
             let processedCount = 0;
+            let unsupportedCount = 0;
             const totalFiles = files.length;
 
             for (let i = 0; i < files.length; i++) {
                 const file = files[i];
+                const extension = getFileExtension(file.name);
+
+                if (!SUPPORTED_AD_EXTENSIONS.includes(extension)) {
+                    unsupportedCount++;
+                    const statusItem = document.createElement('div');
+                    statusItem.style.color = '#ef4444';
+                    statusItem.style.fontSize = '12px';
+                    statusItem.style.marginBottom = '4px';
+                    statusItem.textContent = `❌ ${file.name} is not supported. Allowed: ${SUPPORTED_AD_EXTENSIONS.join(', ')}`;
+                    statusDiv.appendChild(statusItem);
+                    continue;
+                }
 
                 if (file.size > 25 * 1024 * 1024) {
                     const statusItem = document.createElement('div');
@@ -2420,6 +2439,10 @@
                 markPendingChange('ads');
                 showToast(`${processedCount} ad(s) ready to deploy!`, 'success');
                 setTimeout(() => loadAds(), 500);
+            }
+
+            if (unsupportedCount > 0) {
+                showToast(`${unsupportedCount} unsupported file(s) skipped`, 'error');
             }
 
             document.getElementById('fileInput').value = '';

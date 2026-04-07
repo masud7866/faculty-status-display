@@ -304,7 +304,7 @@ app.get("/api/ads", (req, res) => {
   fs.readdir(adsDir, (err, files) => {
     if (err) return res.status(500).json({ error: "Failed to read ads directory" });
     const ads = files
-      .filter(f => /\.(jpg|jpeg|png|gif|mp4|webm)$/i.test(f))
+      .filter(f => /\.(jpg|jpeg|png|gif|webp|mp4|webm)$/i.test(f))
       .map(f => ({
         type: /\.(mp4|webm)$/i.test(f) ? "video" : "image",
         src: `/ads/${f}`
