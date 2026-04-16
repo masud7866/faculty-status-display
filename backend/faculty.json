@@ -140,7 +140,9 @@
       ]
     },
     "status": {
-      "status": "off_duty"
+      "status": "in_class",
+      "room": "B2-405",
+      "batch": "7th-CSE-A"
     },
     "manualOverride": null,
     "overrideExpiry": null,
@@ -275,7 +277,7 @@
       ]
     },
     "status": {
-      "status": "at_dept"
+      "status": "off_duty"
     },
     "manualOverride": null,
     "overrideExpiry": null,
@@ -434,7 +436,7 @@
       ]
     },
     "status": {
-      "status": "at_dept"
+      "status": "on_weekend"
     },
     "manualOverride": null,
     "overrideExpiry": null,
@@ -805,24 +807,6 @@
           "end": "11:00",
           "room": "B2-305",
           "batch": "3rd-CSE-A"
-        },
-        {
-          "start": "11:00",
-          "end": "12:00",
-          "room": "B2-305",
-          "batch": "3rd-CSE-A"
-        },
-        {
-          "start": "13:00",
-          "end": "14:00",
-          "room": "B2-306",
-          "batch": "3rd-CSE-B"
-        },
-        {
-          "start": "14:00",
-          "end": "15:00",
-          "room": "B2-306",
-          "batch": "3rd-CSE-B"
         }
       ],
       "Wednesday": [
@@ -853,38 +837,14 @@
       ],
       "Thursday": [
         {
-          "start": "10:00",
-          "end": "11:00",
-          "room": "B2-306",
-          "batch": "3rd-CSE-B"
-        },
-        {
           "start": "11:00",
           "end": "12:00",
           "room": "B2-306",
           "batch": "3rd-CSE-B"
         },
         {
-          "start": "16:00",
-          "end": "17:00",
-          "room": "B2-306",
-          "batch": "1st-CSE-MSc"
-        },
-        {
           "start": "18:00",
           "end": "19:00",
-          "room": "B2-306",
-          "batch": "3rd-CSE-Evn"
-        },
-        {
-          "start": "19:00",
-          "end": "20:00",
-          "room": "B2-306",
-          "batch": "5th-CSE-Evn"
-        },
-        {
-          "start": "20:00",
-          "end": "21:00",
           "room": "B2-306",
           "batch": "3rd-CSE-Evn"
         }
@@ -1118,9 +1078,7 @@
       ]
     },
     "status": {
-      "status": "in_class",
-      "room": "B2-303",
-      "batch": "3rd-CSE-Evn"
+      "status": "off_duty"
     },
     "manualOverride": null,
     "overrideExpiry": null,
@@ -1279,7 +1237,7 @@
       ]
     },
     "status": {
-      "status": "at_dept"
+      "status": "off_duty"
     },
     "manualOverride": null,
     "overrideExpiry": null,
@@ -1498,7 +1456,7 @@
       ]
     },
     "status": {
-      "status": "off_duty"
+      "status": "on_weekend"
     },
     "manualOverride": null,
     "overrideExpiry": null,
@@ -1657,7 +1615,9 @@
       ]
     },
     "status": {
-      "status": "at_dept"
+      "status": "in_class",
+      "room": "B2-405",
+      "batch": "7th-CSE-A"
     },
     "manualOverride": null,
     "overrideExpiry": null,
@@ -1828,7 +1788,9 @@
       ]
     },
     "status": {
-      "status": "at_dept"
+      "status": "in_class",
+      "room": "B2-304",
+      "batch": "3rd-CSE-B"
     },
     "manualOverride": null,
     "overrideExpiry": null,
@@ -1944,7 +1906,7 @@
       ]
     },
     "status": {
-      "status": "off_duty"
+      "status": "on_weekend"
     },
     "manualOverride": null,
     "overrideExpiry": null,
@@ -2060,7 +2022,7 @@
       ]
     },
     "status": {
-      "status": "at_dept"
+      "status": "on_weekend"
     },
     "manualOverride": null,
     "overrideExpiry": null,
@@ -2158,7 +2120,9 @@
       ]
     },
     "status": {
-      "status": "at_dept"
+      "status": "in_class",
+      "room": "B2-204",
+      "batch": "CSE-6th"
     },
     "manualOverride": null,
     "overrideExpiry": null,
@@ -2286,7 +2250,9 @@
       ]
     },
     "status": {
-      "status": "on_weekend"
+      "status": "in_class",
+      "room": "B1-402",
+      "batch": "CIVIL"
     },
     "manualOverride": null,
     "overrideExpiry": null,
@@ -2420,7 +2386,9 @@
       ]
     },
     "status": {
-      "status": "at_dept"
+      "status": "in_class",
+      "room": "B2-205",
+      "batch": "4th-CSE-A"
     },
     "manualOverride": null,
     "overrideExpiry": null,
