@@ -35,7 +35,7 @@
             margin-bottom: 15px;
             display: flex;
             justify-content: space-between;
-            align-items: center;
+            align-items: flex-start;
             flex-wrap: wrap;
             gap: 10px;
         }
@@ -77,19 +77,24 @@
             gap: 8px;
             flex-wrap: wrap;
             align-items: center;
+            align-self: flex-start;
         }
 
         .session-info {
-            display: inline-flex;
+            display: none;
             align-items: center;
             justify-content: center;
-            min-height: 32px;
+            min-height: 34px;
             padding: 0 8px;
             font-size: 11px;
             color: #6b7280;
             white-space: nowrap;
             border-radius: 6px;
             line-height: 1;
+        }
+
+        .session-info:not(:empty) {
+            display: inline-flex;
         }
 
         .btn {
