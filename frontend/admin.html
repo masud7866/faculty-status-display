@@ -76,6 +76,20 @@
             display: flex;
             gap: 8px;
             flex-wrap: wrap;
+            align-items: center;
+        }
+
+        .session-info {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 32px;
+            padding: 0 8px;
+            font-size: 11px;
+            color: #6b7280;
+            white-space: nowrap;
+            border-radius: 6px;
+            line-height: 1;
         }
 
         .btn {
@@ -730,7 +744,7 @@
                 <button id="deployBtn" class="btn btn-success" onclick="deployChanges()" disabled>
                     📤 Deploy Changes (<span id="changeCount">0</span>)
                 </button>
-                <span id="sessionInfo" style="font-size: 11px; color: #6b7280; white-space: nowrap;"></span>
+                <span id="sessionInfo" class="session-info"></span>
                 <button onclick="logout()" class="btn btn-danger">Logout</button>
             </div>
         </div>
