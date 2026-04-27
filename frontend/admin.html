@@ -40,6 +40,32 @@
             gap: 10px;
         }
 
+        .header-left {
+            flex: 1;
+            min-width: 260px;
+        }
+
+        .control-panel-callout {
+            margin-top: 10px;
+            background: #eff6ff;
+            border: 1px solid #93c5fd;
+            border-radius: 8px;
+            padding: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        .control-panel-callout-text {
+            color: #1e3a8a;
+            font-size: 13px;
+            line-height: 1.4;
+            flex: 1;
+            min-width: 180px;
+        }
+
         .header h1 {
             color: #1e3a8a;
             font-size: 1.5rem;
@@ -489,6 +515,14 @@
                 font-size: 12px;
             }
 
+            .control-panel-callout {
+                padding: 8px;
+            }
+
+            .control-panel-callout-text {
+                font-size: 12px;
+            }
+
             /* Make form labels smaller on mobile */
             .form-group label {
                 font-size: 12px;
@@ -683,13 +717,20 @@
 
     <div class="container" id="mainContent" style="display: none;">
         <div class="header">
-            <h1>Faculty Admin Panel</h1>
+            <div class="header-left">
+                <h1>Faculty Admin Panel</h1>
+                <div class="control-panel-callout">
+                    <div class="control-panel-callout-text">
+                        Need quick updates? You can manually update faculty status from the Control Panel.
+                    </div>
+                    <a href="control.html" class="btn btn-primary">Open Control Panel</a>
+                </div>
+            </div>
             <div class="nav-buttons">
                 <button id="deployBtn" class="btn btn-success" onclick="deployChanges()" disabled>
                     📤 Deploy Changes (<span id="changeCount">0</span>)
                 </button>
                 <span id="sessionInfo" style="font-size: 11px; color: #6b7280; white-space: nowrap;"></span>
-                <a href="control.html" class="btn btn-secondary">Control Panel</a>
                 <button onclick="logout()" class="btn btn-danger">Logout</button>
             </div>
         </div>
