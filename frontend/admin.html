@@ -1575,6 +1575,9 @@
                 <button id="deployBtn" class="btn btn-success" onclick="deployChanges()" disabled>
                     📤 Deploy Changes (<span id="changeCount">0</span>)
                 </button>
+                <button id="availableTeachersBtn" class="empty-rooms-btn small" onclick="toggleAvailableTeachersOverlay()" aria-label="Show Available Teachers">
+                    👩‍🏫 Available Teachers
+                </button>
                 <button class="empty-rooms-btn small" onclick="toggleEmptyRoomsOverlay()" aria-label="Show Empty Rooms">
                     📍 Empty Rooms
                 </button>
@@ -1941,6 +1944,17 @@
                 <button class="close-overlay-btn" onclick="toggleEmptyRoomsOverlay()" aria-label="Close Empty Rooms">✕</button>
             </div>
             <div class="empty-rooms-body"></div>
+        </div>
+    </div>
+
+    <!-- Available Teachers Overlay (reuses empty-rooms styles) -->
+    <div class="empty-rooms-overlay" id="availableTeachersOverlay">
+        <div class="empty-rooms-content">
+            <div class="empty-rooms-header">
+                <h3 class="empty-rooms-title">👩‍🏫 Available Teachers</h3>
+                <button class="close-overlay-btn" onclick="toggleAvailableTeachersOverlay()" aria-label="Close Available Teachers">✕</button>
+            </div>
+            <div class="available-teachers-body"></div>
         </div>
     </div>
 
@@ -4174,6 +4188,7 @@
         let controlPanelIsUpdating = false;
         let controlPanelInitialized = false;
         let emptyRoomsAutoRefreshStarted = false;
+        let availableTeachersAutoRefreshStarted = false;
 
         const controlPanelStatusOptions = [
             "in_class", "at_dept", "on_leave", "off_duty", "in_meeting", "on_weekend", "postponed", "exam_duty"
@@ -4921,6 +4936,86 @@
                     }, 150);
                 }
             }, 60000);
+        }
+
+        async function renderAvailableTeachersOverlay() {
+            await controlPanelEnsureFacultyData(true);
+
+            const overlay = document.getElementById('availableTeachersOverlay');
+            if (!overlay) return;
+            const content = overlay.querySelector('.available-teachers-body');
+            if (!content) return;
+
+            if (!controlPanelFacultyData.length) {
+                content.innerHTML = `
+                    <div class="empty-rooms-empty-state">
+                        No faculty data is available right now.
+                    </div>
+                `;
+                return;
+            }
+
+            // Group faculty by department
+            const deptMap = {};
+            controlPanelFacultyData.forEach(f => {
+                const dept = f.department || f.dept || 'General';
+                if (!deptMap[dept]) deptMap[dept] = [];
+                const statusObj = controlPanelHasValidManualOverride(f) ? f.manualOverride : (typeof f.status === 'object' && f.status !== null ? f.status.status : f.status || 'off_duty');
+                deptMap[dept].push({ name: f.name, status: statusObj });
+            });
+
+            // Render departments with counts and teacher tiles
+            const deptKeys = Object.keys(deptMap).sort();
+            content.innerHTML = deptKeys.map(dept => {
+                const list = deptMap[dept];
+                const total = list.length;
+                const availableCount = list.filter(t => t.status === 'at_dept').length;
+
+                const teachersHtml = list.map(t => `
+                    <div class="room-item" style="display:flex;flex-direction:column;align-items:center;gap:8px;padding:10px;">
+                        <div style="font-weight:600;color:#1e3a8a;">${t.name}</div>
+                        <div class="status ${t.status}">${controlPanelLabels[t.status] || t.status}</div>
+                    </div>
+                `).join('');
+
+                return `
+                    <div class="time-slot">
+                        <div class="time-slot-header">
+                            <h3 class="time-slot-title">${dept}</h3>
+                            <div class="time-slot-count">${availableCount}/${total} Available</div>
+                        </div>
+                        <div class="empty-rooms-grid">
+                            ${teachersHtml}
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        function startAvailableTeachersAutoRefresh() {
+            if (availableTeachersAutoRefreshStarted) return;
+            availableTeachersAutoRefreshStarted = true;
+
+            setInterval(async () => {
+                const overlay = document.getElementById('availableTeachersOverlay');
+                if (overlay && overlay.classList.contains('active')) {
+                    await renderAvailableTeachersOverlay();
+                }
+            }, 60000);
+        }
+
+        async function toggleAvailableTeachersOverlay() {
+            const overlay = document.getElementById('availableTeachersOverlay');
+            if (!overlay) return;
+
+            if (overlay.classList.contains('active')) {
+                overlay.classList.remove('active');
+                return;
+            }
+
+            await renderAvailableTeachersOverlay();
+            overlay.classList.add('active');
+            startAvailableTeachersAutoRefresh();
         }
 
         // Custom Expiry Modal Functions
