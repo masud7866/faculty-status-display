@@ -927,33 +927,36 @@
             justify-content: space-between;
             align-items: center;
             gap: 12px;
-            margin-bottom: 18px;
-            padding: 14px 16px;
+            margin: -6px -6px 18px;
+            padding: 12px 14px;
             position: sticky;
             top: 0;
-            background: linear-gradient(180deg, rgba(255,255,255,0.98), rgba(255,255,255,0.92));
+            background: rgba(255, 255, 255, 0.96);
             z-index: 3;
-            border-bottom: 1px solid #e5e7eb;
+            border: 1px solid #e5e7eb;
+            border-radius: 16px;
+            box-shadow: 0 10px 24px rgba(15, 23, 42, 0.08);
             backdrop-filter: blur(8px);
         }
 
         .empty-rooms-title {
             color: #1e3a8a;
-            font-size: 1.15rem;
-            font-weight: 600;
+            font-size: 1rem;
+            font-weight: 700;
             margin: 0;
             display: flex;
             align-items: center;
             gap: 8px;
+            letter-spacing: 0.01em;
         }
 
         .close-overlay-btn {
-            background: #f3f4f6;
-            color: white;
+            background: #ffffff;
+            color: #374151;
             border: 1px solid #d1d5db;
             border-radius: 999px;
-            width: 38px;
-            height: 38px;
+            width: 36px;
+            height: 36px;
             display: inline-flex;
             align-items: center;
             justify-content: center;
@@ -961,16 +964,16 @@
             cursor: pointer;
             font-size: 18px;
             font-weight: 700;
-            color: #374151;
             flex: 0 0 auto;
-            box-shadow: 0 2px 8px rgba(16, 24, 40, 0.08);
-            transition: background-color 0.18s, transform 0.1s, border-color 0.18s;
+            box-shadow: 0 4px 10px rgba(16, 24, 40, 0.08);
+            transition: background-color 0.18s, transform 0.1s, border-color 0.18s, box-shadow 0.18s;
         }
 
         .close-overlay-btn:hover {
-            background: #e5e7eb;
+            background: #f8fafc;
             border-color: #9ca3af;
             transform: translateY(-1px);
+            box-shadow: 0 6px 14px rgba(16, 24, 40, 0.12);
         }
 
         .time-slot-header {
@@ -996,43 +999,144 @@
             font-weight: 500;
         }
 
+        .empty-rooms-empty-state {
+            padding: 24px 18px;
+            border: 1px dashed #cbd5e1;
+            border-radius: 14px;
+            background: #f8fafc;
+            color: #475569;
+            text-align: center;
+            font-weight: 500;
+        }
+
         .empty-rooms-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(80px, 1fr));
+            grid-template-columns: repeat(auto-fill, minmax(75px, 1fr));
             gap: 8px;
-            margin-top: 10px;
+            margin-top: 12px;
         }
 
         .room-item {
-            background: #10b981;
+            background: linear-gradient(135deg, #10b981 0%, #059669 100%);
             color: white;
-            padding: 8px 12px;
-            border-radius: 6px;
+            padding: 10px 8px;
+            border-radius: 8px;
             text-align: center;
-            font-weight: 500;
-            font-size: 0.9rem;
+            font-weight: 600;
+            font-size: 0.85rem;
+            cursor: default;
+            transition: all 0.2s ease;
+            box-shadow: 0 2px 8px rgba(16, 185, 129, 0.12);
+            border: 1px solid rgba(5, 150, 105, 0.4);
+        }
+
+        .room-item:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(16, 185, 129, 0.18);
         }
 
         .room-item.occupied {
-            background: #ef4444;
-            opacity: 0.6;
+            background: linear-gradient(135deg, #fca5a5 0%, #ef4444 100%);
+            border-color: rgba(239, 68, 68, 0.4);
+            opacity: 0.7;
+            box-shadow: 0 2px 8px rgba(239, 68, 68, 0.1);
+        }
+
+        .empty-rooms-content {
+            background: white;
+            border-radius: 16px;
+            padding: 0;
+            max-width: 1100px;
+            width: 100%;
+            max-height: 90vh;
+            overflow-y: auto;
+            box-shadow: 0 20px 48px rgba(15, 23, 42, 0.24);
+            transform: scale(0.95);
+            transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+            scroll-behavior: smooth;
+            border: 1px solid rgba(255, 255, 255, 0.6);
+        }
+
+        .empty-rooms-content .empty-rooms-header {
+            margin-top: 0;
+        }
+
+        .empty-rooms-body {
+            padding: 8px 16px 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .time-slot {
+            background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
+            border: 1px solid #e2e8f0;
+            border-radius: 12px;
+            padding: 14px 16px;
+            transition: all 0.2s ease;
+        }
+
+        .time-slot:hover {
+            border-color: #cbd5e1;
+            background: linear-gradient(135deg, #f1f5f9 0%, #e2e8f0 100%);
+            box-shadow: 0 4px 12px rgba(15, 23, 42, 0.06);
+        }
+
+        .current-time-indicator {
+            background: linear-gradient(135deg, #fffaec 0%, #fef3c7 100%) !important;
+            border: 2px solid #f59e0b !important;
+            box-shadow: 0 8px 20px rgba(245, 158, 11, 0.12);
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { box-shadow: 0 8px 20px rgba(245, 158, 11, 0.12); }
+            50% { box-shadow: 0 8px 28px rgba(245, 158, 11, 0.2); }
+        }
+
+        .time-slot-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 12px;
+            gap: 12px;
+        }
+
+        .time-slot-title {
+            font-size: 1rem;
+            font-weight: 600;
+            color: #1e3a8a;
+            margin: 0;
+        }
+
+        .time-slot-count {
+            background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+            color: white;
+            padding: 5px 10px;
+            border-radius: 8px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            white-space: nowrap;
+            box-shadow: 0 2px 8px rgba(16, 185, 129, 0.15);
         }
 
         .no-empty-rooms {
-            color: #6b7280;
+            color: #92400e;
             font-style: italic;
             text-align: center;
-            padding: 20px;
-            background: #fef3c7;
-            border-radius: 8px;
-            border: 1px solid #f59e0b;
+            padding: 16px 12px;
+            background: linear-gradient(135deg, #fef3c7 0%, #fde68a 100%);
+            border-radius: 10px;
+            border: 1px solid #fcd34d;
+            font-weight: 500;
+            font-size: 0.95rem;
         }
 
         .legend {
             display: flex;
-            gap: 15px;
+            gap: 16px;
             justify-content: center;
-            margin-bottom: 20px;
+            margin: 16px 0 12px;
             flex-wrap: wrap;
         }
 
@@ -1041,12 +1145,14 @@
             align-items: center;
             gap: 6px;
             font-size: 0.9rem;
+            color: #475569;
+            font-weight: 500;
         }
 
         .legend-color {
             width: 16px;
             height: 16px;
-            border-radius: 4px;
+            border-radius: 5px;
         }
 
         .legend-available {
@@ -1055,46 +1161,6 @@
 
         .legend-occupied {
             background: #ef4444;
-        }
-
-        .empty-rooms-content {
-            background: white;
-            border-radius: 20px;
-            padding: 0;
-            max-width: 1080px;
-            width: 100%;
-            max-height: 90vh;
-            overflow-y: auto;
-            box-shadow: 0 24px 48px rgba(15, 23, 42, 0.28);
-            transform: scale(0.9);
-            transition: transform 0.3s ease;
-            scroll-behavior: smooth;
-            border: 1px solid rgba(255,255,255,0.5);
-        }
-
-        .empty-rooms-content .empty-rooms-header {
-            margin-top: 0;
-        }
-
-        .empty-rooms-body {
-            padding: 0 20px 20px;
-        }
-
-        .current-time-indicator {
-            background: #fffaec !important;
-            border: 2px solid #f59e0b;
-            animation: pulse 2s infinite;
-            transition: transform 0.3s ease;
-            scroll-margin-top: 20px;
-        }
-
-        .time-slot {
-            margin-bottom: 20px;
-            background: #f8fafc;
-            border-radius: 12px;
-            padding: 15px;
-            border-left: 4px solid #059669;
-            scroll-margin-top: 20px;
         }
 
         .custom-expiry-modal {
@@ -3998,6 +4064,7 @@
         let controlPanelBulkTimerInterval = null;
         let controlPanelIsUpdating = false;
         let controlPanelInitialized = false;
+        let emptyRoomsAutoRefreshStarted = false;
 
         const controlPanelStatusOptions = [
             "in_class", "at_dept", "on_leave", "off_duty", "in_meeting", "on_weekend", "postponed", "exam_duty"
@@ -4049,6 +4116,25 @@
                 showToast("Failed to fetch faculty data", "error");
                 return null;
             }
+        }
+
+        async function controlPanelEnsureFacultyData(forceRefresh = false) {
+            if (!forceRefresh && controlPanelFacultyData.length > 0) {
+                return controlPanelFacultyData;
+            }
+
+            const freshData = await controlPanelFetchFacultyData();
+            if (freshData) {
+                controlPanelFacultyData = freshData;
+                return controlPanelFacultyData;
+            }
+
+            if (facultyData.length > 0) {
+                controlPanelFacultyData = [...facultyData];
+                return controlPanelFacultyData;
+            }
+
+            return null;
         }
 
         async function controlPanelUpdateFaculty(updates) {
@@ -4116,15 +4202,11 @@
 
             // Load initial data
             controlPanelLoadData();
-            
-            // Start empty rooms auto-refresh
-            startEmptyRoomsAutoRefresh();
         }
 
         async function controlPanelLoadData() {
-            const data = await controlPanelFetchFacultyData();
+            const data = await controlPanelEnsureFacultyData(true);
             if (data) {
-                controlPanelFacultyData = data;
                 controlPanelRender();
             }
         }
@@ -4587,13 +4669,24 @@
             return `${convertTo12Hour(start)} - ${convertTo12Hour(end)}`;
         }
 
-        function renderEmptyRoomsOverlay() {
-            const emptyRoomsData = getEmptyRoomsData();
-            const currentDay = getCurrentDay();
-            const currentTimeSlot = getCurrentTimeSlot();
+        async function renderEmptyRoomsOverlay() {
+            await controlPanelEnsureFacultyData(true);
 
+            const emptyRoomsData = getEmptyRoomsData();
             const overlay = document.getElementById('emptyRoomsOverlay');
+            if (!overlay) return;
             const content = overlay.querySelector('.empty-rooms-body');
+
+            if (!content) return;
+
+            if (!controlPanelFacultyData.length) {
+                content.innerHTML = `
+                    <div class="empty-rooms-empty-state">
+                        No faculty data is available right now.
+                    </div>
+                `;
+                return;
+            }
 
             content.innerHTML = `
                 ${emptyRoomsData.map((data, index) => `
@@ -4602,7 +4695,7 @@
                          data-time-slot="${data.timeSlot}">
                         <div class="time-slot-header">
                             <h3 class="time-slot-title">
-                                ${formatTimeSlotFor12Hour(data.timeSlot)} ${data.isCurrentSlot ? '🔴 Current' : ''}
+                                ${formatTimeSlotFor12Hour(data.timeSlot)} ${data.isCurrentSlot ? 'Current' : ''}
                             </h3>
                             <div class="time-slot-count">
                                 ${data.emptyCount}/${data.totalRooms} Available
@@ -4652,26 +4745,31 @@
             }
         }
 
-        function toggleEmptyRoomsOverlay() {
+        async function toggleEmptyRoomsOverlay() {
             const overlay = document.getElementById('emptyRoomsOverlay');
             if (!overlay) return;
 
             if (overlay.classList.contains('active')) {
                 overlay.classList.remove('active');
-            } else {
-                renderEmptyRoomsOverlay();
-                overlay.classList.add('active');
+                return;
             }
+
+            await renderEmptyRoomsOverlay();
+            overlay.classList.add('active');
+            startEmptyRoomsAutoRefresh();
         }
 
         function startEmptyRoomsAutoRefresh() {
-            setInterval(() => {
+            if (emptyRoomsAutoRefreshStarted) return;
+            emptyRoomsAutoRefreshStarted = true;
+
+            setInterval(async () => {
                 const overlay = document.getElementById('emptyRoomsOverlay');
                 if (overlay && overlay.classList.contains('active')) {
                     const container = document.querySelector('.empty-rooms-content');
                     const savedScrollTop = container ? container.scrollTop : 0;
 
-                    renderEmptyRoomsOverlay();
+                    await renderEmptyRoomsOverlay();
 
                     setTimeout(() => {
                         if (container && Math.abs(container.scrollTop - savedScrollTop) < 100) {
