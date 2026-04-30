@@ -1691,10 +1691,10 @@
                     <div class="control-panel-controls" id="controls" role="main" aria-label="Faculty Status Controls"></div>
 
                     <div class="empty-rooms-overlay" id="emptyRoomsOverlay">
+                        <button class="close-overlay-btn" onclick="toggleEmptyRoomsOverlay()" aria-label="Close Empty Rooms">✖</button>
                         <div class="empty-rooms-content">
                             <div class="empty-rooms-header">
                                 <h3 class="empty-rooms-title">Available Rooms and Batches</h3>
-                                <button class="close-overlay-btn" onclick="toggleEmptyRoomsOverlay()">✖</button>
                             </div>
                             <div class="empty-rooms-body"></div>
                         </div>
@@ -4392,7 +4392,9 @@
                             f.overrideExpiry = null;
                         });
                         document.getElementById("bulkStatus").value = "";
+                        controlPanelIsUpdating = false;
                         controlPanelRender();
+                        controlPanelIsUpdating = true;
 
                         try {
                             await controlPanelUpdateFaculty(controlPanelFacultyData.map(f => ({
@@ -4444,6 +4446,10 @@
                 f.manualOverride = status;
                 f.overrideExpiry = expiry.toISOString();
             });
+
+            controlPanelIsUpdating = false;
+            controlPanelRender();
+            controlPanelIsUpdating = true;
 
             const success = await controlPanelUpdateFaculty(controlPanelFacultyData.map(f => ({
                 name: f.name,
@@ -4755,6 +4761,10 @@
                     manualOverride: f.manualOverride,
                     overrideExpiry: expiryDate.toISOString()
                 }));
+
+                controlPanelIsUpdating = false;
+                controlPanelRender();
+                controlPanelIsUpdating = true;
 
                 const success = await controlPanelUpdateFaculty(updates);
                 if (success) {
