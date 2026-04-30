@@ -4080,15 +4080,49 @@
             if (controlPanelIsUpdating) return;
             controlPanelIsUpdating = true;
 
-            const controls = document.getElementById('controls');
-            controls.innerHTML = "";
-
-            controlPanelFacultyData.forEach((f, i) => {
-                const div = document.createElement("div");
-                div.className = "control-panel-faculty-card";
-                div.id = `faculty-card-${f.name}`;
+            const renderFaculty = (f, i) => {
+                let div = document.getElementById(`faculty-card-${f.name}`);
+                const isNew = !div;
+                if (isNew) {
+                    div = document.createElement("div");
+                    div.id = `faculty-card-${f.name}`;
+                    div.className = "control-panel-faculty-card";
+                    document.getElementById('controls').appendChild(div);
+                }
 
                 const currentStatus = controlPanelGetStatusString(f);
+                const select = document.getElementById(`status-${f.name}`);
+                if (select && select.value === currentStatus && !isNew) {
+                    const timerBtn = document.getElementById(`timer-btn-${f.name}`);
+                    if (timerBtn) {
+                        if (controlPanelHasValidManualOverride(f)) {
+                            timerBtn.style.border = "1px solid #fd7e14";
+                            timerBtn.style.background = "#fff7e6";
+                            timerBtn.style.color = "#b45309";
+                            timerBtn.disabled = false;
+                            timerBtn.textContent = `Clear override (${controlPanelGetRemainingTime(f.overrideExpiry)})`;
+                        } else {
+                            timerBtn.style.border = "1px solid #e5e7eb";
+                            timerBtn.style.background = "#f3f4f6";
+                            timerBtn.style.color = "#a1a1aa";
+                            timerBtn.disabled = true;
+                            timerBtn.textContent = "No manual override";
+                        }
+                    }
+
+                    const customExpiryBtn = document.getElementById(`custom-expiry-btn-${f.name}`);
+                    if (customExpiryBtn) {
+                        customExpiryBtn.disabled = !controlPanelHasValidManualOverride(f);
+                        if (controlPanelHasValidManualOverride(f)) {
+                            customExpiryBtn.classList.add('active');
+                        } else {
+                            customExpiryBtn.classList.remove('active');
+                        }
+                    }
+                    return;
+                }
+
+                div.innerHTML = "";
                 const img = document.createElement("img");
                 img.src = "https://faculty-status-display.onrender.com" + f.image;
                 img.alt = f.name;
@@ -4099,20 +4133,20 @@
                 label.appendChild(img);
                 label.appendChild(nameSpan);
 
-                const select = document.createElement("select");
-                select.id = `status-${f.name}`;
+                const selectElement = document.createElement("select");
+                selectElement.id = `status-${f.name}`;
                 controlPanelStatusOptions.forEach(opt => {
                     const option = document.createElement("option");
                     option.value = opt;
                     option.textContent = controlPanelLabels[opt];
                     if (opt === currentStatus) option.selected = true;
-                    select.appendChild(option);
+                    selectElement.appendChild(option);
                 });
 
-                select.addEventListener("change", async () => {
+                selectElement.addEventListener("change", async () => {
                     if (controlPanelIsUpdating) return;
                     controlPanelIsUpdating = true;
-                    const newValue = select.value;
+                    const newValue = selectElement.value;
                     controlPanelFacultyData[i].manualOverride = newValue;
                     const now = new Date();
                     let expiry = new Date(now);
@@ -4145,11 +4179,17 @@
                 customExpiryBtn.className = "custom-expiry-btn-small";
                 customExpiryBtn.textContent = "⏰ Custom Expiry";
                 customExpiryBtn.disabled = !controlPanelHasValidManualOverride(f);
-                if (controlPanelHasValidManualOverride(f)) customExpiryBtn.classList.add('active');
+                if (controlPanelHasValidManualOverride(f)) {
+                    customExpiryBtn.classList.add('active');
+                }
                 customExpiryBtn.onclick = () => openCustomExpiryModal(f.name, false);
 
                 const timerBtn = document.createElement("button");
                 timerBtn.id = `timer-btn-${f.name}`;
+                timerBtn.style.padding = "0.3rem 0.8rem";
+                timerBtn.style.borderRadius = "6px";
+                timerBtn.style.fontWeight = "500";
+                timerBtn.style.fontSize = "0.85rem";
                 if (controlPanelHasValidManualOverride(f)) {
                     timerBtn.style.border = "1px solid #fd7e14";
                     timerBtn.style.background = "#fff7e6";
@@ -4167,6 +4207,7 @@
                 timerBtn.onclick = async () => {
                     if (controlPanelIsUpdating) return;
                     controlPanelIsUpdating = true;
+                    timerBtn.disabled = true;
                     controlPanelFacultyData[i].manualOverride = null;
                     controlPanelFacultyData[i].overrideExpiry = null;
 
@@ -4184,17 +4225,39 @@
                             controlPanelShowMessage("Override cleared");
                         }
                     }
+                    timerBtn.disabled = false;
                     controlPanelIsUpdating = false;
                 };
 
                 div.appendChild(label);
-                div.appendChild(select);
+                div.appendChild(selectElement);
                 div.appendChild(customExpiryBtn);
                 div.appendChild(timerBtn);
-                controls.appendChild(div);
-            });
 
-            controlPanelIsUpdating = false;
+                if (controlPanelHasValidManualOverride(f)) {
+                    const intervalId = setInterval(() => {
+                        const btn = document.getElementById(`timer-btn-${f.name}`);
+                        if (btn) {
+                            btn.textContent = `Clear override (${controlPanelGetRemainingTime(f.overrideExpiry)})`;
+                            if (!controlPanelHasValidManualOverride(f)) {
+                                clearInterval(intervalId);
+                                controlPanelTimerIntervals = controlPanelTimerIntervals.filter(id => id !== intervalId);
+                                controlPanelRender();
+                            }
+                        }
+                    }, 1000);
+                    controlPanelTimerIntervals.push(intervalId);
+                }
+            };
+
+            requestAnimationFrame(() => {
+                controlPanelTimerIntervals.forEach(clearInterval);
+                controlPanelTimerIntervals = [];
+                const controls = document.getElementById('controls');
+                controls.innerHTML = "";
+                controlPanelFacultyData.forEach(renderFaculty);
+                controlPanelIsUpdating = false;
+            });
         }
 
         async function setStatusForAll(status) {
