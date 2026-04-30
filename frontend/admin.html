@@ -875,6 +875,49 @@
             cursor: not-allowed;
         }
 
+        .control-panel-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            gap: 20px;
+            flex-wrap: wrap;
+        }
+
+        .control-panel-header-info {
+            font-size: 0.9rem;
+            color: #6b7280;
+            margin: 0;
+        }
+
+        .control-panel-faculty-card label > div {
+            display: flex;
+            flex-direction: column;
+            gap: 0.15rem;
+        }
+
+        .control-panel-faculty-card label > div:last-child {
+            font-size: 0.8rem;
+            color: #6b7280;
+            white-space: pre-line;
+            line-height: 1.3;
+        }
+
+        @media (max-width: 768px) {
+            .control-panel-container { gap: 1.2rem; }
+            .control-panel-header { flex-direction: column; gap: 12px; }
+            .control-panel-bulk-status { padding: 1rem; gap: 0.6rem; }
+            .control-panel-faculty-card { padding: 1rem; gap: 0.7rem; }
+            .control-panel-faculty-card label { font-size: 0.95rem; }
+            .control-panel-faculty-card img { width: 40px; height: 40px; }
+        }
+
+        @media (max-width: 600px) {
+            .control-panel-bulk-status,
+            .control-panel-faculty-card { padding: 0.9rem; }
+            .control-panel-controls { gap: 0.6rem; }
+            .control-panel-faculty-card img { width: 36px; height: 36px; }
+        }
+
         .empty-rooms-btn {
             padding: 0.7rem 1.3rem;
             background: #059669;
@@ -1487,15 +1530,89 @@
 
         <div class="section">
             <div class="tabs">
-                <button class="tab active" onclick="showTab('faculty')">Faculty</button>
-                <button class="tab" onclick="showTab('control')">Control Panel</button>
+                <button class="tab active" onclick="showTab('control')">Control Panel</button>
+                <button class="tab" onclick="showTab('faculty')">Faculty</button>
                 <button class="tab" onclick="showTab('marquee')">Marquee</button>
                 <button class="tab" onclick="showTab('ads')">Ads</button>
                 <button class="tab" onclick="showTab('upload')">Upload Ads</button>
             </div>
 
+            <!-- Control Panel Tab -->
+            <div id="control-tab" class="tab-content active">
+                <div class="control-panel-container" style="margin-bottom: 0;">
+                    <div class="control-panel-header">
+                        <div>
+                            <h2 style="margin: 0 0 12px 0; font-size: 1.5rem;">Faculty Status Control</h2>
+                            <div class="control-panel-header-info">Manage faculty status, overrides, and room/batch assignments</div>
+                        </div>
+                        <button class="empty-rooms-btn" onclick="toggleEmptyRoomsOverlay()" style="margin-bottom: 0;">
+                            📍 Empty Rooms
+                        </button>
+                    </div>
+
+                    <div class="control-panel-bulk-status" role="region" aria-labelledby="bulkStatusLabel">
+                        <label id="bulkStatusLabel" for="bulkStatus">Set Status for All Faculty:</label>
+                        <select id="bulkStatus" onchange="setStatusForAll(this.value)" aria-label="Bulk status selector">
+                            <option value="">-- Select Status --</option>
+                        </select>
+                    </div>
+
+                    <div class="control-panel-controls" id="controls" role="main" aria-label="Faculty Status Controls"></div>
+
+                    <!-- Custom Expiry Modal -->
+                    <div class="custom-expiry-modal" id="customExpiryModal">
+                        <div class="custom-expiry-content">
+                            <div class="custom-expiry-header">
+                                <h3 class="custom-expiry-title">Set Custom Expiry Time</h3>
+                                <button class="custom-expiry-close" onclick="closeCustomExpiryModal()">✕</button>
+                            </div>
+
+                            <div class="expiry-mode-selector">
+                                <button class="expiry-mode-btn active" data-mode="duration">Duration</button>
+                                <button class="expiry-mode-btn" data-mode="datetime">Date & Time</button>
+                            </div>
+
+                            <div class="duration-section">
+                                <div class="duration-inputs">
+                                    <div class="duration-input">
+                                        <label for="durationDays">Days</label>
+                                        <input type="number" id="durationDays" min="0" max="30" value="0">
+                                    </div>
+                                    <div class="duration-input">
+                                        <label for="durationHours">Hours</label>
+                                        <input type="number" id="durationHours" min="0" max="23" value="1">
+                                    </div>
+                                    <div class="duration-input">
+                                        <label for="durationMinutes">Minutes</label>
+                                        <input type="number" id="durationMinutes" min="0" max="59" value="0">
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="datetime-section hidden">
+                                <div class="datetime-inputs">
+                                    <div class="datetime-input">
+                                        <label for="expiryDate">Date</label>
+                                        <input type="date" id="expiryDate">
+                                    </div>
+                                    <div class="datetime-input">
+                                        <label for="expiryTime">Time</label>
+                                        <input type="time" id="expiryTime">
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="custom-expiry-actions">
+                                <button class="custom-expiry-btn cancel" onclick="closeCustomExpiryModal()">Cancel</button>
+                                <button class="custom-expiry-btn save" onclick="saveCustomExpiry()">Set Expiry</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
             <!-- Faculty Management Tab -->
-            <div id="faculty-tab" class="tab-content active">
+            <div id="faculty-tab" class="tab-content">
                 <!-- Existing Faculty Section - Shown First -->
                 <div class="section">
                     <h2>Existing Faculty</h2>
@@ -1759,70 +1876,6 @@
                         4. Drag and drop your advertisement files<br>
                         5. Add commit message and commit changes<br>
                         6. Wait for deployment (2-3 minutes)
-                    </div>
-                </div>
-            </div>
-
-            <!-- Control Panel Tab -->
-            <div id="control-tab" class="tab-content">
-                <div class="control-panel-container">
-                    <div class="control-panel-bulk-status" role="region" aria-labelledby="bulkStatusLabel">
-                        <label id="bulkStatusLabel" for="bulkStatus">Set Status for All Faculty:</label>
-                        <select id="bulkStatus" onchange="setStatusForAll(this.value)" aria-label="Bulk status selector">
-                            <option value="">-- Select Status --</option>
-                        </select>
-                    </div>
-
-                    <div class="control-panel-controls" id="controls" role="main" aria-label="Faculty Status Controls"></div>
-
-                    <!-- Custom Expiry Modal -->
-                    <div class="custom-expiry-modal" id="customExpiryModal">
-                        <div class="custom-expiry-content">
-                            <div class="custom-expiry-header">
-                                <h3 class="custom-expiry-title">Set Custom Expiry Time</h3>
-                                <button class="custom-expiry-close" onclick="closeCustomExpiryModal()">✕</button>
-                            </div>
-
-                            <div class="expiry-mode-selector">
-                                <button class="expiry-mode-btn active" data-mode="duration">Duration</button>
-                                <button class="expiry-mode-btn" data-mode="datetime">Date & Time</button>
-                            </div>
-
-                            <div class="duration-section">
-                                <div class="duration-inputs">
-                                    <div class="duration-input">
-                                        <label for="durationDays">Days</label>
-                                        <input type="number" id="durationDays" min="0" max="30" value="0">
-                                    </div>
-                                    <div class="duration-input">
-                                        <label for="durationHours">Hours</label>
-                                        <input type="number" id="durationHours" min="0" max="23" value="1">
-                                    </div>
-                                    <div class="duration-input">
-                                        <label for="durationMinutes">Minutes</label>
-                                        <input type="number" id="durationMinutes" min="0" max="59" value="0">
-                                    </div>
-                                </div>
-                            </div>
-
-                            <div class="datetime-section hidden">
-                                <div class="datetime-inputs">
-                                    <div class="datetime-input">
-                                        <label for="expiryDate">Date</label>
-                                        <input type="date" id="expiryDate">
-                                    </div>
-                                    <div class="datetime-input">
-                                        <label for="expiryTime">Time</label>
-                                        <input type="time" id="expiryTime">
-                                    </div>
-                                </div>
-                            </div>
-
-                            <div class="custom-expiry-actions">
-                                <button class="custom-expiry-btn cancel" onclick="closeCustomExpiryModal()">Cancel</button>
-                                <button class="custom-expiry-btn save" onclick="saveCustomExpiry()">Set Expiry</button>
-                            </div>
-                        </div>
                     </div>
                 </div>
             </div>
@@ -4293,10 +4346,44 @@
                 img.alt = f.name;
 
                 const label = document.createElement("label");
-                const nameSpan = document.createElement("span");
-                nameSpan.textContent = f.name;
+
+                // Create a container for name and room/batch info
+                const nameContainer = document.createElement("div");
+                nameContainer.style.display = "flex";
+                nameContainer.style.flexDirection = "column";
+                nameContainer.style.gap = "0.15rem";
+
+                // Add the name
+                const nameText = document.createElement("span");
+                nameText.textContent = f.name;
+                nameContainer.appendChild(nameText);
+
+                // Add room/batch info if available
+                let room = null, batch = null;
+                let statusObj = controlPanelHasValidManualOverride(f) ? f.manualOverride : f.status;
+                if (typeof statusObj === "object" && statusObj !== null) {
+                    room = statusObj.room || null;
+                    batch = statusObj.batch || null;
+                }
+
+                if (room || batch) {
+                    const infoDiv = document.createElement("div");
+                    infoDiv.style.fontSize = "0.8rem";
+                    infoDiv.style.color = "#6b7280";
+                    infoDiv.style.lineHeight = "1.3";
+                    infoDiv.style.whiteSpace = "pre-line";
+
+                    let infoText = "";
+                    if (room) infoText += `Room: ${room}`;
+                    if (room && batch) infoText += "\n";
+                    if (batch) infoText += `Batch: ${batch}`;
+
+                    infoDiv.textContent = infoText;
+                    nameContainer.appendChild(infoDiv);
+                }
+
                 label.appendChild(img);
-                label.appendChild(nameSpan);
+                label.appendChild(nameContainer);
 
                 const selectElement = document.createElement("select");
                 selectElement.id = `status-${f.name}`;
