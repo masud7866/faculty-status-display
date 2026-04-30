@@ -902,6 +902,61 @@
             line-height: 1.3;
         }
 
+        /* Desktop sizing constraints for control elements to avoid overly wide selectors */
+        @media (min-width: 1024px) {
+            .control-panel-bulk-status select,
+            .control-panel-faculty-card select {
+                width: auto;
+                max-width: 420px;
+                min-width: 180px;
+                align-self: flex-start;
+            }
+
+            .control-panel-faculty-card button,
+            .control-panel-faculty-card .custom-expiry-btn-small {
+                width: auto;
+                align-self: flex-start;
+            }
+        }
+
+        /* Inline layout for wide screens: label + controls on one row */
+        @media (min-width: 1200px) {
+            .control-panel-bulk-status {
+                flex-direction: row;
+                align-items: center;
+                gap: 12px;
+            }
+
+            .control-panel-bulk-status label {
+                margin: 0;
+                flex: 0 0 auto;
+                white-space: nowrap;
+            }
+
+            .control-panel-bulk-status select {
+                flex: 0 0 auto;
+                margin-left: 0;
+            }
+
+            .control-panel-faculty-card {
+                flex-direction: row;
+                align-items: center;
+                gap: 16px;
+            }
+
+            .control-panel-faculty-card label {
+                flex: 1 1 auto;
+                margin-bottom: 0;
+            }
+
+            .control-panel-faculty-card select,
+            .control-panel-faculty-card button,
+            .control-panel-faculty-card .custom-expiry-btn-small {
+                flex: 0 0 auto;
+                margin-left: 8px;
+            }
+        }
+
         @media (max-width: 768px) {
             .control-panel-container { gap: 1.2rem; }
             .control-panel-header { flex-direction: column; gap: 12px; }
