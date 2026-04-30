@@ -1545,9 +1545,6 @@
                             <h2 style="margin: 0 0 12px 0; font-size: 1.5rem;">Faculty Status Control</h2>
                             <div class="control-panel-header-info">Manage faculty status, overrides, and room/batch assignments</div>
                         </div>
-                        <button class="empty-rooms-btn" onclick="toggleEmptyRoomsOverlay()" style="margin-bottom: 0;">
-                            📍 Empty Rooms
-                        </button>
                     </div>
 
                     <div class="control-panel-bulk-status" role="region" aria-labelledby="bulkStatusLabel">
@@ -1993,6 +1990,10 @@
             loadAds();
             setupFileUpload();
             startSessionKeepAlive(); // Keep session active during editing
+            // Initialize control panel if it's the active tab
+            if (document.getElementById('control-tab').classList.contains('active')) {
+                initializeControlPanel();
+            }
         }
 
         // Session keep-alive mechanism (now using JWT tokens)
@@ -5017,10 +5018,13 @@
         const originalShowTab = showTab;
         showTab = function(tabName) {
             originalShowTab.call(this, tabName);
-            if (tabName === 'control' && !controlPanelInitialized) {
-                initializeControlPanel();
-            } else if (tabName === 'control') {
-                controlPanelLoadData();
+            if (tabName === 'control') {
+                if (!controlPanelInitialized) {
+                    initializeControlPanel();
+                } else {
+                    // Always reload data when switching to control tab
+                    controlPanelLoadData();
+                }
             }
         };
     </script>
