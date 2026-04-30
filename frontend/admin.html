@@ -1140,6 +1140,85 @@
             box-shadow: 0 2px 8px rgba(239, 68, 68, 0.1);
         }
 
+        /* Teacher tile styles for Available Teachers overlay */
+        .teacher-tile {
+            background: white;
+            color: #374151;
+            padding: 8px;
+            border-radius: 8px;
+            text-align: center;
+            font-weight: 600;
+            font-size: 0.85rem;
+            box-shadow: 0 2px 8px rgba(15, 23, 42, 0.06);
+            border: 1px solid #e5e7eb;
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .teacher-tile .teacher-name {
+            color: #1e3a8a;
+            font-weight: 700;
+            font-size: 0.95rem;
+        }
+
+        .teacher-tile.available {
+            /* reuse room-item green background for available */
+            background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+            color: white;
+            border-color: rgba(5, 150, 105, 0.4);
+            box-shadow: 0 2px 8px rgba(16, 185, 129, 0.12);
+        }
+
+        /* Status color palette copied from frontend/index.html (canonical) */
+        .status {
+            border-radius: 30px;
+            padding: 0.35em 0.65em;
+            font-size: 0.8rem;
+            display: inline-block;
+            line-height: 1.1;
+            font-weight: 600;
+        }
+
+        .status.in_class {
+            background: #e0e7ff;
+            color: #2563eb;
+        }
+
+        .status.at_dept {
+            background: #d1fae5;
+            color: #059669;
+        }
+
+        .status.in_meeting,
+        .status.exam_duty {
+            background: #fef3c7;
+            color: #b45309;
+        }
+
+        .status.on_leave {
+            background: #fee2e2;
+            color: #dc2626;
+        }
+
+        .status.off_duty,
+        .status.on_break {
+            background: #e5e7eb;
+            color: #374151;
+        }
+
+        .status.on_weekend {
+            background: #ffe4e6;
+            color: #be123c;
+        }
+
+        .status.postponed {
+            background: #fecaca;
+            color: #991b1b;
+        }
+
         .empty-rooms-content {
             background: white;
             border-radius: 16px;
@@ -4955,33 +5034,62 @@
                 return;
             }
 
-            // Group faculty by department
-            const deptMap = {};
-            controlPanelFacultyData.forEach(f => {
-                const dept = f.department || f.dept || 'General';
-                if (!deptMap[dept]) deptMap[dept] = [];
-                const statusObj = controlPanelHasValidManualOverride(f) ? f.manualOverride : (typeof f.status === 'object' && f.status !== null ? f.status.status : f.status || 'off_duty');
-                deptMap[dept].push({ name: f.name, status: statusObj });
-            });
+            const currentTimeSlot = getCurrentTimeSlot();
 
-            // Render departments with counts and teacher tiles
-            const deptKeys = Object.keys(deptMap).sort();
-            content.innerHTML = deptKeys.map(dept => {
-                const list = deptMap[dept];
-                const total = list.length;
-                const availableCount = list.filter(t => t.status === 'at_dept').length;
+            // For each time slot, compute available teachers (by schedule or manual at_dept)
+            const slotsHtml = controlPanelTIME_SLOTS.map((timeSlot, idx) => {
+                const isCurrent = timeSlot === currentTimeSlot;
 
-                const teachersHtml = list.map(t => `
-                    <div class="room-item" style="display:flex;flex-direction:column;align-items:center;gap:8px;padding:10px;">
-                        <div style="font-weight:600;color:#1e3a8a;">${t.name}</div>
-                        <div class="status ${t.status}">${controlPanelLabels[t.status] || t.status}</div>
-                    </div>
-                `).join('');
+                const teachers = controlPanelFacultyData.map(f => {
+                    // Determine effective status
+                    const status = controlPanelHasValidManualOverride(f)
+                        ? (typeof f.manualOverride === 'object' && f.manualOverride !== null ? f.manualOverride.status : f.manualOverride)
+                        : (typeof f.status === 'object' && f.status !== null ? f.status.status : f.status || 'off_duty');
+
+                    // Determine if faculty is occupied by schedule in this slot
+                    let occupied = false;
+                    const day = getCurrentDay();
+                    if (f.classTimes && f.classTimes[day] && Array.isArray(f.classTimes[day])) {
+                        f.classTimes[day].forEach(ct => {
+                            if (ct.start && ct.end) {
+                                if (isTimeInRange(timeSlot, ct.start, ct.end)) {
+                                    occupied = true;
+                                }
+                            }
+                        });
+                    }
+
+                    // Available if manual at_dept OR not occupied by schedule
+                    const available = (status === 'at_dept') || !occupied;
+
+                    return { name: f.name, status, available };
+                });
+
+                const total = teachers.length;
+                const availableCount = teachers.filter(t => t.available).length;
+
+                const teachersHtml = teachers.map(t => {
+                    if (t.available) {
+                        return `
+                            <div class="teacher-tile available">
+                                <div class="teacher-name">${t.name}</div>
+                                <div class="status at_dept">${controlPanelLabels['at_dept']}</div>
+                            </div>
+                        `;
+                    }
+
+                    return `
+                        <div class="teacher-tile">
+                            <div class="teacher-name">${t.name}</div>
+                            <div class="status ${t.status}">${controlPanelLabels[t.status] || t.status}</div>
+                        </div>
+                    `;
+                }).join('');
 
                 return `
-                    <div class="time-slot">
+                    <div class="time-slot ${isCurrent ? 'current-time-indicator' : ''}" id="availTimeSlot-${idx}" data-time-slot="${timeSlot}">
                         <div class="time-slot-header">
-                            <h3 class="time-slot-title">${dept}</h3>
+                            <h3 class="time-slot-title">${formatTimeSlotFor12Hour(timeSlot)} ${isCurrent ? 'Current' : ''}</h3>
                             <div class="time-slot-count">${availableCount}/${total} Available</div>
                         </div>
                         <div class="empty-rooms-grid">
@@ -4990,6 +5098,12 @@
                     </div>
                 `;
             }).join('');
+
+            content.innerHTML = slotsHtml;
+
+            setTimeout(() => {
+                scrollToCurrentTimeSlot();
+            }, 100);
         }
 
         function startAvailableTeachersAutoRefresh() {
