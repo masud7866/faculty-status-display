@@ -1656,6 +1656,9 @@
                         <select id="bulkStatus" onchange="setStatusForAll(this.value)" aria-label="Bulk status selector">
                             <option value="">-- Select Status --</option>
                         </select>
+                        <button class="empty-rooms-btn" onclick="toggleEmptyRoomsOverlay()" aria-label="Show Empty Rooms" style="align-self: flex-start; margin-top: 0.5rem;">
+                            📍 Empty Rooms
+                        </button>
                     </div>
 
                     <div class="control-panel-controls" id="controls" role="main" aria-label="Faculty Status Controls"></div>
@@ -3965,8 +3968,9 @@
             exam_duty: "Exam Duty"
         };
 
-        const ALL_ROOMS = ['B2-003', 'B2-102', 'B2-203', 'B2-204', 'B2-205', 'B2-206', 'B2-303', 'B2-304', 'B2-305', 'B2-306', 'B2-307'];
-        const TIME_SLOTS = [
+        const controlPanelALL_ROOMS = ['B2-003', 'B2-102', 'B2-203', 'B2-204', 'B2-205', 'B2-206', 'B2-303', 'B2-304', 'B2-305', 'B2-306', 'B2-307'];
+
+        const controlPanelTIME_SLOTS = [
             '08:00-09:00', '09:00-10:00', '10:00-11:00', '11:00-12:00',
             '12:00-13:00', '13:00-14:00', '14:00-15:00', '15:00-16:00',
             '16:00-17:00', '17:00-18:00'
@@ -4066,6 +4070,9 @@
 
             // Load initial data
             controlPanelLoadData();
+            
+            // Start empty rooms auto-refresh
+            startEmptyRoomsAutoRefresh();
         }
 
         async function controlPanelLoadData() {
@@ -4073,6 +4080,17 @@
             if (data) {
                 controlPanelFacultyData = data;
                 controlPanelRender();
+            }
+        }
+
+        function controlPanelUpdateBulkTimer() {
+            const bulkTimerBtn = document.getElementById("bulk-timer-btn");
+            if (!bulkTimerBtn) return;
+            const allManual = controlPanelFacultyData.every(f => !!f.manualOverride);
+            if (allManual) {
+                const times = controlPanelFacultyData.map(f => controlPanelGetRemainingTime(f.overrideExpiry)).filter(t => t !== "Expired");
+                bulkTimerBtn.textContent = "Clear all overrides (" + (times.length ? times.sort()[0] : "Expired") + ")";
+                bulkTimerBtn.classList.toggle('expiring', times.length && controlPanelFacultyData.some(f => controlPanelIsExpiringSoon(f.overrideExpiry)));
             }
         }
 
@@ -4256,6 +4274,120 @@
                 const controls = document.getElementById('controls');
                 controls.innerHTML = "";
                 controlPanelFacultyData.forEach(renderFaculty);
+
+                // Create bulk timer button
+                let allManual = controlPanelFacultyData.every(f => !!f.manualOverride);
+                let bulkTimerBtn = document.getElementById("bulk-timer-btn");
+                if (!bulkTimerBtn) {
+                    bulkTimerBtn = document.createElement("button");
+                    bulkTimerBtn.id = "bulk-timer-btn";
+                    bulkTimerBtn.style.marginLeft = "0";
+                    bulkTimerBtn.style.padding = "0.3rem 0.8rem";
+                    bulkTimerBtn.style.borderRadius = "6px";
+                    bulkTimerBtn.style.border = "1px solid #d1d5db";
+                    bulkTimerBtn.style.background = "#f3f4f6";
+                    bulkTimerBtn.style.fontSize = "0.85rem";
+                    const bulkStatusContainer = document.querySelector(".control-panel-bulk-status");
+                    const customExpiryBtn = document.getElementById("bulk-custom-expiry-btn");
+                    if (customExpiryBtn) {
+                        bulkStatusContainer.insertBefore(bulkTimerBtn, customExpiryBtn.nextSibling);
+                    } else {
+                        bulkStatusContainer.appendChild(bulkTimerBtn);
+                    }
+                }
+                bulkTimerBtn.disabled = !allManual;
+
+                // Create bulk custom expiry button
+                let bulkCustomExpiryBtn = document.getElementById("bulk-custom-expiry-btn");
+                if (!bulkCustomExpiryBtn) {
+                    bulkCustomExpiryBtn = document.createElement("button");
+                    bulkCustomExpiryBtn.id = "bulk-custom-expiry-btn";
+                    bulkCustomExpiryBtn.className = "custom-expiry-btn-small";
+                    bulkCustomExpiryBtn.textContent = "⏰ Custom Expiry";
+                    bulkCustomExpiryBtn.title = "Set custom expiry time for all";
+                    bulkCustomExpiryBtn.disabled = !allManual;
+                    if (allManual) {
+                        bulkCustomExpiryBtn.classList.add('active');
+                    }
+                    const bulkStatusContainer = document.querySelector(".control-panel-bulk-status");
+                    const selectElement = document.getElementById("bulkStatus");
+                    bulkStatusContainer.insertBefore(bulkCustomExpiryBtn, selectElement.nextSibling);
+                }
+                bulkCustomExpiryBtn.disabled = !allManual;
+                if (allManual) {
+                    bulkCustomExpiryBtn.classList.add('active');
+                } else {
+                    bulkCustomExpiryBtn.classList.remove('active');
+                }
+
+                bulkCustomExpiryBtn.onclick = () => {
+                    openCustomExpiryModal(null, true);
+                };
+
+                if (allManual) {
+                    const times = controlPanelFacultyData.map(f => controlPanelGetRemainingTime(f.overrideExpiry)).filter(t => t !== "Expired");
+                    bulkTimerBtn.textContent = "Clear all overrides (" + (times.length ? times.sort()[0] : "Expired") + ")";
+                    bulkTimerBtn.style.border = "1px solid #fd7e14";
+                    bulkTimerBtn.style.background = "#fff7e6";
+                    bulkTimerBtn.style.color = "#b45309";
+                    bulkTimerBtn.disabled = false;
+                    bulkTimerBtn.classList.toggle('expiring', times.length && controlPanelFacultyData.some(f => controlPanelIsExpiringSoon(f.overrideExpiry)));
+
+                    if (controlPanelBulkTimerInterval) clearInterval(controlPanelBulkTimerInterval);
+                    controlPanelBulkTimerInterval = setInterval(() => {
+                        controlPanelUpdateBulkTimer();
+                        if (!controlPanelFacultyData.every(f => controlPanelHasValidManualOverride(f))) {
+                            clearInterval(controlPanelBulkTimerInterval);
+                            controlPanelBulkTimerInterval = null;
+                            controlPanelRender();
+                        }
+                    }, 1000);
+
+                    bulkTimerBtn.onclick = async () => {
+                        if (controlPanelIsUpdating) return;
+                        controlPanelIsUpdating = true;
+                        bulkTimerBtn.disabled = true;
+                        controlPanelFacultyData.forEach(f => {
+                            f.manualOverride = null;
+                            f.overrideExpiry = null;
+                        });
+                        document.getElementById("bulkStatus").value = "";
+                        controlPanelRender();
+
+                        try {
+                            await controlPanelUpdateFaculty(controlPanelFacultyData.map(f => ({
+                                name: f.name,
+                                manualOverride: null,
+                                overrideExpiry: null
+                            })));
+                            const freshData = await controlPanelFetchFacultyData();
+                            if (freshData) {
+                                controlPanelFacultyData = freshData;
+                                controlPanelRender();
+                                controlPanelShowMessage("All manual overrides cleared.");
+                            }
+                        } catch (err) {
+                            controlPanelShowMessage("Failed to clear overrides.", true);
+                            console.error(err);
+                        } finally {
+                            bulkTimerBtn.disabled = false;
+                            controlPanelIsUpdating = false;
+                        }
+                    };
+                } else {
+                    bulkTimerBtn.textContent = "Clear all overrides";
+                    bulkTimerBtn.style.border = "1px solid #e5e7eb";
+                    bulkTimerBtn.style.background = "#f3f4f6";
+                    bulkTimerBtn.style.color = "#a1a1aa";
+                    bulkTimerBtn.disabled = true;
+                    bulkTimerBtn.onclick = null;
+                    bulkTimerBtn.classList.remove('expiring');
+                    if (controlPanelBulkTimerInterval) {
+                        clearInterval(controlPanelBulkTimerInterval);
+                        controlPanelBulkTimerInterval = null;
+                    }
+                }
+
                 controlPanelIsUpdating = false;
             });
         }
@@ -4292,6 +4424,200 @@
             }
             controlPanelIsUpdating = false;
             document.getElementById('bulkStatus').value = "";
+        }
+
+        // ========== EMPTY ROOMS FUNCTIONS ==========
+
+        function getCurrentDay() {
+            const days = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
+            const today = new Date();
+            return days[today.getDay()];
+        }
+
+        function getCurrentTimeSlot() {
+            const now = new Date();
+            const hour = now.getHours();
+            const minute = now.getMinutes();
+            const currentTimeInMinutes = hour * 60 + minute;
+
+            for (let i = 0; i < controlPanelTIME_SLOTS.length; i++) {
+                const [start, end] = controlPanelTIME_SLOTS[i].split('-');
+                const [startHour, startMin] = start.split(':').map(Number);
+                const [endHour, endMin] = end.split(':').map(Number);
+
+                const startTimeInMinutes = startHour * 60 + startMin;
+                const endTimeInMinutes = endHour * 60 + endMin;
+
+                if (currentTimeInMinutes >= startTimeInMinutes && currentTimeInMinutes < endTimeInMinutes) {
+                    return controlPanelTIME_SLOTS[i];
+                }
+            }
+
+            return null;
+        }
+
+        function isTimeInRange(timeSlot, classStart, classEnd) {
+            const [slotStart, slotEnd] = timeSlot.split('-');
+
+            function timeToMinutes(timeStr) {
+                const [hours, minutes] = timeStr.split(':').map(Number);
+                return hours * 60 + minutes;
+            }
+
+            const slotStartMin = timeToMinutes(slotStart);
+            const slotEndMin = timeToMinutes(slotEnd);
+            const classStartMin = timeToMinutes(classStart);
+            const classEndMin = timeToMinutes(classEnd);
+
+            return !(classEndMin <= slotStartMin || classStartMin >= slotEndMin);
+        }
+
+        function getOccupiedRooms(timeSlot) {
+            const currentDay = getCurrentDay();
+            const occupiedRooms = new Set();
+
+            controlPanelFacultyData.forEach(faculty => {
+                if (faculty.classTimes && faculty.classTimes[currentDay] && Array.isArray(faculty.classTimes[currentDay])) {
+                    faculty.classTimes[currentDay].forEach(classInfo => {
+                        if (classInfo.start && classInfo.end && classInfo.room) {
+                            if (isTimeInRange(timeSlot, classInfo.start, classInfo.end)) {
+                                occupiedRooms.add(classInfo.room);
+                            }
+                        }
+                    });
+                }
+            });
+
+            return Array.from(occupiedRooms);
+        }
+
+        function getEmptyRoomsData() {
+            const emptyRoomsData = [];
+            const currentTimeSlot = getCurrentTimeSlot();
+
+            controlPanelTIME_SLOTS.forEach(timeSlot => {
+                const occupiedRooms = getOccupiedRooms(timeSlot);
+                const emptyRooms = controlPanelALL_ROOMS.filter(room => !occupiedRooms.includes(room));
+
+                emptyRoomsData.push({
+                    timeSlot,
+                    emptyRooms,
+                    occupiedRooms,
+                    isCurrentSlot: timeSlot === currentTimeSlot,
+                    emptyCount: emptyRooms.length,
+                    totalRooms: controlPanelALL_ROOMS.length
+                });
+            });
+
+            return emptyRoomsData;
+        }
+
+        function formatTimeSlotFor12Hour(timeSlot24h) {
+            const [start, end] = timeSlot24h.split('-');
+
+            function convertTo12Hour(time24) {
+                const [hours, minutes] = time24.split(':').map(Number);
+                const period = hours >= 12 ? 'PM' : 'AM';
+                const hours12 = hours === 0 ? 12 : hours > 12 ? hours - 12 : hours;
+                return `${hours12}:${minutes.toString().padStart(2, '0')} ${period}`;
+            }
+
+            return `${convertTo12Hour(start)} - ${convertTo12Hour(end)}`;
+        }
+
+        function renderEmptyRoomsOverlay() {
+            const emptyRoomsData = getEmptyRoomsData();
+            const currentDay = getCurrentDay();
+            const currentTimeSlot = getCurrentTimeSlot();
+
+            const overlay = document.getElementById('emptyRoomsOverlay');
+            const content = overlay.querySelector('.empty-rooms-body');
+
+            content.innerHTML = `
+                ${emptyRoomsData.map((data, index) => `
+                    <div class="time-slot ${data.isCurrentSlot ? 'current-time-indicator' : ''}" 
+                         id="timeSlot-${index}" 
+                         data-time-slot="${data.timeSlot}">
+                        <div class="time-slot-header">
+                            <h3 class="time-slot-title">
+                                ${formatTimeSlotFor12Hour(data.timeSlot)} ${data.isCurrentSlot ? '🔴 Current' : ''}
+                            </h3>
+                            <div class="time-slot-count">
+                                ${data.emptyCount}/${data.totalRooms} Available
+                            </div>
+                        </div>
+                        
+                        ${data.emptyCount === 0 ? `
+                            <div class="no-empty-rooms">
+                                All rooms are occupied during this time slot
+                            </div>
+                        ` : `
+                            <div class="empty-rooms-grid">
+                                ${controlPanelALL_ROOMS.map(room => `
+                                    <div class="room-item ${data.occupiedRooms.includes(room) ? 'occupied' : ''}">
+                                        ${room}
+                                    </div>
+                                `).join('')}
+                            </div>
+                        `}
+                    </div>
+                `).join('')}
+            `;
+
+            setTimeout(() => {
+                scrollToCurrentTimeSlot();
+            }, 100);
+        }
+
+        function scrollToCurrentTimeSlot() {
+            const currentSlotElement = document.querySelector('.current-time-indicator');
+            if (currentSlotElement) {
+                const container = document.querySelector('.empty-rooms-content');
+                if (container) {
+                    const containerRect = container.getBoundingClientRect();
+                    const elementRect = currentSlotElement.getBoundingClientRect();
+                    const relativeTop = elementRect.top - containerRect.top + container.scrollTop;
+                    const targetScrollTop = relativeTop - (container.clientHeight / 2) + (currentSlotElement.offsetHeight / 2);
+                    container.scrollTo({
+                        top: Math.max(0, targetScrollTop),
+                        behavior: 'smooth'
+                    });
+                    currentSlotElement.style.transform = 'scale(1.02)';
+                    setTimeout(() => {
+                        currentSlotElement.style.transform = 'scale(1)';
+                    }, 300);
+                }
+            }
+        }
+
+        function toggleEmptyRoomsOverlay() {
+            const overlay = document.getElementById('emptyRoomsOverlay');
+            if (!overlay) return;
+
+            if (overlay.classList.contains('active')) {
+                overlay.classList.remove('active');
+            } else {
+                renderEmptyRoomsOverlay();
+                overlay.classList.add('active');
+            }
+        }
+
+        function startEmptyRoomsAutoRefresh() {
+            setInterval(() => {
+                const overlay = document.getElementById('emptyRoomsOverlay');
+                if (overlay && overlay.classList.contains('active')) {
+                    const container = document.querySelector('.empty-rooms-content');
+                    const savedScrollTop = container ? container.scrollTop : 0;
+
+                    renderEmptyRoomsOverlay();
+
+                    setTimeout(() => {
+                        if (container && Math.abs(container.scrollTop - savedScrollTop) < 100) {
+                            container.scrollTop = savedScrollTop;
+                        }
+                    }, 150);
+                }
+            }, 60000);
         }
 
         // Custom Expiry Modal Functions
