@@ -725,6 +725,628 @@
         .edit-mode h2 {
             color: #92400e;
         }
+
+        /* Control Panel Styles */
+        .control-panel-container {
+            display: flex;
+            flex-direction: column;
+            gap: 1.2rem;
+        }
+
+        .control-panel-bulk-status {
+            background: #fff;
+            padding: 1.2rem;
+            border-radius: 12px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            display: flex;
+            flex-direction: column;
+            gap: 0.7rem;
+        }
+
+        .control-panel-bulk-status label {
+            font-weight: 500;
+            color: #374151;
+            font-size: 0.9rem;
+        }
+
+        .control-panel-bulk-status select {
+            padding: 0.5rem;
+            border-radius: 6px;
+            border: 1px solid #d1d5db;
+            font-size: 0.9rem;
+            background-color: #f3f4f6;
+            transition: border-color 0.2s;
+            min-height: 44px;
+            min-width: 44px;
+            touch-action: manipulation;
+        }
+
+        .control-panel-bulk-status select:focus {
+            border-color: #3b82f6;
+            outline: none;
+        }
+
+        .control-panel-controls {
+            display: flex;
+            flex-direction: column;
+            gap: 1.2rem;
+        }
+
+        .control-panel-faculty-card {
+            background: #fff;
+            border-radius: 12px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            padding: 1.2rem;
+            display: flex;
+            flex-direction: column;
+            gap: 0.7rem;
+            font-size: 1rem;
+        }
+
+        .control-panel-faculty-card:nth-child(even) {
+            background: #f8fafc;
+        }
+
+        .control-panel-faculty-card label {
+            font-weight: 600;
+            color: #1e3a8a;
+            display: flex;
+            align-items: center;
+            gap: 0.7rem;
+            font-size: 1.05rem;
+            margin-bottom: 0.2rem;
+        }
+
+        .control-panel-faculty-card img {
+            width: 44px;
+            height: 44px;
+            border-radius: 50%;
+            object-fit: cover;
+            box-shadow: 0 2px 8px rgba(16, 34, 74, .08);
+        }
+
+        .control-panel-faculty-card select {
+            padding: 0.7rem 1rem;
+            border-radius: 10px;
+            border: 1.5px solid #cbd5e1;
+            font-size: 1rem;
+            background: #f8fafc;
+            transition: border-color 0.18s, box-shadow 0.18s;
+            font-weight: 500;
+            min-height: 44px;
+            min-width: 44px;
+            touch-action: manipulation;
+        }
+
+        .control-panel-faculty-card select:focus {
+            border-color: #2563eb;
+            outline: none;
+            box-shadow: 0 0 0 3px rgba(37, 99, 235, .18);
+            background: #fff;
+        }
+
+        .control-panel-faculty-card button {
+            padding: 0.7rem 1.3rem;
+            border-radius: 10px;
+            font-weight: 600;
+            font-size: 1rem;
+            border: none;
+            background: #f8fafc;
+            color: #374151;
+            box-shadow: 0 2px 8px rgba(16, 34, 74, .08);
+            transition: background-color 0.18s, transform 0.1s;
+            min-height: 44px;
+            min-width: 44px;
+            touch-action: manipulation;
+        }
+
+        .control-panel-faculty-card button:not(:disabled) {
+            background: #fff7e6;
+            color: #b45309;
+            border: 1.5px solid #fd7e14;
+        }
+
+        .control-panel-faculty-card button:not(:disabled):hover {
+            background: #ffe7c2;
+            transform: translateY(-1px);
+        }
+
+        .control-panel-faculty-card button.expiring {
+            animation: pulse 1.5s infinite;
+        }
+
+        .control-panel-faculty-card button:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+        }
+
+        .empty-rooms-btn {
+            padding: 0.7rem 1.3rem;
+            background: #059669;
+            color: #fff;
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+            font-size: 1rem;
+            font-weight: 600;
+            letter-spacing: .5px;
+            box-shadow: 0 2px 8px rgba(16, 34, 74, .08);
+            transition: background-color 0.18s, transform 0.1s;
+        }
+
+        .empty-rooms-btn:hover {
+            background: #047857;
+            transform: translateY(-1px);
+        }
+
+        .empty-rooms-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.7);
+            z-index: 1000;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.3s ease;
+        }
+
+        .empty-rooms-overlay.active {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        .empty-rooms-overlay.active .empty-rooms-content {
+            transform: scale(1);
+        }
+
+        .empty-rooms-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            padding-bottom: 15px;
+            border-bottom: 2px solid #e5e7eb;
+        }
+
+        .empty-rooms-title {
+            color: #1e3a8a;
+            font-size: 1.5rem;
+            font-weight: 600;
+            margin: 0;
+        }
+
+        .close-overlay-btn {
+            background: #ef4444;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            padding: 8px 12px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 500;
+        }
+
+        .close-overlay-btn:hover {
+            background: #dc2626;
+        }
+
+        .time-slot-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+
+        .time-slot-title {
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: #1e3a8a;
+            margin: 0;
+        }
+
+        .time-slot-count {
+            background: #059669;
+            color: white;
+            padding: 4px 8px;
+            border-radius: 6px;
+            font-size: 0.8rem;
+            font-weight: 500;
+        }
+
+        .empty-rooms-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(80px, 1fr));
+            gap: 8px;
+            margin-top: 10px;
+        }
+
+        .room-item {
+            background: #10b981;
+            color: white;
+            padding: 8px 12px;
+            border-radius: 6px;
+            text-align: center;
+            font-weight: 500;
+            font-size: 0.9rem;
+        }
+
+        .room-item.occupied {
+            background: #ef4444;
+            opacity: 0.6;
+        }
+
+        .no-empty-rooms {
+            color: #6b7280;
+            font-style: italic;
+            text-align: center;
+            padding: 20px;
+            background: #fef3c7;
+            border-radius: 8px;
+            border: 1px solid #f59e0b;
+        }
+
+        .legend {
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+        }
+
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 0.9rem;
+        }
+
+        .legend-color {
+            width: 16px;
+            height: 16px;
+            border-radius: 4px;
+        }
+
+        .legend-available {
+            background: #10b981;
+        }
+
+        .legend-occupied {
+            background: #ef4444;
+        }
+
+        .empty-rooms-content {
+            background: white;
+            border-radius: 16px;
+            padding: 20px;
+            max-width: 900px;
+            width: 100%;
+            max-height: 90vh;
+            overflow-y: auto;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+            transform: scale(0.9);
+            transition: transform 0.3s ease;
+            scroll-behavior: smooth;
+        }
+
+        .current-time-indicator {
+            background: #fffaec !important;
+            border: 2px solid #f59e0b;
+            animation: pulse 2s infinite;
+            transition: transform 0.3s ease;
+            scroll-margin-top: 20px;
+        }
+
+        .time-slot {
+            margin-bottom: 20px;
+            background: #f8fafc;
+            border-radius: 12px;
+            padding: 15px;
+            border-left: 4px solid #059669;
+            scroll-margin-top: 20px;
+        }
+
+        .custom-expiry-modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.7);
+            z-index: 2000;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.3s ease;
+        }
+
+        .custom-expiry-modal.active {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        .custom-expiry-content {
+            background: white;
+            border-radius: 16px;
+            padding: 24px;
+            max-width: 500px;
+            width: 100%;
+            max-height: 90vh;
+            overflow-y: auto;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+            transform: scale(0.9);
+            transition: transform 0.3s ease;
+        }
+
+        .custom-expiry-modal.active .custom-expiry-content {
+            transform: scale(1);
+        }
+
+        .custom-expiry-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            padding-bottom: 15px;
+            border-bottom: 2px solid #e5e7eb;
+        }
+
+        .custom-expiry-title {
+            color: #1e3a8a;
+            font-size: 1.3rem;
+            font-weight: 600;
+            margin: 0;
+        }
+
+        .custom-expiry-close {
+            background: #ef4444;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            padding: 8px 12px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 500;
+        }
+
+        .custom-expiry-close:hover {
+            background: #dc2626;
+        }
+
+        .expiry-mode-selector {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+        }
+
+        .expiry-mode-btn {
+            padding: 8px 16px;
+            border: 2px solid #d1d5db;
+            background: white;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 0.9rem;
+            font-weight: 500;
+            transition: all 0.2s ease;
+        }
+
+        .expiry-mode-btn.active {
+            border-color: #2563eb;
+            background: #eff6ff;
+            color: #1d4ed8;
+        }
+
+        .expiry-mode-btn:hover {
+            border-color: #9ca3af;
+        }
+
+        .duration-section,
+        .datetime-section {
+            margin-bottom: 20px;
+        }
+
+        .duration-section.hidden,
+        .datetime-section.hidden {
+            display: none;
+        }
+
+        .duration-inputs {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(80px, 1fr));
+            gap: 10px;
+            margin-bottom: 15px;
+        }
+
+        .duration-input {
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+        }
+
+        .duration-input label {
+            font-size: 0.8rem;
+            font-weight: 500;
+            color: #374151;
+        }
+
+        .duration-input input {
+            padding: 8px;
+            border: 1px solid #d1d5db;
+            border-radius: 6px;
+            font-size: 0.9rem;
+            text-align: center;
+        }
+
+        .duration-input input:focus {
+            outline: none;
+            border-color: #2563eb;
+            box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+        }
+
+        .datetime-inputs {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+            margin-bottom: 15px;
+        }
+
+        .datetime-input {
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+        }
+
+        .datetime-input label {
+            font-size: 0.8rem;
+            font-weight: 500;
+            color: #374151;
+        }
+
+        .datetime-input input {
+            padding: 8px;
+            border: 1px solid #d1d5db;
+            border-radius: 6px;
+            font-size: 0.9rem;
+        }
+
+        .datetime-input input:focus {
+            outline: none;
+            border-color: #2563eb;
+            box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+        }
+
+        .custom-expiry-actions {
+            display: flex;
+            gap: 10px;
+            justify-content: flex-end;
+            padding-top: 15px;
+            border-top: 1px solid #e5e7eb;
+        }
+
+        .custom-expiry-btn {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 8px;
+            font-size: 0.9rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .custom-expiry-btn.cancel {
+            background: #f3f4f6;
+            color: #374151;
+        }
+
+        .custom-expiry-btn.cancel:hover {
+            background: #e5e7eb;
+        }
+
+        .custom-expiry-btn.save {
+            background: #2563eb;
+            color: white;
+        }
+
+        .custom-expiry-btn.save:hover {
+            background: #1d4ed8;
+        }
+
+        .custom-expiry-btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .custom-expiry-btn-small {
+            padding: 0.3rem 0.6rem;
+            border: 1px solid #d1d5db;
+            background: #f9fafb;
+            color: #6b7280;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 0.75rem;
+            font-weight: 500;
+            transition: all 0.2s ease;
+            margin: 0 0.25rem;
+        }
+
+        .custom-expiry-btn-small:hover:not(:disabled) {
+            background: #f3f4f6;
+            border-color: #9ca3af;
+        }
+
+        .custom-expiry-btn-small:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .custom-expiry-btn-small.active {
+            background: #dbeafe;
+            border-color: #93c5fd;
+            color: #1e40af;
+        }
+
+        @keyframes pulse {
+            0%, 100% {
+                border-color: #fd7e14;
+            }
+            50% {
+                border-color: #f97316;
+            }
+        }
+
+        /* Mobile responsiveness for control panel */
+        @media (max-width: 600px) {
+            .control-panel-faculty-card {
+                padding: 1rem 0.8rem;
+            }
+
+            .control-panel-faculty-card label {
+                font-size: 0.95rem;
+            }
+
+            .control-panel-faculty-card select,
+            .control-panel-faculty-card button {
+                font-size: 0.9rem;
+                padding: 0.6rem 1rem;
+            }
+
+            .custom-expiry-content {
+                margin: 10px;
+                padding: 20px;
+                max-height: 85vh;
+            }
+
+            .custom-expiry-title {
+                font-size: 1.1rem;
+            }
+
+            .datetime-inputs {
+                grid-template-columns: 1fr;
+                gap: 10px;
+            }
+
+            .duration-inputs {
+                grid-template-columns: repeat(2, 1fr);
+                gap: 8px;
+            }
+
+            .custom-expiry-actions {
+                flex-direction: column;
+            }
+
+            .custom-expiry-btn {
+                width: 100%;
+            }
+        }
     </style>
 </head>
 
@@ -738,12 +1360,6 @@
         <div class="header">
             <div class="header-left">
                 <h1>Faculty Admin Panel</h1>
-                <div class="control-panel-callout">
-                    <div class="control-panel-callout-text">
-                        Need quick updates? You can manually update faculty status from the Control Panel.
-                    </div>
-                    <a href="control.html" class="btn btn-primary">Open Control Panel</a>
-                </div>
             </div>
             <div class="nav-buttons">
                 <button id="deployBtn" class="btn btn-success" onclick="deployChanges()" disabled>
@@ -757,6 +1373,7 @@
         <div class="section">
             <div class="tabs">
                 <button class="tab active" onclick="showTab('faculty')">Faculty</button>
+                <button class="tab" onclick="showTab('control')">Control Panel</button>
                 <button class="tab" onclick="showTab('marquee')">Marquee</button>
                 <button class="tab" onclick="showTab('ads')">Ads</button>
                 <button class="tab" onclick="showTab('upload')">Upload Ads</button>
@@ -1027,6 +1644,80 @@
                         4. Drag and drop your advertisement files<br>
                         5. Add commit message and commit changes<br>
                         6. Wait for deployment (2-3 minutes)
+                    </div>
+                </div>
+            </div>
+
+            <!-- Control Panel Tab -->
+            <div id="control-tab" class="tab-content">
+                <div class="control-panel-container">
+                    <div class="control-panel-bulk-status" role="region" aria-labelledby="bulkStatusLabel">
+                        <label id="bulkStatusLabel" for="bulkStatus">Set Status for All Faculty:</label>
+                        <select id="bulkStatus" onchange="setStatusForAll(this.value)" aria-label="Bulk status selector">
+                            <option value="">-- Select Status --</option>
+                        </select>
+                    </div>
+
+                    <div class="control-panel-controls" id="controls" role="main" aria-label="Faculty Status Controls"></div>
+
+                    <div class="empty-rooms-overlay" id="emptyRoomsOverlay">
+                        <div class="empty-rooms-content">
+                            <div class="empty-rooms-header">
+                                <h3 class="empty-rooms-title">Available Rooms and Batches</h3>
+                                <button class="close-overlay-btn" onclick="toggleEmptyRoomsOverlay()">✖</button>
+                            </div>
+                            <div class="empty-rooms-body"></div>
+                        </div>
+                    </div>
+
+                    <!-- Custom Expiry Modal -->
+                    <div class="custom-expiry-modal" id="customExpiryModal">
+                        <div class="custom-expiry-content">
+                            <div class="custom-expiry-header">
+                                <h3 class="custom-expiry-title">Set Custom Expiry Time</h3>
+                                <button class="custom-expiry-close" onclick="closeCustomExpiryModal()">✕</button>
+                            </div>
+
+                            <div class="expiry-mode-selector">
+                                <button class="expiry-mode-btn active" data-mode="duration">Duration</button>
+                                <button class="expiry-mode-btn" data-mode="datetime">Date & Time</button>
+                            </div>
+
+                            <div class="duration-section">
+                                <div class="duration-inputs">
+                                    <div class="duration-input">
+                                        <label for="durationDays">Days</label>
+                                        <input type="number" id="durationDays" min="0" max="30" value="0">
+                                    </div>
+                                    <div class="duration-input">
+                                        <label for="durationHours">Hours</label>
+                                        <input type="number" id="durationHours" min="0" max="23" value="1">
+                                    </div>
+                                    <div class="duration-input">
+                                        <label for="durationMinutes">Minutes</label>
+                                        <input type="number" id="durationMinutes" min="0" max="59" value="0">
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="datetime-section hidden">
+                                <div class="datetime-inputs">
+                                    <div class="datetime-input">
+                                        <label for="expiryDate">Date</label>
+                                        <input type="date" id="expiryDate">
+                                    </div>
+                                    <div class="datetime-input">
+                                        <label for="expiryTime">Time</label>
+                                        <input type="time" id="expiryTime">
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="custom-expiry-actions">
+                                <button class="custom-expiry-btn cancel" onclick="closeCustomExpiryModal()">Cancel</button>
+                                <button class="custom-expiry-btn save" onclick="saveCustomExpiry()">Set Expiry</button>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -3249,6 +3940,459 @@
                 console.error('Priority update error:', error);
             }
         }
+
+        // ========== CONTROL PANEL CODE ==========
+
+        // Control Panel Variables
+        let controlPanelFacultyData = [];
+        let controlPanelTimerIntervals = [];
+        let controlPanelBulkTimerInterval = null;
+        let controlPanelIsUpdating = false;
+        let controlPanelInitialized = false;
+
+        const controlPanelStatusOptions = [
+            "in_class", "at_dept", "on_leave", "off_duty", "in_meeting", "on_weekend", "postponed", "exam_duty"
+        ];
+
+        const controlPanelLabels = {
+            in_class: "In Class",
+            at_dept: "At Department",
+            on_leave: "On Leave",
+            off_duty: "Off Duty",
+            in_meeting: "In Meeting",
+            on_weekend: "On Weekend",
+            postponed: "Postpone Class",
+            exam_duty: "Exam Duty"
+        };
+
+        const ALL_ROOMS = ['B2-003', 'B2-102', 'B2-203', 'B2-204', 'B2-205', 'B2-206', 'B2-303', 'B2-304', 'B2-305', 'B2-306', 'B2-307'];
+        const TIME_SLOTS = [
+            '08:00-09:00', '09:00-10:00', '10:00-11:00', '11:00-12:00',
+            '12:00-13:00', '13:00-14:00', '14:00-15:00', '15:00-16:00',
+            '16:00-17:00', '17:00-18:00'
+        ];
+
+        // Control Panel Helper Functions
+        function controlPanelGetAuthHeaders() {
+            const token = getAuthToken();
+            const headers = { 'Content-Type': 'application/json' };
+            if (token) headers['Authorization'] = `Bearer ${token}`;
+            return headers;
+        }
+
+        async function controlPanelFetchFacultyData() {
+            try {
+                const res = await fetch("https://faculty-status-display.onrender.com/api/faculty", {
+                    headers: controlPanelGetAuthHeaders()
+                });
+                if (!res.ok) throw new Error("Failed to fetch faculty data");
+                const data = await res.json();
+                const sortedData = data.sort((a, b) => {
+                    const precedenceA = a.precedence || 50;
+                    const precedenceB = b.precedence || 50;
+                    if (precedenceA !== precedenceB) return precedenceA - precedenceB;
+                    return a.name.localeCompare(b.name);
+                });
+                return sortedData;
+            } catch (err) {
+                console.error("Failed to fetch faculty:", err);
+                showToast("Failed to fetch faculty data", "error");
+                return null;
+            }
+        }
+
+        async function controlPanelUpdateFaculty(updates) {
+            try {
+                const res = await fetch("https://faculty-status-display.onrender.com/api/update", {
+                    method: "POST",
+                    headers: controlPanelGetAuthHeaders(),
+                    body: JSON.stringify(updates)
+                });
+                if (!res.ok) throw new Error("Failed to update faculty");
+                return true;
+            } catch (err) {
+                console.error("Failed to update faculty:", err);
+                showToast("Failed to update faculty status", "error");
+                return false;
+            }
+        }
+
+        function controlPanelShowMessage(text, isError = false) {
+            showToast(text, isError ? 'error' : 'success');
+        }
+
+        function controlPanelHasValidManualOverride(f) {
+            return f.manualOverride && f.overrideExpiry && new Date(f.overrideExpiry) > new Date();
+        }
+
+        function controlPanelGetRemainingTime(expiry) {
+            if (!expiry) return "";
+            const exp = new Date(expiry);
+            if (isNaN(exp.getTime())) return "";
+            const now = new Date();
+            const diffMs = exp - now;
+            if (diffMs <= 0) return "Expired";
+            const mins = Math.floor(diffMs / 60000) % 60;
+            const hrs = Math.floor(diffMs / 3600000);
+            const secs = Math.floor((diffMs % 60000) / 1000);
+            return `${hrs}:${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
+        }
+
+        function controlPanelIsExpiringSoon(expiry) {
+            if (!expiry) return false;
+            const exp = new Date(expiry);
+            const now = new Date();
+            const diffMs = exp - now;
+            return diffMs > 0 && diffMs <= 5 * 60 * 1000;
+        }
+
+        function controlPanelGetStatusString(f) {
+            if (controlPanelHasValidManualOverride(f)) return f.manualOverride;
+            return typeof f.status === "object" && f.status !== null ? f.status.status : f.status || "";
+        }
+
+        function initializeControlPanel() {
+            if (controlPanelInitialized) return;
+            controlPanelInitialized = true;
+
+            // Add status options to bulk select
+            const bulkSelect = document.getElementById('bulkStatus');
+            controlPanelStatusOptions.forEach(opt => {
+                const option = document.createElement("option");
+                option.value = opt;
+                option.textContent = controlPanelLabels[opt];
+                bulkSelect.appendChild(option);
+            });
+
+            // Load initial data
+            controlPanelLoadData();
+        }
+
+        async function controlPanelLoadData() {
+            const data = await controlPanelFetchFacultyData();
+            if (data) {
+                controlPanelFacultyData = data;
+                controlPanelRender();
+            }
+        }
+
+        function controlPanelRender() {
+            if (controlPanelIsUpdating) return;
+            controlPanelIsUpdating = true;
+
+            const controls = document.getElementById('controls');
+            controls.innerHTML = "";
+
+            controlPanelFacultyData.forEach((f, i) => {
+                const div = document.createElement("div");
+                div.className = "control-panel-faculty-card";
+                div.id = `faculty-card-${f.name}`;
+
+                const currentStatus = controlPanelGetStatusString(f);
+                const img = document.createElement("img");
+                img.src = "https://faculty-status-display.onrender.com" + f.image;
+                img.alt = f.name;
+
+                const label = document.createElement("label");
+                const nameSpan = document.createElement("span");
+                nameSpan.textContent = f.name;
+                label.appendChild(img);
+                label.appendChild(nameSpan);
+
+                const select = document.createElement("select");
+                select.id = `status-${f.name}`;
+                controlPanelStatusOptions.forEach(opt => {
+                    const option = document.createElement("option");
+                    option.value = opt;
+                    option.textContent = controlPanelLabels[opt];
+                    if (opt === currentStatus) option.selected = true;
+                    select.appendChild(option);
+                });
+
+                select.addEventListener("change", async () => {
+                    if (controlPanelIsUpdating) return;
+                    controlPanelIsUpdating = true;
+                    const newValue = select.value;
+                    controlPanelFacultyData[i].manualOverride = newValue;
+                    const now = new Date();
+                    let expiry = new Date(now);
+                    if (["in_class", "at_dept", "in_meeting"].includes(newValue)) {
+                        expiry.setUTCHours(expiry.getUTCHours() + 1);
+                    } else {
+                        expiry.setUTCHours(17, 59, 59, 999);
+                    }
+                    controlPanelFacultyData[i].overrideExpiry = expiry.toISOString();
+
+                    const success = await controlPanelUpdateFaculty([{
+                        name: f.name,
+                        manualOverride: newValue,
+                        overrideExpiry: expiry.toISOString()
+                    }]);
+
+                    if (success) {
+                        const freshData = await controlPanelFetchFacultyData();
+                        if (freshData) {
+                            controlPanelFacultyData = freshData;
+                            controlPanelRender();
+                            controlPanelShowMessage("Status updated");
+                        }
+                    }
+                    controlPanelIsUpdating = false;
+                });
+
+                const customExpiryBtn = document.createElement("button");
+                customExpiryBtn.id = `custom-expiry-btn-${f.name}`;
+                customExpiryBtn.className = "custom-expiry-btn-small";
+                customExpiryBtn.textContent = "⏰ Custom Expiry";
+                customExpiryBtn.disabled = !controlPanelHasValidManualOverride(f);
+                if (controlPanelHasValidManualOverride(f)) customExpiryBtn.classList.add('active');
+                customExpiryBtn.onclick = () => openCustomExpiryModal(f.name, false);
+
+                const timerBtn = document.createElement("button");
+                timerBtn.id = `timer-btn-${f.name}`;
+                if (controlPanelHasValidManualOverride(f)) {
+                    timerBtn.style.border = "1px solid #fd7e14";
+                    timerBtn.style.background = "#fff7e6";
+                    timerBtn.style.color = "#b45309";
+                    timerBtn.disabled = false;
+                    timerBtn.textContent = `Clear override (${controlPanelGetRemainingTime(f.overrideExpiry)})`;
+                } else {
+                    timerBtn.style.border = "1px solid #e5e7eb";
+                    timerBtn.style.background = "#f3f4f6";
+                    timerBtn.style.color = "#a1a1aa";
+                    timerBtn.disabled = true;
+                    timerBtn.textContent = "No manual override";
+                }
+
+                timerBtn.onclick = async () => {
+                    if (controlPanelIsUpdating) return;
+                    controlPanelIsUpdating = true;
+                    controlPanelFacultyData[i].manualOverride = null;
+                    controlPanelFacultyData[i].overrideExpiry = null;
+
+                    const success = await controlPanelUpdateFaculty([{
+                        name: f.name,
+                        manualOverride: null,
+                        overrideExpiry: null
+                    }]);
+
+                    if (success) {
+                        const freshData = await controlPanelFetchFacultyData();
+                        if (freshData) {
+                            controlPanelFacultyData = freshData;
+                            controlPanelRender();
+                            controlPanelShowMessage("Override cleared");
+                        }
+                    }
+                    controlPanelIsUpdating = false;
+                };
+
+                div.appendChild(label);
+                div.appendChild(select);
+                div.appendChild(customExpiryBtn);
+                div.appendChild(timerBtn);
+                controls.appendChild(div);
+            });
+
+            controlPanelIsUpdating = false;
+        }
+
+        async function setStatusForAll(status) {
+            if (!status || controlPanelIsUpdating) return;
+            controlPanelIsUpdating = true;
+            const now = new Date();
+            let expiry = new Date(now);
+            if (["in_class", "at_dept", "in_meeting"].includes(status)) {
+                expiry.setUTCHours(expiry.getUTCHours() + 1);
+            } else {
+                expiry.setUTCHours(17, 59, 59, 999);
+            }
+
+            controlPanelFacultyData.forEach(f => {
+                f.manualOverride = status;
+                f.overrideExpiry = expiry.toISOString();
+            });
+
+            const success = await controlPanelUpdateFaculty(controlPanelFacultyData.map(f => ({
+                name: f.name,
+                manualOverride: f.manualOverride,
+                overrideExpiry: f.overrideExpiry
+            })));
+
+            if (success) {
+                const freshData = await controlPanelFetchFacultyData();
+                if (freshData) {
+                    controlPanelFacultyData = freshData;
+                    controlPanelRender();
+                    controlPanelShowMessage(`All faculty set to ${controlPanelLabels[status]}`);
+                }
+            }
+            controlPanelIsUpdating = false;
+            document.getElementById('bulkStatus').value = "";
+        }
+
+        // Custom Expiry Modal Functions
+        let currentExpiryTarget = null;
+        let isBulkExpiry = false;
+
+        function openCustomExpiryModal(target, isBulk = false) {
+            currentExpiryTarget = target;
+            isBulkExpiry = isBulk;
+            const modal = document.getElementById('customExpiryModal');
+            const title = modal.querySelector('.custom-expiry-title');
+
+            if (isBulk) {
+                title.textContent = 'Set Custom Expiry Time for All Faculty';
+            } else {
+                title.textContent = `Set Custom Expiry Time for ${target}`;
+            }
+
+            const today = new Date();
+            document.getElementById('expiryDate').value = today.toISOString().split('T')[0];
+            const oneHourFromNow = new Date(today.getTime() + 60 * 60 * 1000);
+            document.getElementById('expiryTime').value = oneHourFromNow.toTimeString().slice(0, 5);
+
+            switchExpiryMode('duration');
+            modal.classList.add('active');
+        }
+
+        function closeCustomExpiryModal() {
+            const modal = document.getElementById('customExpiryModal');
+            modal.classList.remove('active');
+            currentExpiryTarget = null;
+            isBulkExpiry = false;
+        }
+
+        function switchExpiryMode(mode) {
+            const durationSection = document.querySelector('.duration-section');
+            const datetimeSection = document.querySelector('.datetime-section');
+            const modeBtns = document.querySelectorAll('.expiry-mode-btn');
+
+            modeBtns.forEach(btn => {
+                if (btn.dataset.mode === mode) {
+                    btn.classList.add('active');
+                } else {
+                    btn.classList.remove('active');
+                }
+            });
+
+            if (mode === 'duration') {
+                durationSection.classList.remove('hidden');
+                datetimeSection.classList.add('hidden');
+            } else {
+                durationSection.classList.add('hidden');
+                datetimeSection.classList.remove('hidden');
+            }
+        }
+
+        async function saveCustomExpiry() {
+            if (controlPanelIsUpdating) return;
+
+            const activeMode = document.querySelector('.expiry-mode-btn.active').dataset.mode;
+            let expiryDate;
+
+            if (activeMode === 'duration') {
+                const days = parseInt(document.getElementById('durationDays').value) || 0;
+                const hours = parseInt(document.getElementById('durationHours').value) || 0;
+                const minutes = parseInt(document.getElementById('durationMinutes').value) || 0;
+
+                if (days === 0 && hours === 0 && minutes === 0) {
+                    controlPanelShowMessage("Please set a duration greater than 0", true);
+                    return;
+                }
+
+                const now = new Date();
+                expiryDate = new Date(now.getTime() + (days * 24 * 60 * 60 * 1000) + (hours * 60 * 60 * 1000) + (minutes * 60 * 1000));
+            } else {
+                const dateStr = document.getElementById('expiryDate').value;
+                const timeStr = document.getElementById('expiryTime').value;
+
+                if (!dateStr || !timeStr) {
+                    controlPanelShowMessage("Please select both date and time", true);
+                    return;
+                }
+
+                expiryDate = new Date(`${dateStr}T${timeStr}`);
+                const now = new Date();
+
+                if (expiryDate <= now) {
+                    controlPanelShowMessage("Please select a future date and time", true);
+                    return;
+                }
+            }
+
+            controlPanelIsUpdating = true;
+
+            if (isBulkExpiry) {
+                const updates = controlPanelFacultyData.map(f => ({
+                    name: f.name,
+                    manualOverride: f.manualOverride,
+                    overrideExpiry: expiryDate.toISOString()
+                }));
+
+                const success = await controlPanelUpdateFaculty(updates);
+                if (success) {
+                    const freshData = await controlPanelFetchFacultyData();
+                    if (freshData) {
+                        controlPanelFacultyData = freshData;
+                        controlPanelRender();
+                        controlPanelShowMessage("Custom expiry set for all faculty");
+                    }
+                }
+            } else if (currentExpiryTarget) {
+                const facultyIndex = controlPanelFacultyData.findIndex(f => f.name === currentExpiryTarget);
+                if (facultyIndex !== -1) {
+                    const success = await controlPanelUpdateFaculty([{
+                        name: currentExpiryTarget,
+                        manualOverride: controlPanelFacultyData[facultyIndex].manualOverride,
+                        overrideExpiry: expiryDate.toISOString()
+                    }]);
+
+                    if (success) {
+                        const freshData = await controlPanelFetchFacultyData();
+                        if (freshData) {
+                            controlPanelFacultyData = freshData;
+                            controlPanelRender();
+                            controlPanelShowMessage(`Custom expiry set for ${currentExpiryTarget}`);
+                        }
+                    }
+                }
+            }
+
+            controlPanelIsUpdating = false;
+            closeCustomExpiryModal();
+        }
+
+        // Initialize modal event listeners
+        document.addEventListener('DOMContentLoaded', () => {
+            document.querySelectorAll('.expiry-mode-btn').forEach(btn => {
+                btn.addEventListener('click', () => switchExpiryMode(btn.dataset.mode));
+            });
+
+            const modal = document.getElementById('customExpiryModal');
+            if (modal) {
+                modal.addEventListener('click', (e) => {
+                    if (e.target === modal) closeCustomExpiryModal();
+                });
+            }
+
+            document.addEventListener('keydown', (e) => {
+                if (e.key === 'Escape' && document.getElementById('customExpiryModal')?.classList.contains('active')) {
+                    closeCustomExpiryModal();
+                }
+            });
+        });
+
+        // Modify showTab to initialize control panel when tab is shown
+        const originalShowTab = showTab;
+        showTab = function(tabName) {
+            originalShowTab.call(this, tabName);
+            if (tabName === 'control' && !controlPanelInitialized) {
+                initializeControlPanel();
+            } else if (tabName === 'control') {
+                controlPanelLoadData();
+            }
+        };
     </script>
 </body>
 
