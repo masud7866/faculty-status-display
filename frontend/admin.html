@@ -766,6 +766,21 @@
             outline: none;
         }
 
+        .control-panel-header-actions {
+            display: flex;
+            gap: 8px;
+            align-items: center;
+            flex-wrap: wrap;
+            justify-content: flex-end;
+        }
+
+        .empty-rooms-btn.small {
+            padding: 0.45rem 0.8rem;
+            font-size: 0.82rem;
+            border-radius: 8px;
+            box-shadow: 0 1px 4px rgba(16, 34, 74, .08);
+        }
+
         .control-panel-controls {
             display: flex;
             flex-direction: column;
@@ -912,6 +927,10 @@
             margin-bottom: 20px;
             padding-bottom: 15px;
             border-bottom: 2px solid #e5e7eb;
+            position: sticky;
+            top: 0;
+            background: white;
+            z-index: 2;
         }
 
         .empty-rooms-title {
@@ -930,6 +949,10 @@
             cursor: pointer;
             font-size: 14px;
             font-weight: 500;
+            position: fixed;
+            top: 24px;
+            right: 24px;
+            z-index: 3001;
         }
 
         .close-overlay-btn:hover {
@@ -1032,6 +1055,10 @@
             transform: scale(0.9);
             transition: transform 0.3s ease;
             scroll-behavior: smooth;
+        }
+
+        .empty-rooms-content .empty-rooms-header {
+            margin-top: 0;
         }
 
         .current-time-indicator {
@@ -1365,6 +1392,9 @@
                 <button id="deployBtn" class="btn btn-success" onclick="deployChanges()" disabled>
                     📤 Deploy Changes (<span id="changeCount">0</span>)
                 </button>
+                <button class="empty-rooms-btn small" onclick="toggleEmptyRoomsOverlay()" aria-label="Show Empty Rooms">
+                    📍 Empty Rooms
+                </button>
                 <span id="sessionInfo" class="session-info"></span>
                 <button onclick="logout()" class="btn btn-danger">Logout</button>
             </div>
@@ -1656,9 +1686,6 @@
                         <select id="bulkStatus" onchange="setStatusForAll(this.value)" aria-label="Bulk status selector">
                             <option value="">-- Select Status --</option>
                         </select>
-                        <button class="empty-rooms-btn" onclick="toggleEmptyRoomsOverlay()" aria-label="Show Empty Rooms" style="align-self: flex-start; margin-top: 0.5rem;">
-                            📍 Empty Rooms
-                        </button>
                     </div>
 
                     <div class="control-panel-controls" id="controls" role="main" aria-label="Faculty Status Controls"></div>
@@ -4083,6 +4110,25 @@
             }
         }
 
+        async function controlPanelReloadDataAndRender(successMessage, isError = false) {
+            const freshData = await controlPanelFetchFacultyData();
+            controlPanelIsUpdating = false;
+
+            if (freshData) {
+                controlPanelFacultyData = freshData;
+                controlPanelRender();
+                if (successMessage) {
+                    controlPanelShowMessage(successMessage, isError);
+                }
+                return true;
+            }
+
+            if (successMessage) {
+                controlPanelShowMessage(successMessage, true);
+            }
+            return false;
+        }
+
         function controlPanelUpdateBulkTimer() {
             const bulkTimerBtn = document.getElementById("bulk-timer-btn");
             if (!bulkTimerBtn) return;
@@ -4182,14 +4228,11 @@
                     }]);
 
                     if (success) {
-                        const freshData = await controlPanelFetchFacultyData();
-                        if (freshData) {
-                            controlPanelFacultyData = freshData;
-                            controlPanelRender();
-                            controlPanelShowMessage("Status updated");
-                        }
+                        await controlPanelReloadDataAndRender("Status updated");
                     }
-                    controlPanelIsUpdating = false;
+                    if (controlPanelIsUpdating) {
+                        controlPanelIsUpdating = false;
+                    }
                 });
 
                 const customExpiryBtn = document.createElement("button");
@@ -4236,15 +4279,12 @@
                     }]);
 
                     if (success) {
-                        const freshData = await controlPanelFetchFacultyData();
-                        if (freshData) {
-                            controlPanelFacultyData = freshData;
-                            controlPanelRender();
-                            controlPanelShowMessage("Override cleared");
-                        }
+                        await controlPanelReloadDataAndRender("Override cleared");
                     }
                     timerBtn.disabled = false;
-                    controlPanelIsUpdating = false;
+                    if (controlPanelIsUpdating) {
+                        controlPanelIsUpdating = false;
+                    }
                 };
 
                 div.appendChild(label);
@@ -4360,18 +4400,15 @@
                                 manualOverride: null,
                                 overrideExpiry: null
                             })));
-                            const freshData = await controlPanelFetchFacultyData();
-                            if (freshData) {
-                                controlPanelFacultyData = freshData;
-                                controlPanelRender();
-                                controlPanelShowMessage("All manual overrides cleared.");
-                            }
+                            await controlPanelReloadDataAndRender("All manual overrides cleared.");
                         } catch (err) {
                             controlPanelShowMessage("Failed to clear overrides.", true);
                             console.error(err);
                         } finally {
                             bulkTimerBtn.disabled = false;
-                            controlPanelIsUpdating = false;
+                            if (controlPanelIsUpdating) {
+                                controlPanelIsUpdating = false;
+                            }
                         }
                     };
                 } else {
@@ -4721,12 +4758,7 @@
 
                 const success = await controlPanelUpdateFaculty(updates);
                 if (success) {
-                    const freshData = await controlPanelFetchFacultyData();
-                    if (freshData) {
-                        controlPanelFacultyData = freshData;
-                        controlPanelRender();
-                        controlPanelShowMessage("Custom expiry set for all faculty");
-                    }
+                    await controlPanelReloadDataAndRender("Custom expiry set for all faculty");
                 }
             } else if (currentExpiryTarget) {
                 const facultyIndex = controlPanelFacultyData.findIndex(f => f.name === currentExpiryTarget);
@@ -4738,12 +4770,7 @@
                     }]);
 
                     if (success) {
-                        const freshData = await controlPanelFetchFacultyData();
-                        if (freshData) {
-                            controlPanelFacultyData = freshData;
-                            controlPanelRender();
-                            controlPanelShowMessage(`Custom expiry set for ${currentExpiryTarget}`);
-                        }
+                            await controlPanelReloadDataAndRender(`Custom expiry set for ${currentExpiryTarget}`);
                     }
                 }
             }
