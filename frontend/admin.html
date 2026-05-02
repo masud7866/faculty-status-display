@@ -1114,6 +1114,11 @@
             margin-top: 12px;
         }
 
+        .available-teachers-body .empty-rooms-grid {
+            grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+            gap: 12px;
+        }
+
         .room-item {
             background: linear-gradient(135deg, #10b981 0%, #059669 100%);
             color: white;
@@ -1144,24 +1149,27 @@
         .teacher-tile {
             background: white;
             color: #374151;
-            padding: 8px;
-            border-radius: 8px;
+            padding: 14px 12px;
+            border-radius: 12px;
             text-align: center;
             font-weight: 600;
-            font-size: 0.85rem;
-            box-shadow: 0 2px 8px rgba(15, 23, 42, 0.06);
+            font-size: 0.95rem;
+            box-shadow: 0 4px 14px rgba(15, 23, 42, 0.08);
             border: 1px solid #e5e7eb;
             display: flex;
             flex-direction: column;
-            gap: 6px;
+            gap: 10px;
             align-items: center;
             justify-content: center;
+            min-height: 110px;
         }
 
         .teacher-tile .teacher-name {
             color: #1e3a8a;
             font-weight: 700;
-            font-size: 0.95rem;
+            font-size: 1.03rem;
+            line-height: 1.25;
+            overflow-wrap: anywhere;
         }
 
         .teacher-tile.available {
@@ -1170,6 +1178,11 @@
             color: white;
             border-color: rgba(5, 150, 105, 0.4);
             box-shadow: 0 2px 8px rgba(16, 185, 129, 0.12);
+        }
+
+        .teacher-tile.available .teacher-name,
+        .teacher-tile.available .status {
+            color: white;
         }
 
         /* Status color palette copied from frontend/index.html (canonical) */
@@ -4961,10 +4974,13 @@
             }, 100);
         }
 
-        function scrollToCurrentTimeSlot() {
-            const currentSlotElement = document.querySelector('.current-time-indicator');
+        function scrollToCurrentTimeSlot(overlayOrElement = null) {
+            const overlay = overlayOrElement && overlayOrElement.nodeType === 1
+                ? overlayOrElement
+                : document.getElementById('emptyRoomsOverlay');
+            const currentSlotElement = overlay ? overlay.querySelector('.current-time-indicator') : document.querySelector('.current-time-indicator');
             if (currentSlotElement) {
-                const container = document.querySelector('.empty-rooms-content');
+                const container = overlay ? overlay.querySelector('.empty-rooms-content') : document.querySelector('.empty-rooms-content');
                 if (container) {
                     const containerRect = container.getBoundingClientRect();
                     const elementRect = currentSlotElement.getBoundingClientRect();
@@ -5035,56 +5051,39 @@
             }
 
             const currentTimeSlot = getCurrentTimeSlot();
+            const currentDay = getCurrentDay();
 
-            // For each time slot, compute available teachers (by schedule or manual at_dept)
+            // For each time slot, compute teacher status by hour.
             const slotsHtml = controlPanelTIME_SLOTS.map((timeSlot, idx) => {
                 const isCurrent = timeSlot === currentTimeSlot;
 
                 const teachers = controlPanelFacultyData.map(f => {
-                    // Determine effective status
-                    const status = controlPanelHasValidManualOverride(f)
+                    const baseStatus = controlPanelHasValidManualOverride(f)
                         ? (typeof f.manualOverride === 'object' && f.manualOverride !== null ? f.manualOverride.status : f.manualOverride)
                         : (typeof f.status === 'object' && f.status !== null ? f.status.status : f.status || 'off_duty');
 
-                    // Determine if faculty is occupied by schedule in this slot
-                    let occupied = false;
-                    const day = getCurrentDay();
-                    if (f.classTimes && f.classTimes[day] && Array.isArray(f.classTimes[day])) {
-                        f.classTimes[day].forEach(ct => {
-                            if (ct.start && ct.end) {
-                                if (isTimeInRange(timeSlot, ct.start, ct.end)) {
-                                    occupied = true;
-                                }
-                            }
-                        });
-                    }
+                    const hasClassInSlot = Boolean(
+                        f.classTimes &&
+                        f.classTimes[currentDay] &&
+                        Array.isArray(f.classTimes[currentDay]) &&
+                        f.classTimes[currentDay].some(ct => ct.start && ct.end && isTimeInRange(timeSlot, ct.start, ct.end))
+                    );
 
-                    // Available if manual at_dept OR not occupied by schedule
-                    const available = (status === 'at_dept') || !occupied;
+                    const slotStatus = hasClassInSlot ? 'in_class' : baseStatus;
+                    const available = slotStatus === 'at_dept';
 
-                    return { name: f.name, status, available };
+                    return { name: f.name, status: slotStatus, available };
                 });
 
                 const total = teachers.length;
                 const availableCount = teachers.filter(t => t.available).length;
 
-                const teachersHtml = teachers.map(t => {
-                    if (t.available) {
-                        return `
-                            <div class="teacher-tile available">
-                                <div class="teacher-name">${t.name}</div>
-                                <div class="status at_dept">${controlPanelLabels['at_dept']}</div>
-                            </div>
-                        `;
-                    }
-
-                    return `
-                        <div class="teacher-tile">
-                            <div class="teacher-name">${t.name}</div>
-                            <div class="status ${t.status}">${controlPanelLabels[t.status] || t.status}</div>
-                        </div>
-                    `;
-                }).join('');
+                const teachersHtml = teachers.map(t => `
+                    <div class="teacher-tile ${t.available ? 'available' : ''}">
+                        <div class="teacher-name">${t.name}</div>
+                        <div class="status ${t.status}">${controlPanelLabels[t.status] || t.status}</div>
+                    </div>
+                `).join('');
 
                 return `
                     <div class="time-slot ${isCurrent ? 'current-time-indicator' : ''}" id="availTimeSlot-${idx}" data-time-slot="${timeSlot}">
@@ -5102,7 +5101,19 @@
             content.innerHTML = slotsHtml;
 
             setTimeout(() => {
-                scrollToCurrentTimeSlot();
+                const availSlot = overlay.querySelector('.current-time-indicator');
+                if (availSlot) {
+                    const scrollContainer = overlay.querySelector('.empty-rooms-content');
+                    if (scrollContainer) {
+                        const rect = availSlot.getBoundingClientRect();
+                        const containerRect = scrollContainer.getBoundingClientRect();
+                        const relativeTop = rect.top - containerRect.top + scrollContainer.scrollTop;
+                        const targetScroll = relativeTop - (scrollContainer.clientHeight / 2) + (availSlot.offsetHeight / 2);
+                        scrollContainer.scrollTo({ top: Math.max(0, targetScroll), behavior: 'smooth' });
+                        availSlot.style.transform = 'scale(1.02)';
+                        setTimeout(() => { availSlot.style.transform = 'scale(1)'; }, 300);
+                    }
+                }
             }, 100);
         }
 
@@ -5124,6 +5135,7 @@
 
             if (overlay.classList.contains('active')) {
                 overlay.classList.remove('active');
+                availableTeachersAutoRefreshStarted = false;
                 return;
             }
 
