@@ -4354,6 +4354,25 @@
             return null;
         }
 
+        function controlPanelApplyLocalUpdates(updates) {
+            updates.forEach(update => {
+                const faculty = controlPanelFacultyData.find(item => item.name === update.name);
+                if (!faculty) return;
+
+                if (Object.prototype.hasOwnProperty.call(update, 'manualOverride')) {
+                    faculty.manualOverride = update.manualOverride;
+                }
+
+                if (Object.prototype.hasOwnProperty.call(update, 'overrideExpiry')) {
+                    faculty.overrideExpiry = update.overrideExpiry;
+                }
+
+                if (Object.prototype.hasOwnProperty.call(update, 'status')) {
+                    faculty.status = update.status;
+                }
+            });
+        }
+
         async function controlPanelUpdateFaculty(updates) {
             try {
                 const res = await fetch("https://faculty-status-display.onrender.com/api/update", {
@@ -4580,6 +4599,16 @@
                         expiry.setUTCHours(17, 59, 59, 999);
                     }
 
+                    controlPanelApplyLocalUpdates([{ 
+                        name: facultyName,
+                        manualOverride: newValue,
+                        overrideExpiry: expiry.toISOString()
+                    }]);
+
+                    controlPanelIsUpdating = false;
+                    controlPanelRender();
+                    controlPanelIsUpdating = true;
+
                     const success = await controlPanelUpdateFaculty([{
                         name: facultyName,
                         manualOverride: newValue,
@@ -4629,6 +4658,16 @@
                     controlPanelIsUpdating = true;
                     timerBtn.disabled = true;
                     const facultyName = f.name;
+
+                    controlPanelApplyLocalUpdates([{
+                        name: facultyName,
+                        manualOverride: null,
+                        overrideExpiry: null
+                    }]);
+
+                    controlPanelIsUpdating = false;
+                    controlPanelRender();
+                    controlPanelIsUpdating = true;
 
                     const success = await controlPanelUpdateFaculty([{
                         name: facultyName,
@@ -4804,6 +4843,10 @@
                 f.manualOverride = status;
                 f.overrideExpiry = expiry.toISOString();
             });
+
+            controlPanelIsUpdating = false;
+            controlPanelRender();
+            controlPanelIsUpdating = true;
 
             const updates = controlPanelFacultyData.map(f => ({
                 name: f.name,
@@ -5248,6 +5291,14 @@
                     overrideExpiry: expiryDate.toISOString()
                 }));
 
+                controlPanelFacultyData.forEach(f => {
+                    f.overrideExpiry = expiryDate.toISOString();
+                });
+
+                controlPanelIsUpdating = false;
+                controlPanelRender();
+                controlPanelIsUpdating = true;
+
                 const success = await controlPanelUpdateFaculty(updates);
                 if (success) {
                     await controlPanelReloadDataAndRender("Custom expiry set for all faculty");
@@ -5255,6 +5306,12 @@
             } else if (currentExpiryTarget) {
                 const facultyIndex = controlPanelFacultyData.findIndex(f => f.name === currentExpiryTarget);
                 if (facultyIndex !== -1) {
+                    controlPanelFacultyData[facultyIndex].overrideExpiry = expiryDate.toISOString();
+
+                    controlPanelIsUpdating = false;
+                    controlPanelRender();
+                    controlPanelIsUpdating = true;
+
                     const success = await controlPanelUpdateFaculty([{
                         name: currentExpiryTarget,
                         manualOverride: controlPanelFacultyData[facultyIndex].manualOverride,
