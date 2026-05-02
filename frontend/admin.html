@@ -4569,7 +4569,8 @@
                     if (controlPanelIsUpdating) return;
                     controlPanelIsUpdating = true;
                     const newValue = selectElement.value;
-                    controlPanelFacultyData[i].manualOverride = newValue;
+                    const facultyName = f.name;
+        
                     const now = new Date();
                     let expiry = new Date(now);
                     if (["in_class", "at_dept", "in_meeting"].includes(newValue)) {
@@ -4577,10 +4578,9 @@
                     } else {
                         expiry.setUTCHours(17, 59, 59, 999);
                     }
-                    controlPanelFacultyData[i].overrideExpiry = expiry.toISOString();
 
                     const success = await controlPanelUpdateFaculty([{
-                        name: f.name,
+                        name: facultyName,
                         manualOverride: newValue,
                         overrideExpiry: expiry.toISOString()
                     }]);
@@ -4627,11 +4627,10 @@
                     if (controlPanelIsUpdating) return;
                     controlPanelIsUpdating = true;
                     timerBtn.disabled = true;
-                    controlPanelFacultyData[i].manualOverride = null;
-                    controlPanelFacultyData[i].overrideExpiry = null;
+                    const facultyName = f.name;
 
                     const success = await controlPanelUpdateFaculty([{
-                        name: f.name,
+                        name: facultyName,
                         manualOverride: null,
                         overrideExpiry: null
                     }]);
