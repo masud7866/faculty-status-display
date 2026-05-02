@@ -4316,7 +4316,8 @@
         async function controlPanelFetchFacultyData() {
             try {
                 const res = await fetch("https://faculty-status-display.onrender.com/api/faculty", {
-                    headers: controlPanelGetAuthHeaders()
+                    headers: controlPanelGetAuthHeaders(),
+                    cache: 'no-store'
                 });
                 if (!res.ok) throw new Error("Failed to fetch faculty data");
                 const data = await res.json();
@@ -4804,15 +4805,13 @@
                 f.overrideExpiry = expiry.toISOString();
             });
 
-            controlPanelIsUpdating = false;
-            controlPanelRender();
-            controlPanelIsUpdating = true;
-
-            const success = await controlPanelUpdateFaculty(controlPanelFacultyData.map(f => ({
+            const updates = controlPanelFacultyData.map(f => ({
                 name: f.name,
                 manualOverride: f.manualOverride,
                 overrideExpiry: f.overrideExpiry
-            })));
+            }));
+
+            const success = await controlPanelUpdateFaculty(updates);
 
             if (success) {
                 const freshData = await controlPanelFetchFacultyData();
@@ -5248,10 +5247,6 @@
                     manualOverride: f.manualOverride,
                     overrideExpiry: expiryDate.toISOString()
                 }));
-
-                controlPanelIsUpdating = false;
-                controlPanelRender();
-                controlPanelIsUpdating = true;
 
                 const success = await controlPanelUpdateFaculty(updates);
                 if (success) {
