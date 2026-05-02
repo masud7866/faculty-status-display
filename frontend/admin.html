@@ -4708,9 +4708,11 @@
                     }]);
 
                     if (success) {
-                        await controlPanelReloadDataAndRender("Override cleared");
+                        controlPanelShowMessage("Override cleared");
+                        controlPanelPendingLocalState.delete(facultyName);
                     }
                     timerBtn.disabled = false;
+                    controlPanelIsUpdating = false;
                     if (controlPanelIsUpdating) {
                         controlPanelIsUpdating = false;
                     }
@@ -4824,6 +4826,8 @@
                         if (controlPanelIsUpdating) return;
                         controlPanelIsUpdating = true;
                         bulkTimerBtn.disabled = true;
+
+                        const facultyNames = controlPanelFacultyData.map(faculty => faculty.name);
                         
                         try {
                             await controlPanelUpdateFaculty(controlPanelFacultyData.map(f => ({
@@ -4831,15 +4835,20 @@
                                 manualOverride: null,
                                 overrideExpiry: null
                             })));
-                            await controlPanelReloadDataAndRender("All manual overrides cleared.", false);
+
+                            facultyNames.forEach(name => controlPanelPendingLocalState.delete(name));
+                            controlPanelFacultyData.forEach(faculty => {
+                                faculty.manualOverride = null;
+                                faculty.overrideExpiry = null;
+                            });
+                            controlPanelRender();
+                            controlPanelShowMessage("All manual overrides cleared.");
                         } catch (err) {
                             controlPanelShowMessage("Failed to clear overrides.", true);
                             console.error(err);
                         } finally {
                             bulkTimerBtn.disabled = false;
-                            if (controlPanelIsUpdating) {
-                                controlPanelIsUpdating = false;
-                            }
+                            controlPanelIsUpdating = false;
                         }
                     };
                 } else {
