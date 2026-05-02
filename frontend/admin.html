@@ -4560,8 +4560,10 @@
                     const option = document.createElement("option");
                     option.value = opt;
                     option.textContent = controlPanelLabels[opt];
+                    if (opt === currentStatus) option.selected = true;
                     selectElement.appendChild(option);
                 });
+                selectElement.value = currentStatus;
 
                 selectElement.addEventListener("change", async () => {
                     if (controlPanelIsUpdating) return;
@@ -4647,9 +4649,6 @@
                 div.appendChild(selectElement);
                 div.appendChild(customExpiryBtn);
                 div.appendChild(timerBtn);
-
-                // Set selector value AFTER it's been added to DOM to ensure proper synchronization
-                selectElement.value = currentStatus;
 
                 if (controlPanelHasValidManualOverride(f)) {
                     const intervalId = setInterval(() => {
@@ -4785,17 +4784,6 @@
                         controlPanelBulkTimerInterval = null;
                     }
                 }
-
-                // Validate and fix any selector value mismatches
-                controlPanelFacultyData.forEach(f => {
-                    const select = document.getElementById(`status-${f.name}`);
-                    if (select) {
-                        const expectedValue = controlPanelGetStatusString(f);
-                        if (select.value !== expectedValue) {
-                            select.value = expectedValue;
-                        }
-                    }
-                });
 
                 controlPanelIsUpdating = false;
             });
