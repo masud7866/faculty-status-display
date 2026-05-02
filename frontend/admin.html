@@ -4433,7 +4433,7 @@
 
             if (freshData) {
                 controlPanelFacultyData = freshData;
-                controlPanelRender();
+                controlPanelRender(true);
                 if (successMessage) {
                     controlPanelShowMessage(successMessage, isError);
                 }
@@ -4457,7 +4457,7 @@
             }
         }
 
-        function controlPanelRender() {
+        function controlPanelRender(forceRender = false) {
             if (controlPanelIsUpdating) return;
             controlPanelIsUpdating = true;
 
@@ -4473,7 +4473,7 @@
 
                 const currentStatus = controlPanelGetStatusString(f);
                 const select = document.getElementById(`status-${f.name}`);
-                if (select && select.value === currentStatus && !isNew) {
+                if (select && select.value === currentStatus && !isNew && !forceRender) {
                     const timerBtn = document.getElementById(`timer-btn-${f.name}`);
                     if (timerBtn) {
                         if (controlPanelHasValidManualOverride(f)) {
