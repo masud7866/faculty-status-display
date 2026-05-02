@@ -4465,12 +4465,6 @@
                 let div = document.getElementById(`faculty-card-${f.name}`);
                 const isNew = !div;
                 
-                // If forcing a full render, remove and recreate the card
-                if (forceRender && div) {
-                    div.remove();
-                    div = null;
-                }
-                
                 if (isNew || !div) {
                     div = document.createElement("div");
                     div.id = `faculty-card-${f.name}`;
@@ -4566,11 +4560,8 @@
                     const option = document.createElement("option");
                     option.value = opt;
                     option.textContent = controlPanelLabels[opt];
-                    if (opt === currentStatus) option.selected = true;
                     selectElement.appendChild(option);
                 });
-                // Explicitly ensure selector value matches current status
-                selectElement.value = currentStatus;
 
                 selectElement.addEventListener("change", async () => {
                     if (controlPanelIsUpdating) return;
@@ -4656,6 +4647,9 @@
                 div.appendChild(selectElement);
                 div.appendChild(customExpiryBtn);
                 div.appendChild(timerBtn);
+
+                // Set selector value AFTER it's been added to DOM to ensure proper synchronization
+                selectElement.value = currentStatus;
 
                 if (controlPanelHasValidManualOverride(f)) {
                     const intervalId = setInterval(() => {
@@ -4791,6 +4785,17 @@
                         controlPanelBulkTimerInterval = null;
                     }
                 }
+
+                // Validate and fix any selector value mismatches
+                controlPanelFacultyData.forEach(f => {
+                    const select = document.getElementById(`status-${f.name}`);
+                    if (select) {
+                        const expectedValue = controlPanelGetStatusString(f);
+                        if (select.value !== expectedValue) {
+                            select.value = expectedValue;
+                        }
+                    }
+                });
 
                 controlPanelIsUpdating = false;
             });
