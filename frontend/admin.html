@@ -4281,6 +4281,7 @@
         let controlPanelInitialized = false;
         let emptyRoomsAutoRefreshStarted = false;
         let availableTeachersAutoRefreshStarted = false;
+        let controlPanelPendingLocalState = new Map();
 
         const controlPanelStatusOptions = [
             "in_class", "at_dept", "on_leave", "off_duty", "in_meeting", "on_weekend", "postponed", "exam_duty"
@@ -4342,7 +4343,7 @@
 
             const freshData = await controlPanelFetchFacultyData();
             if (freshData) {
-                controlPanelFacultyData = freshData;
+                controlPanelFacultyData = controlPanelMergePendingLocalState(freshData);
                 return controlPanelFacultyData;
             }
 
@@ -4354,22 +4355,53 @@
             return null;
         }
 
+        function controlPanelMergePendingLocalState(freshData) {
+            if (!Array.isArray(freshData) || controlPanelPendingLocalState.size === 0) {
+                return freshData;
+            }
+
+            return freshData.map(freshFaculty => {
+                const pending = controlPanelPendingLocalState.get(freshFaculty.name);
+                if (!pending) return freshFaculty;
+
+                const mergedFaculty = { ...freshFaculty, ...pending };
+                const hasMatchedOverride =
+                    Object.prototype.hasOwnProperty.call(pending, 'manualOverride') &&
+                    Object.prototype.hasOwnProperty.call(pending, 'overrideExpiry') &&
+                    freshFaculty.manualOverride === pending.manualOverride &&
+                    freshFaculty.overrideExpiry === pending.overrideExpiry;
+
+                if (hasMatchedOverride) {
+                    controlPanelPendingLocalState.delete(freshFaculty.name);
+                }
+
+                return mergedFaculty;
+            });
+        }
+
         function controlPanelApplyLocalUpdates(updates) {
             updates.forEach(update => {
                 const faculty = controlPanelFacultyData.find(item => item.name === update.name);
                 if (!faculty) return;
 
+                const pendingFacultyState = controlPanelPendingLocalState.get(update.name) || {};
+
                 if (Object.prototype.hasOwnProperty.call(update, 'manualOverride')) {
                     faculty.manualOverride = update.manualOverride;
+                    pendingFacultyState.manualOverride = update.manualOverride;
                 }
 
                 if (Object.prototype.hasOwnProperty.call(update, 'overrideExpiry')) {
                     faculty.overrideExpiry = update.overrideExpiry;
+                    pendingFacultyState.overrideExpiry = update.overrideExpiry;
                 }
 
                 if (Object.prototype.hasOwnProperty.call(update, 'status')) {
                     faculty.status = update.status;
+                    pendingFacultyState.status = update.status;
                 }
+
+                controlPanelPendingLocalState.set(update.name, pendingFacultyState);
             });
         }
 
@@ -4452,7 +4484,7 @@
             controlPanelIsUpdating = false;
 
             if (freshData) {
-                controlPanelFacultyData = freshData;
+                controlPanelFacultyData = controlPanelMergePendingLocalState(freshData);
                 controlPanelRender(true);
                 if (successMessage) {
                     controlPanelShowMessage(successMessage, isError);
