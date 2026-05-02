@@ -4464,7 +4464,14 @@
             const renderFaculty = (f, i) => {
                 let div = document.getElementById(`faculty-card-${f.name}`);
                 const isNew = !div;
-                if (isNew) {
+                
+                // If forcing a full render, remove and recreate the card
+                if (forceRender && div) {
+                    div.remove();
+                    div = null;
+                }
+                
+                if (isNew || !div) {
                     div = document.createElement("div");
                     div.id = `faculty-card-${f.name}`;
                     div.className = "control-panel-faculty-card";
