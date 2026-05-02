@@ -4753,22 +4753,14 @@
                         if (controlPanelIsUpdating) return;
                         controlPanelIsUpdating = true;
                         bulkTimerBtn.disabled = true;
-                        controlPanelFacultyData.forEach(f => {
-                            f.manualOverride = null;
-                            f.overrideExpiry = null;
-                        });
-                        document.getElementById("bulkStatus").value = "";
-                        controlPanelIsUpdating = false;
-                        controlPanelRender();
-                        controlPanelIsUpdating = true;
-
+                        
                         try {
                             await controlPanelUpdateFaculty(controlPanelFacultyData.map(f => ({
                                 name: f.name,
                                 manualOverride: null,
                                 overrideExpiry: null
                             })));
-                            await controlPanelReloadDataAndRender("All manual overrides cleared.");
+                            await controlPanelReloadDataAndRender("All manual overrides cleared.", false);
                         } catch (err) {
                             controlPanelShowMessage("Failed to clear overrides.", true);
                             console.error(err);
