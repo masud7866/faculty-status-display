@@ -4503,36 +4503,9 @@
                     return;
                 }
                 
-                // If select exists but value doesn't match, update it to current status
+                // If select exists but value doesn't match, force full re-render of card
                 if (select && !isNew) {
-                    select.value = currentStatus;
-                    const timerBtn = document.getElementById(`timer-btn-${f.name}`);
-                    if (timerBtn) {
-                        if (controlPanelHasValidManualOverride(f)) {
-                            timerBtn.style.border = "1px solid #fd7e14";
-                            timerBtn.style.background = "#fff7e6";
-                            timerBtn.style.color = "#b45309";
-                            timerBtn.disabled = false;
-                            timerBtn.textContent = `Clear override (${controlPanelGetRemainingTime(f.overrideExpiry)})`;
-                        } else {
-                            timerBtn.style.border = "1px solid #e5e7eb";
-                            timerBtn.style.background = "#f3f4f6";
-                            timerBtn.style.color = "#a1a1aa";
-                            timerBtn.disabled = true;
-                            timerBtn.textContent = "No manual override";
-                        }
-                    }
-
-                    const customExpiryBtn = document.getElementById(`custom-expiry-btn-${f.name}`);
-                    if (customExpiryBtn) {
-                        customExpiryBtn.disabled = !controlPanelHasValidManualOverride(f);
-                        if (controlPanelHasValidManualOverride(f)) {
-                            customExpiryBtn.classList.add('active');
-                        } else {
-                            customExpiryBtn.classList.remove('active');
-                        }
-                    }
-                    return;
+                    div.innerHTML = "";
                 }
 
                 div.innerHTML = "";
@@ -4707,11 +4680,14 @@
                     bulkTimerBtn = document.createElement("button");
                     bulkTimerBtn.id = "bulk-timer-btn";
                     bulkTimerBtn.style.marginLeft = "0";
-                    bulkTimerBtn.style.padding = "0.3rem 0.8rem";
+                    bulkTimerBtn.style.padding = "0.5rem 1rem";
                     bulkTimerBtn.style.borderRadius = "6px";
                     bulkTimerBtn.style.border = "1px solid #d1d5db";
                     bulkTimerBtn.style.background = "#f3f4f6";
-                    bulkTimerBtn.style.fontSize = "0.85rem";
+                    bulkTimerBtn.style.fontSize = "0.9rem";
+                    bulkTimerBtn.style.minHeight = "44px";
+                    bulkTimerBtn.style.minWidth = "44px";
+                    bulkTimerBtn.style.fontWeight = "500";
                     const bulkStatusContainer = document.querySelector(".control-panel-bulk-status");
                     const customExpiryBtn = document.getElementById("bulk-custom-expiry-btn");
                     if (customExpiryBtn) {
@@ -4731,6 +4707,11 @@
                     bulkCustomExpiryBtn.textContent = "⏰ Custom Expiry";
                     bulkCustomExpiryBtn.title = "Set custom expiry time for all";
                     bulkCustomExpiryBtn.disabled = !allManual;
+                    bulkCustomExpiryBtn.style.padding = "0.5rem 1rem";
+                    bulkCustomExpiryBtn.style.fontSize = "0.9rem";
+                    bulkCustomExpiryBtn.style.minHeight = "44px";
+                    bulkCustomExpiryBtn.style.minWidth = "44px";
+                    bulkCustomExpiryBtn.style.fontWeight = "500";
                     if (allManual) {
                         bulkCustomExpiryBtn.classList.add('active');
                     }
