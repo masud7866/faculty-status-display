@@ -4502,6 +4502,38 @@
                     }
                     return;
                 }
+                
+                // If select exists but value doesn't match, update it to current status
+                if (select && !isNew) {
+                    select.value = currentStatus;
+                    const timerBtn = document.getElementById(`timer-btn-${f.name}`);
+                    if (timerBtn) {
+                        if (controlPanelHasValidManualOverride(f)) {
+                            timerBtn.style.border = "1px solid #fd7e14";
+                            timerBtn.style.background = "#fff7e6";
+                            timerBtn.style.color = "#b45309";
+                            timerBtn.disabled = false;
+                            timerBtn.textContent = `Clear override (${controlPanelGetRemainingTime(f.overrideExpiry)})`;
+                        } else {
+                            timerBtn.style.border = "1px solid #e5e7eb";
+                            timerBtn.style.background = "#f3f4f6";
+                            timerBtn.style.color = "#a1a1aa";
+                            timerBtn.disabled = true;
+                            timerBtn.textContent = "No manual override";
+                        }
+                    }
+
+                    const customExpiryBtn = document.getElementById(`custom-expiry-btn-${f.name}`);
+                    if (customExpiryBtn) {
+                        customExpiryBtn.disabled = !controlPanelHasValidManualOverride(f);
+                        if (controlPanelHasValidManualOverride(f)) {
+                            customExpiryBtn.classList.add('active');
+                        } else {
+                            customExpiryBtn.classList.remove('active');
+                        }
+                    }
+                    return;
+                }
 
                 div.innerHTML = "";
                 const img = document.createElement("img");
@@ -4557,6 +4589,8 @@
                     if (opt === currentStatus) option.selected = true;
                     selectElement.appendChild(option);
                 });
+                // Explicitly ensure selector value matches current status
+                selectElement.value = currentStatus;
 
                 selectElement.addEventListener("change", async () => {
                     if (controlPanelIsUpdating) return;
