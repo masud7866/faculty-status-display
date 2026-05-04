@@ -5170,10 +5170,8 @@
                             ? f.manualOverride.status 
                             : f.manualOverride;
                     } else {
-                        // Use actual status
-                        slotStatus = typeof f.status === 'object' && f.status !== null 
-                            ? f.status.status 
-                            : f.status || 'off_duty';
+                        // No class, no office hours, no override = not available in this slot
+                        slotStatus = 'off_duty';
                     }
 
                     const available = slotStatus === 'at_dept';
