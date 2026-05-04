@@ -5153,8 +5153,10 @@
                     const hasOfficeHoursInSlot = Boolean(
                         f.officeHours &&
                         f.officeHours[currentDay] &&
-                        Array.isArray(f.officeHours[currentDay]) === false &&
-                        typeof f.officeHours[currentDay] === 'object' &&
+                        Array.isArray(f.officeHours[currentDay]) &&
+                        f.officeHours[currentDay].length >= 2 &&
+                        f.officeHours[currentDay][0] &&
+                        f.officeHours[currentDay][1] &&
                         isTimeInRange(timeSlot, f.officeHours[currentDay][0], f.officeHours[currentDay][1])
                     );
 
