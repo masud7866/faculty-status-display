@@ -5117,7 +5117,12 @@
         }
 
         async function renderAvailableTeachersOverlay() {
-            await controlPanelEnsureFacultyData(true);
+            const freshData = await controlPanelFetchFacultyData();
+            if (freshData) {
+                controlPanelFacultyData = controlPanelMergePendingLocalState(freshData);
+            } else {
+                await controlPanelEnsureFacultyData(true);
+            }
 
             const overlay = document.getElementById('availableTeachersOverlay');
             if (!overlay) return;
@@ -5135,10 +5140,26 @@
 
             const currentTimeSlot = getCurrentTimeSlot();
             const currentDay = getCurrentDay();
+            const now = new Date();
+
+            function getSlotDateRange(timeSlot) {
+                const [start, end] = timeSlot.split('-');
+                const [startHour, startMin] = start.split(':').map(Number);
+                const [endHour, endMin] = end.split(':').map(Number);
+
+                const slotStart = new Date(now);
+                slotStart.setHours(startHour, startMin, 0, 0);
+
+                const slotEnd = new Date(now);
+                slotEnd.setHours(endHour, endMin, 0, 0);
+
+                return { slotStart, slotEnd };
+            }
 
             // For each time slot, compute teacher status by hour.
             const slotsHtml = controlPanelTIME_SLOTS.map((timeSlot, idx) => {
                 const isCurrent = timeSlot === currentTimeSlot;
+                const { slotStart, slotEnd } = getSlotDateRange(timeSlot);
 
                 const teachers = controlPanelFacultyData.map(f => {
                     // Check if they have a class during this time slot
@@ -5160,19 +5181,48 @@
                         isTimeInRange(timeSlot, f.officeHours[currentDay][0], f.officeHours[currentDay][1])
                     );
 
-                    // Determine actual status based on schedule first
+                    const hasWeekendInDay = Boolean(
+                        Array.isArray(f.weekend) && f.weekend.includes(currentDay)
+                    );
+
+                    const overrideStatus = controlPanelHasValidManualOverride(f)
+                        ? (typeof f.manualOverride === 'object' && f.manualOverride !== null
+                            ? f.manualOverride.status
+                            : f.manualOverride)
+                        : null;
+
+                    const overrideExpiry = f.overrideExpiry ? new Date(f.overrideExpiry) : null;
+                    const hasValidOverrideWindow = Boolean(
+                        overrideStatus &&
+                        overrideExpiry &&
+                        !isNaN(overrideExpiry.getTime()) &&
+                        overrideExpiry > now
+                    );
+
+                    // Override applies to any slot overlapping [now, overrideExpiry].
+                    const overrideAppliesInSlot = Boolean(
+                        hasValidOverrideWindow &&
+                        slotEnd > now &&
+                        slotStart < overrideExpiry
+                    );
+
+                    const backendStatus = typeof f.status === 'object' && f.status !== null
+                        ? f.status.status
+                        : f.status;
+
                     let slotStatus;
-                    if (hasClassInSlot) {
+                    if (overrideAppliesInSlot) {
+                        slotStatus = overrideStatus;
+                    } else if (hasClassInSlot) {
                         slotStatus = 'in_class';
                     } else if (hasOfficeHoursInSlot) {
                         slotStatus = 'at_dept';
-                    } else if (controlPanelHasValidManualOverride(f)) {
-                        // Use manual override only if no scheduled activity
-                        slotStatus = typeof f.manualOverride === 'object' && f.manualOverride !== null 
-                            ? f.manualOverride.status 
-                            : f.manualOverride;
+                    } else if (hasWeekendInDay) {
+                        slotStatus = 'on_weekend';
+                    } else if (isCurrent && ['on_leave', 'in_meeting', 'exam_duty', 'postponed'].includes(backendStatus)) {
+                        slotStatus = backendStatus;
                     } else {
-                        // No class, no office hours, no override = not available in this slot
+                        // No scheduled activity in this slot.
                         slotStatus = 'off_duty';
                     }
 
