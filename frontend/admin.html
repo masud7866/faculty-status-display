@@ -5141,10 +5141,7 @@
                 const isCurrent = timeSlot === currentTimeSlot;
 
                 const teachers = controlPanelFacultyData.map(f => {
-                    const baseStatus = controlPanelHasValidManualOverride(f)
-                        ? (typeof f.manualOverride === 'object' && f.manualOverride !== null ? f.manualOverride.status : f.manualOverride)
-                        : (typeof f.status === 'object' && f.status !== null ? f.status.status : f.status || 'off_duty');
-
+                    // Check if they have a class during this time slot
                     const hasClassInSlot = Boolean(
                         f.classTimes &&
                         f.classTimes[currentDay] &&
@@ -5152,7 +5149,33 @@
                         f.classTimes[currentDay].some(ct => ct.start && ct.end && isTimeInRange(timeSlot, ct.start, ct.end))
                     );
 
-                    const slotStatus = hasClassInSlot ? 'in_class' : baseStatus;
+                    // Check if they have office hours during this time slot
+                    const hasOfficeHoursInSlot = Boolean(
+                        f.officeHours &&
+                        f.officeHours[currentDay] &&
+                        Array.isArray(f.officeHours[currentDay]) === false &&
+                        typeof f.officeHours[currentDay] === 'object' &&
+                        isTimeInRange(timeSlot, f.officeHours[currentDay][0], f.officeHours[currentDay][1])
+                    );
+
+                    // Determine actual status based on schedule first
+                    let slotStatus;
+                    if (hasClassInSlot) {
+                        slotStatus = 'in_class';
+                    } else if (hasOfficeHoursInSlot) {
+                        slotStatus = 'at_dept';
+                    } else if (controlPanelHasValidManualOverride(f)) {
+                        // Use manual override only if no scheduled activity
+                        slotStatus = typeof f.manualOverride === 'object' && f.manualOverride !== null 
+                            ? f.manualOverride.status 
+                            : f.manualOverride;
+                    } else {
+                        // Use actual status
+                        slotStatus = typeof f.status === 'object' && f.status !== null 
+                            ? f.status.status 
+                            : f.status || 'off_duty';
+                    }
+
                     const available = slotStatus === 'at_dept';
 
                     return { name: f.name, status: slotStatus, available };
