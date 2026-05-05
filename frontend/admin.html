@@ -5233,6 +5233,7 @@
 
                 const total = teachers.length;
                 const availableCount = teachers.filter(t => t.available).length;
+                const inClassCount = teachers.filter(t => t.status === 'in_class').length;
 
                 const teachersHtml = teachers.map(t => `
                     <div class="teacher-tile ${t.available ? 'available' : ''}">
@@ -5245,7 +5246,7 @@
                     <div class="time-slot ${isCurrent ? 'current-time-indicator' : ''}" id="availTimeSlot-${idx}" data-time-slot="${timeSlot}">
                         <div class="time-slot-header">
                             <h3 class="time-slot-title">${formatTimeSlotFor12Hour(timeSlot)} ${isCurrent ? 'Current' : ''}</h3>
-                            <div class="time-slot-count">${availableCount}/${total} Available</div>
+                            <div class="time-slot-count">${availableCount}/${total} Available · ${inClassCount} In Class</div>
                         </div>
                         <div class="empty-rooms-grid">
                             ${teachersHtml}
