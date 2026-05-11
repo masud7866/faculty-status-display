@@ -4581,8 +4581,8 @@
                 });
                 if (!res.ok) throw new Error("Failed to fetch faculty data");
                 const data = await res.json();
-                const filteredData = filterFacultyForCurrentUser(data);
-                const sortedData = filteredData.sort((a, b) => {
+                // Note: Do NOT filter for user role here - overlays should show ALL faculty
+                const sortedData = data.sort((a, b) => {
                     const precedenceA = a.precedence || 50;
                     const precedenceB = b.precedence || 50;
                     if (precedenceA !== precedenceB) return precedenceA - precedenceB;
