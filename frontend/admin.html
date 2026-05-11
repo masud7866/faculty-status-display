@@ -5652,7 +5652,42 @@
             box.style.background = isError ? '#fef2f2' : '#f0f9ff';
             box.style.borderColor = isError ? '#fca5a5' : '#93c5fd';
             box.style.color = isError ? '#b91c1c' : '#1e3a8a';
-            box.textContent = text;
+            box.innerHTML = `<div style="font-weight:600; margin-bottom:0.35rem;">Status</div><div>${text}</div>`;
+        }
+
+        function showUserMgmtCredential(username, temporaryPassword) {
+            const box = document.getElementById('userMgmtMessage');
+            if (!box) return;
+
+            box.classList.remove('hidden');
+            box.style.background = '#ecfdf5';
+            box.style.borderColor = '#86efac';
+            box.style.color = '#14532d';
+            box.innerHTML = `
+                <div style="font-weight:700; margin-bottom:0.5rem;">Temporary password generated</div>
+                <div style="margin-bottom:0.4rem;"><strong>User:</strong> ${username}</div>
+                <div style="margin-bottom:0.6rem;"><strong>Password:</strong></div>
+                <div style="display:flex; gap:0.5rem; flex-wrap:wrap; align-items:center;">
+                    <code id="tempPasswordValue" style="display:inline-block; padding:0.5rem 0.75rem; background:#ffffff; border:1px solid #a7f3d0; border-radius:8px; color:#064e3b; font-weight:700; letter-spacing:0.04em; word-break:break-all;">${temporaryPassword}</code>
+                    <button type="button" class="btn btn-primary" onclick="copyTemporaryPassword()">Copy Password</button>
+                </div>
+                <div style="margin-top:0.6rem; font-size:0.85rem; color:#166534;">This password is shown once. If you miss it, reset the user again.</div>
+            `;
+        }
+
+        async function copyTemporaryPassword() {
+            const value = document.getElementById('tempPasswordValue')?.textContent || '';
+            if (!value) {
+                showUserMgmtMessage('No temporary password is available to copy.', true);
+                return;
+            }
+
+            try {
+                await navigator.clipboard.writeText(value);
+                showUserMgmtMessage('Temporary password copied to clipboard.', false);
+            } catch (error) {
+                showUserMgmtMessage(`Copy failed. Password: ${value}`, true);
+            }
         }
 
         function renderUsersList(users) {
@@ -5739,7 +5774,7 @@
                 }
 
                 const data = await response.json();
-                showUserMgmtMessage(`Temporary password for ${data.username}: ${data.temporaryPassword}`, false);
+                showUserMgmtCredential(data.username, data.temporaryPassword);
             } catch (error) {
                 showUserMgmtMessage(error.message || 'Failed to reset password', true);
             }
@@ -5760,7 +5795,12 @@
                 }
 
                 const data = await response.json();
-                showUserMgmtMessage(`Created ${data.createdCount} new accounts`, false);
+                if (data.createdUsers?.length) {
+                    const summary = data.createdUsers.slice(0, 3).map(item => `${item.username}: ${item.temporaryPassword}`).join('<br>');
+                    showUserMgmtMessage(`Created ${data.createdCount} new accounts.<br><br><strong>Sample credentials:</strong><br>${summary}`, false);
+                } else {
+                    showUserMgmtMessage(`Created ${data.createdCount} new accounts`, false);
+                }
                 loadUsers();
             } catch (error) {
                 showUserMgmtMessage(error.message || 'Failed to migrate faculty accounts', true);
