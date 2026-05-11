@@ -1799,7 +1799,7 @@
                                 <label for="email">Email</label>
                                 <input type="email" id="email" class="form-control">
                             </div>
-                            <div class="form-group">
+                            <div class="form-group" id="displayPositionGroup">
                                 <label for="displayPosition">Display Position</label>
                                 <select id="displayPosition" class="form-control">
                                     <option value="first">First (Top)</option>
@@ -1889,7 +1889,7 @@
                             <div id="classTimes"></div>
                         </div>
 
-                        <div class="form-actions">
+                        <div class="form-actions" id="facultyFormActions">
                             <button type="submit" class="btn btn-success" id="submitBtn">Add Faculty</button>
                             <button type="button" onclick="resetForm()" class="btn btn-secondary">Reset Form</button>
                             <button type="button" onclick="cancelEdit()" class="btn btn-warning hidden" id="cancelEditBtn">Cancel Edit</button>
@@ -2206,6 +2206,61 @@
                 const deployBtn = document.getElementById('deployBtn');
                 if (deployBtn) deployBtn.classList.remove('hidden');
             }
+
+            syncFacultyFormVisibility();
+        }
+
+        function syncFacultyFormVisibility() {
+            const editMode = document.getElementById('editMode')?.value === 'true';
+            const submitBtn = document.getElementById('submitBtn');
+            const resetBtn = document.querySelector('#facultyFormActions .btn.btn-secondary');
+            const cancelBtn = document.getElementById('cancelEditBtn');
+            const formTitle = document.getElementById('facultyFormTitle');
+            const displayPositionGroup = document.getElementById('displayPositionGroup');
+
+            if (isUserRole()) {
+                if (formTitle) {
+                    formTitle.textContent = 'Edit Your Info';
+                }
+
+                if (displayPositionGroup) {
+                    displayPositionGroup.classList.add('hidden');
+                }
+
+                if (submitBtn) {
+                    submitBtn.textContent = 'Update Profile';
+                    submitBtn.style.display = editMode ? '' : 'none';
+                }
+
+                if (resetBtn) {
+                    resetBtn.style.display = editMode ? '' : 'none';
+                }
+
+                if (cancelBtn) {
+                    cancelBtn.style.display = editMode ? '' : 'none';
+                }
+                return;
+            }
+
+            if (formTitle) {
+                formTitle.textContent = 'Add New Faculty';
+            }
+
+            if (displayPositionGroup) {
+                displayPositionGroup.classList.remove('hidden');
+            }
+
+            if (submitBtn) {
+                submitBtn.style.display = '';
+            }
+
+            if (resetBtn) {
+                resetBtn.style.display = '';
+            }
+
+            if (cancelBtn) {
+                cancelBtn.style.display = '';
+            }
         }
 
         function filterFacultyForCurrentUser(data) {
@@ -2277,6 +2332,7 @@
         // Check authentication
         document.addEventListener('DOMContentLoaded', function () {
             checkAuth();
+            syncFacultyFormVisibility();
         });
 
         async function checkAuth() {
@@ -2729,6 +2785,7 @@
             document.getElementById('displayPosition').value = 'last';
             document.getElementById('customPositionGroup').style.display = 'none';
             document.getElementById('customPosition').value = '';
+            syncFacultyFormVisibility();
         }
 
         function cancelEdit() {
@@ -2848,6 +2905,7 @@
             });
 
             showToast(`Editing ${name}`, 'info');
+            syncFacultyFormVisibility();
         }
 
         // Faculty Image Upload
