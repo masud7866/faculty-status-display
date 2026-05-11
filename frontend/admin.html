@@ -2795,7 +2795,7 @@
 
         // Edit Faculty Function
         function editFaculty(name) {
-            if (isUserRole() && normalizeUsername(name) !== normalizeUsername(getCurrentFacultyName())) {
+            if (isUserRole() && name !== getCurrentFacultyName()) {
                 showToast('You can only edit your own faculty record', 'error');
                 return;
             }
