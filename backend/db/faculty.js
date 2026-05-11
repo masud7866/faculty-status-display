@@ -14,6 +14,119 @@ class FacultyDB {
     return this.db;
   }
 
+  async getUsersCollection() {
+    const db = await this.connect();
+    return db.collection('users');
+  }
+
+  async listUsers() {
+    const users = await this.getUsersCollection();
+    return users.find({}).toArray();
+  }
+
+  async getUserByUsername(username) {
+    if (!username) return null;
+    const users = await this.getUsersCollection();
+    return users.findOne({ username: username.toLowerCase() });
+  }
+
+  async getUserByFacultyName(facultyName) {
+    if (!facultyName) return null;
+    const users = await this.getUsersCollection();
+    return users.findOne({ facultyName });
+  }
+
+  async upsertUser(user) {
+    const users = await this.getUsersCollection();
+    const username = user.username.toLowerCase();
+    const now = new Date();
+    const payload = {
+      ...user,
+      username,
+      updatedAt: now
+    };
+
+    await users.updateOne(
+      { username },
+      {
+        $set: payload,
+        $setOnInsert: { createdAt: now }
+      },
+      { upsert: true }
+    );
+
+    return this.getUserByUsername(username);
+  }
+
+  async updateUser(username, updates) {
+    const users = await this.getUsersCollection();
+    const now = new Date();
+    const result = await users.updateOne(
+      { username: username.toLowerCase() },
+      {
+        $set: {
+          ...updates,
+          updatedAt: now
+        }
+      }
+    );
+    return result.modifiedCount > 0;
+  }
+
+  async deleteUser(username) {
+    const users = await this.getUsersCollection();
+    const result = await users.deleteOne({ username: username.toLowerCase() });
+    return result.deletedCount > 0;
+  }
+
+  async ensureDefaultAdmin(defaultUser) {
+    const users = await this.getUsersCollection();
+    const existingAdmin = await users.findOne({ username: defaultUser.username.toLowerCase() });
+    if (existingAdmin) return existingAdmin;
+
+    const now = new Date();
+    const adminUser = {
+      ...defaultUser,
+      username: defaultUser.username.toLowerCase(),
+      role: 'admin',
+      facultyName: defaultUser.facultyName || null,
+      mustChangePassword: true,
+      createdAt: now,
+      updatedAt: now,
+      lastPasswordChangeAt: now
+    };
+
+    await users.insertOne(adminUser);
+    return adminUser;
+  }
+
+  async createFacultyUser(facultyName, userData) {
+    const users = await this.getUsersCollection();
+    const existing = await users.findOne({ facultyName });
+    const now = new Date();
+    const payload = {
+      ...userData,
+      username: userData.username.toLowerCase(),
+      facultyName,
+      updatedAt: now
+    };
+
+    if (existing) {
+      await users.updateOne(
+        { _id: existing._id },
+        { $set: payload }
+      );
+      return this.getUserByUsername(payload.username);
+    }
+
+    await users.insertOne({
+      ...payload,
+      createdAt: now
+    });
+
+    return this.getUserByUsername(payload.username);
+  }
+
   async getAllFaculty() {
     const db = await this.connect();
     const faculty = await db.collection('faculty').find({}).toArray();

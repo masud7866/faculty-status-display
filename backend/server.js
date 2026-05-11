@@ -5,12 +5,19 @@ const jwt = require("jsonwebtoken");
 const cors = require("cors");
 const path = require("path");
 const fs = require("fs");
+const crypto = require("crypto");
 const FacultyDB = require("./db/faculty");
 const compression = require('compression');
 
 // JWT configuration
 const JWT_SECRET = process.env.JWT_SECRET || "jwt_secret_key_change_in_production";
 const JWT_EXPIRES_IN = "8h"; // 8 hours
+const LEGACY_ADMIN_USERNAME = "admin";
+const LEGACY_ADMIN_PASSWORD = "admin123";
+const DEFAULT_TEMP_PASSWORD_LENGTH = 12;
+const PBKDF2_ITERATIONS = 120000;
+const PBKDF2_KEY_LENGTH = 64;
+const PBKDF2_DIGEST = "sha512";
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -79,6 +86,211 @@ function requireAuth(req, res, next) {
     }
     return res.status(401).json({ error: "Invalid token" });
   }
+}
+
+function requireRole(...roles) {
+  return (req, res, next) => {
+    if (!req.user) {
+      return res.status(401).json({ error: "Unauthorized" });
+    }
+
+    if (!roles.includes(req.user.role)) {
+      return res.status(403).json({ error: "Forbidden" });
+    }
+
+    next();
+  };
+}
+
+function normalizeUsername(username) {
+  return String(username || "").trim().toLowerCase();
+}
+
+function normalizeFacultyUsername(faculty) {
+  const email = normalizeUsername(faculty?.email);
+  if (email) {
+    return email;
+  }
+
+  return normalizeUsername(faculty?.name).replace(/\s+/g, "");
+}
+
+function generateTempPassword(length = DEFAULT_TEMP_PASSWORD_LENGTH) {
+  const alphabet = "ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz23456789!@#$%*";
+  const bytes = crypto.randomBytes(length);
+  let password = "";
+
+  for (let index = 0; index < length; index += 1) {
+    password += alphabet[bytes[index] % alphabet.length];
+  }
+
+  return password;
+}
+
+function hashPassword(password, salt = crypto.randomBytes(16).toString("hex")) {
+  const hash = crypto.pbkdf2Sync(
+    String(password),
+    salt,
+    PBKDF2_ITERATIONS,
+    PBKDF2_KEY_LENGTH,
+    PBKDF2_DIGEST
+  ).toString("hex");
+
+  return `pbkdf2$${PBKDF2_ITERATIONS}$${salt}$${hash}`;
+}
+
+function verifyPassword(password, storedHash) {
+  if (!storedHash || typeof storedHash !== "string") {
+    return false;
+  }
+
+  const [scheme, iterationsStr, salt, hash] = storedHash.split("$");
+  if (scheme !== "pbkdf2" || !iterationsStr || !salt || !hash) {
+    return normalizeUsername(password) === LEGACY_ADMIN_PASSWORD && storedHash === LEGACY_ADMIN_PASSWORD;
+  }
+
+  const iterations = Number(iterationsStr);
+  if (!Number.isFinite(iterations) || iterations <= 0) {
+    return false;
+  }
+
+  const candidate = crypto.pbkdf2Sync(
+    String(password),
+    salt,
+    iterations,
+    hash.length / 2,
+    PBKDF2_DIGEST
+  );
+
+  const storedBuffer = Buffer.from(hash, "hex");
+  if (storedBuffer.length !== candidate.length) {
+    return false;
+  }
+
+  return crypto.timingSafeEqual(storedBuffer, candidate);
+}
+
+function buildAuthToken(user) {
+  const payload = {
+    username: user.username,
+    role: user.role || "user",
+    linkedFacultyName: user.linkedFacultyName || null,
+    linkedFacultyEmail: user.linkedFacultyEmail || null,
+    mustChangePassword: !!user.mustChangePassword,
+    loginTime: new Date().toISOString()
+  };
+
+  return jwt.sign(payload, JWT_SECRET, { expiresIn: JWT_EXPIRES_IN });
+}
+
+function normalizeUserRecord(user) {
+  if (!user) {
+    return null;
+  }
+
+  return {
+    _id: user._id,
+    username: user.username,
+    usernameLower: user.usernameLower,
+    role: user.role || "user",
+    linkedFacultyName: user.linkedFacultyName || null,
+    linkedFacultyEmail: user.linkedFacultyEmail || null,
+    mustChangePassword: !!user.mustChangePassword,
+    createdAt: user.createdAt || null,
+    updatedAt: user.updatedAt || null,
+    passwordUpdatedAt: user.passwordUpdatedAt || null
+  };
+}
+
+async function getUsersCollection() {
+  const db = await facultyDB.connect();
+  return db.collection("users");
+}
+
+async function findUserByUsername(username) {
+  const users = await getUsersCollection();
+  return users.findOne({ usernameLower: normalizeUsername(username) });
+}
+
+async function issueAuthResponse(user, res) {
+  const token = buildAuthToken(user);
+  res.status(200).json({
+    success: true,
+    token,
+    expiresIn: JWT_EXPIRES_IN,
+    user: normalizeUserRecord(user)
+  });
+}
+
+async function upsertUserFromFaculty(faculty, options = {}) {
+  const users = await getUsersCollection();
+  const baseUsername = normalizeFacultyUsername(faculty);
+  if (!baseUsername) {
+    return null;
+  }
+
+  const existing = await users.findOne({
+    $or: [
+      { linkedFacultyName: faculty.name },
+      { usernameLower: baseUsername }
+    ]
+  });
+
+  if (existing && !options.forceReset) {
+    const updates = {
+      linkedFacultyName: faculty.name || existing.linkedFacultyName || null,
+      linkedFacultyEmail: faculty.email || existing.linkedFacultyEmail || null,
+      updatedAt: new Date()
+    };
+
+    await users.updateOne({ _id: existing._id }, { $set: updates });
+    return { user: { ...existing, ...updates }, tempPassword: null, created: false };
+  }
+
+  let username = baseUsername;
+  let suffix = 1;
+  while (await users.findOne({ usernameLower: normalizeUsername(username) })) {
+    suffix += 1;
+    username = `${baseUsername}${suffix}`;
+  }
+
+  const tempPassword = options.tempPassword || generateTempPassword();
+  const now = new Date();
+  const newUser = {
+    username,
+    usernameLower: normalizeUsername(username),
+    passwordHash: hashPassword(tempPassword),
+    role: options.role || "user",
+    linkedFacultyName: faculty.name || null,
+    linkedFacultyEmail: faculty.email || null,
+    mustChangePassword: true,
+    createdAt: now,
+    updatedAt: now,
+    passwordUpdatedAt: now
+  };
+
+  const result = await users.insertOne(newUser);
+  return { user: { ...newUser, _id: result.insertedId }, tempPassword, created: true };
+}
+
+async function ensureDefaultUsersFromFaculty() {
+  const db = await facultyDB.connect();
+  const facultyRecords = await db.collection("faculty").find({}).toArray();
+  const createdUsers = [];
+
+  for (const faculty of facultyRecords) {
+    const created = await upsertUserFromFaculty(faculty);
+    if (created?.created) {
+      createdUsers.push({
+        username: created.user.username,
+        tempPassword: created.tempPassword,
+        linkedFacultyName: faculty.name,
+        linkedFacultyEmail: faculty.email || null
+      });
+    }
+  }
+
+  return createdUsers;
 }
 
 // Serve images
@@ -228,26 +440,236 @@ app.get("/api/faculty", async (req, res) => {
   }
 });
 
-app.post("/api/login", (req, res) => {
+async function handleLogin(req, res) {
   const { username, password } = req.body;
-  if (username === "admin" && password === "admin123") {
-    // Generate JWT token
-    const payload = {
-      username: username,
-      loginTime: new Date().toISOString(),
-      userAgent: req.headers['user-agent']
-    };
-    
-    const token = jwt.sign(payload, JWT_SECRET, { expiresIn: JWT_EXPIRES_IN });
-    
-    console.log(`✅ New JWT token generated for ${username}`);
-    res.status(200).json({ 
-      success: true,
-      token: token,
-      expiresIn: JWT_EXPIRES_IN
+  const normalizedUsername = normalizeUsername(username);
+
+  try {
+    if (!normalizedUsername || !password) {
+      return res.status(400).json({ error: "Username and password are required" });
+    }
+
+    if (normalizedUsername === LEGACY_ADMIN_USERNAME && password === LEGACY_ADMIN_PASSWORD) {
+      const legacyAdmin = {
+        username: LEGACY_ADMIN_USERNAME,
+        usernameLower: LEGACY_ADMIN_USERNAME,
+        role: "admin",
+        linkedFacultyName: null,
+        linkedFacultyEmail: null,
+        mustChangePassword: true
+      };
+      return issueAuthResponse(legacyAdmin, res);
+    }
+
+    const user = await findUserByUsername(normalizedUsername);
+    if (!user || !verifyPassword(password, user.passwordHash)) {
+      return res.status(401).json({ error: "Invalid credentials" });
+    }
+
+    const responseUser = normalizeUserRecord(user);
+    responseUser.passwordHash = undefined;
+    return issueAuthResponse(user, res);
+  } catch (error) {
+    console.error("❌ Login failed:", error);
+    res.status(500).json({ error: "Failed to login" });
+  }
+}
+
+app.post("/api/login", handleLogin);
+
+app.post("/api/auth/login", handleLogin);
+
+app.get("/api/auth/me", requireAuth, async (req, res) => {
+  try {
+    const user = await findUserByUsername(req.user.username);
+    if (user) {
+      return res.json({ loggedIn: true, user: normalizeUserRecord(user) });
+    }
+
+    return res.json({
+      loggedIn: true,
+      user: {
+        username: req.user.username,
+        role: req.user.role || "user",
+        linkedFacultyName: req.user.linkedFacultyName || null,
+        linkedFacultyEmail: req.user.linkedFacultyEmail || null,
+        mustChangePassword: !!req.user.mustChangePassword
+      }
     });
-  } else {
-    res.status(401).json({ error: "Invalid credentials" });
+  } catch (error) {
+    console.error("❌ Failed to load user profile:", error);
+    res.status(500).json({ error: "Failed to load profile" });
+  }
+});
+
+app.get("/api/auth/users", requireAuth, requireRole("admin"), async (req, res) => {
+  try {
+    const users = await getUsersCollection();
+    const records = await users.find({}).sort({ username: 1 }).toArray();
+    res.json(records.map(normalizeUserRecord));
+  } catch (error) {
+    console.error("❌ Failed to list users:", error);
+    res.status(500).json({ error: "Failed to list users" });
+  }
+});
+
+app.put("/api/auth/users/:username", requireAuth, requireRole("admin"), async (req, res) => {
+  try {
+    const username = normalizeUsername(req.params.username);
+    const { role } = req.body;
+
+    if (!username) {
+      return res.status(400).json({ error: "Username is required" });
+    }
+
+    if (!["admin", "editor", "user"].includes(role)) {
+      return res.status(400).json({ error: "Invalid role" });
+    }
+
+    const users = await getUsersCollection();
+    const result = await users.updateOne(
+      { usernameLower: username },
+      { $set: { role, updatedAt: new Date() } }
+    );
+
+    if (result.matchedCount === 0) {
+      return res.status(404).json({ error: "User not found" });
+    }
+
+    const updatedUser = await findUserByUsername(username);
+    res.json({ message: "User role updated", user: normalizeUserRecord(updatedUser) });
+  } catch (error) {
+    console.error("❌ Failed to update user role:", error);
+    res.status(500).json({ error: "Failed to update role" });
+  }
+});
+
+app.post("/api/auth/users/:username/reset-password", requireAuth, requireRole("admin"), async (req, res) => {
+  try {
+    const username = normalizeUsername(req.params.username);
+    const user = await findUserByUsername(username);
+    if (!user) {
+      return res.status(404).json({ error: "User not found" });
+    }
+
+    const tempPassword = generateTempPassword();
+    const users = await getUsersCollection();
+    await users.updateOne(
+      { usernameLower: username },
+      {
+        $set: {
+          passwordHash: hashPassword(tempPassword),
+          mustChangePassword: true,
+          updatedAt: new Date(),
+          passwordUpdatedAt: new Date()
+        }
+      }
+    );
+
+    res.json({
+      message: "Password reset successfully",
+      username,
+      temporaryPassword: tempPassword
+    });
+  } catch (error) {
+    console.error("❌ Failed to reset password:", error);
+    res.status(500).json({ error: "Failed to reset password" });
+  }
+});
+
+app.post("/api/auth/migrate-faculty-accounts", requireAuth, requireRole("admin"), async (req, res) => {
+  try {
+    const db = await facultyDB.connect();
+    const facultyRecords = await db.collection("faculty").find({}).toArray();
+    const createdUsers = [];
+
+    for (const faculty of facultyRecords) {
+      const created = await upsertUserFromFaculty(faculty);
+      if (created?.created) {
+        createdUsers.push({
+          facultyName: faculty.name,
+          username: created.user.username,
+          temporaryPassword: created.tempPassword
+        });
+      }
+    }
+
+    res.json({
+      message: "Faculty accounts migrated",
+      createdCount: createdUsers.length,
+      createdUsers
+    });
+  } catch (error) {
+    console.error("❌ Failed to migrate faculty accounts:", error);
+    res.status(500).json({ error: "Failed to migrate faculty accounts" });
+  }
+});
+
+app.post("/api/auth/change-password", requireAuth, async (req, res) => {
+  try {
+    const { currentPassword, newPassword } = req.body;
+    const username = normalizeUsername(req.user.username);
+
+    if (!currentPassword || !newPassword) {
+      return res.status(400).json({ error: "Current and new password are required" });
+    }
+
+    if (String(newPassword).length < 8) {
+      return res.status(400).json({ error: "New password must be at least 8 characters" });
+    }
+
+    const users = await getUsersCollection();
+    let user = await findUserByUsername(username);
+
+    if (!user && username === LEGACY_ADMIN_USERNAME && currentPassword === LEGACY_ADMIN_PASSWORD) {
+      user = {
+        username: LEGACY_ADMIN_USERNAME,
+        usernameLower: LEGACY_ADMIN_USERNAME,
+        role: "admin",
+        linkedFacultyName: null,
+        linkedFacultyEmail: null,
+        mustChangePassword: true
+      };
+    }
+
+    if (!user) {
+      return res.status(404).json({ error: "User not found" });
+    }
+
+    const passwordMatches = user.passwordHash
+      ? verifyPassword(currentPassword, user.passwordHash)
+      : currentPassword === LEGACY_ADMIN_PASSWORD && username === LEGACY_ADMIN_USERNAME;
+
+    if (!passwordMatches) {
+      return res.status(401).json({ error: "Current password is incorrect" });
+    }
+
+    const passwordHash = hashPassword(newPassword);
+    await users.updateOne(
+      { usernameLower: username },
+      {
+        $set: {
+          username: username,
+          usernameLower: username,
+          role: user.role || req.user.role || "user",
+          linkedFacultyName: user.linkedFacultyName || req.user.linkedFacultyName || null,
+          linkedFacultyEmail: user.linkedFacultyEmail || req.user.linkedFacultyEmail || null,
+          passwordHash,
+          mustChangePassword: false,
+          updatedAt: new Date(),
+          passwordUpdatedAt: new Date()
+        },
+        $setOnInsert: {
+          createdAt: new Date()
+        }
+      },
+      { upsert: true }
+    );
+
+    res.json({ message: "Password changed successfully" });
+  } catch (error) {
+    console.error("❌ Failed to change password:", error);
+    res.status(500).json({ error: "Failed to change password" });
   }
 });
 
@@ -255,6 +677,21 @@ app.post("/api/update", requireAuth, async (req, res) => {
   const overrides = req.body;
 
   try {
+    if (req.user.role === "user") {
+      const allowedFacultyName = req.user.linkedFacultyName;
+      if (!allowedFacultyName) {
+        return res.status(403).json({ error: "No faculty account linked to this user" });
+      }
+
+      const invalidUpdate = Array.isArray(overrides)
+        ? overrides.some(update => normalizeUsername(update.name) !== normalizeUsername(allowedFacultyName))
+        : normalizeUsername(overrides.name) !== normalizeUsername(allowedFacultyName);
+
+      if (invalidUpdate) {
+        return res.status(403).json({ error: "Users can only update their own status" });
+      }
+    }
+
     const result = await facultyDB.bulkUpdateOverrides(overrides);
     console.log(`✅ Updated ${result} faculty records`);
     res.json({ message: "Faculty data updated successfully." });
@@ -270,29 +707,24 @@ app.post("/api/logout", (req, res) => {
   res.json({ success: true, message: "Logged out successfully" });
 });
 
-app.get("/api/check-login", (req, res) => {
-  const authHeader = req.headers.authorization;
-  
-  if (!authHeader || !authHeader.startsWith('Bearer ')) {
-    return res.status(401).json({ loggedIn: false });
-  }
-  
-  const token = authHeader.substring(7);
-  
+app.get("/api/check-login", requireAuth, async (req, res) => {
   try {
-    const decoded = jwt.verify(token, JWT_SECRET);
-    
-    const sessionAge = decoded.loginTime ? 
-      Math.floor((Date.now() - new Date(decoded.loginTime)) / 1000 / 60) : 
-      null; // Age in minutes
-    
-    // Calculate remaining time from exp (expiration timestamp in seconds)
+    const decoded = req.user;
+    const user = await findUserByUsername(decoded.username);
+    const sessionAge = decoded.loginTime ? Math.floor((Date.now() - new Date(decoded.loginTime)) / 1000 / 60) : null;
     const remainingMinutes = Math.floor((decoded.exp - Date.now() / 1000) / 60);
     
     res.json({ 
       loggedIn: true,
       sessionAge: sessionAge,
-      remainingMinutes: remainingMinutes
+      remainingMinutes: remainingMinutes,
+      user: user ? normalizeUserRecord(user) : {
+        username: decoded.username,
+        role: decoded.role || "user",
+        linkedFacultyName: decoded.linkedFacultyName || null,
+        linkedFacultyEmail: decoded.linkedFacultyEmail || null,
+        mustChangePassword: !!decoded.mustChangePassword
+      }
     });
   } catch (error) {
     res.status(401).json({ loggedIn: false, error: error.message });
@@ -364,7 +796,7 @@ app.get("/api/admin/faculty/:name", requireAuth, async (req, res) => {
 });
 
 // Add new faculty member
-app.post("/api/admin/faculty", requireAuth, async (req, res) => {
+app.post("/api/admin/faculty", requireAuth, requireRole("admin", "editor"), async (req, res) => {
   try {
     const db = await facultyDB.connect();
     const newFaculty = {
@@ -376,6 +808,10 @@ app.post("/api/admin/faculty", requireAuth, async (req, res) => {
       overrideExpiry: null
     };
     
+    if (!newFaculty.name) {
+      return res.status(400).json({ error: "Faculty name is required" });
+    }
+
     // Check if faculty already exists
     const existing = await db.collection('faculty').findOne({ name: newFaculty.name });
     if (existing) {
@@ -383,6 +819,7 @@ app.post("/api/admin/faculty", requireAuth, async (req, res) => {
     }
     
     await db.collection('faculty').insertOne(newFaculty);
+    await upsertUserFromFaculty(newFaculty, { role: "user" });
     console.log(`✅ Added new faculty: ${newFaculty.name}`);
     res.json({ message: "Faculty added successfully" });
   } catch (error) {
@@ -425,6 +862,19 @@ app.put("/api/admin/faculty/:name", requireAuth, async (req, res) => {
         return res.status(400).json({ error: "Faculty with this name already exists" });
       }
     }
+
+    if (req.user.role === "user") {
+      if (normalizeUsername(originalName) !== normalizeUsername(req.user.linkedFacultyName)) {
+        return res.status(403).json({ error: "Users can only edit their own faculty profile" });
+      }
+
+      const allowedFields = new Set(["name", "designation", "contact", "email", "image", "weekend", "officeHours", "classTimes", "displayPosition", "customPosition", "precedence"]);
+      Object.keys(updateData).forEach(key => {
+        if (!allowedFields.has(key)) {
+          delete updateData[key];
+        }
+      });
+    }
     
     const result = await db.collection('faculty').updateOne(
       { name: originalName },
@@ -433,6 +883,20 @@ app.put("/api/admin/faculty/:name", requireAuth, async (req, res) => {
     
     if (result.matchedCount === 0) {
       return res.status(404).json({ error: "Faculty not found" });
+    }
+
+    if (updateData.name && updateData.name !== originalName) {
+      const users = await getUsersCollection();
+      await users.updateOne(
+        { linkedFacultyName: originalName },
+        {
+          $set: {
+            linkedFacultyName: updateData.name,
+            linkedFacultyEmail: updateData.email || null,
+            updatedAt: new Date()
+          }
+        }
+      );
     }
     
     console.log(`✅ Updated faculty: ${originalName} (precedence: ${updateData.precedence || 'default'})`);
@@ -445,7 +909,7 @@ app.put("/api/admin/faculty/:name", requireAuth, async (req, res) => {
 });
 
 // Delete faculty member
-app.delete("/api/admin/faculty/:name", requireAuth, async (req, res) => {
+app.delete("/api/admin/faculty/:name", requireAuth, requireRole("admin"), async (req, res) => {
   try {
     const db = await facultyDB.connect();
     const result = await db.collection('faculty').deleteOne({ name: req.params.name });
@@ -455,6 +919,8 @@ app.delete("/api/admin/faculty/:name", requireAuth, async (req, res) => {
     }
     
     console.log(`✅ Deleted faculty: ${req.params.name}`);
+    const users = await getUsersCollection();
+    await users.deleteMany({ linkedFacultyName: req.params.name });
     res.json({ message: "Faculty deleted successfully" });
   } catch (error) {
     console.error("Error deleting faculty:", error);
@@ -463,7 +929,7 @@ app.delete("/api/admin/faculty/:name", requireAuth, async (req, res) => {
 });
 
 // Update marquee text (database version for admin panel)
-app.post("/api/admin/marquee", requireAuth, async (req, res) => {
+app.post("/api/admin/marquee", requireAuth, requireRole("admin", "editor"), async (req, res) => {
   const { text } = req.body;
   
   try {
@@ -579,7 +1045,7 @@ app.post("/api/admin/marquee", requireAuth, async (req, res) => {
 });
 
 // GitHub file upload route
-app.post("/api/upload", requireAuth, async (req, res) => {
+app.post("/api/upload", requireAuth, requireRole("admin", "editor"), async (req, res) => {
   const { filename, content, path } = req.body;
     if (!process.env.GITHUB_TOKEN) {
     return res.status(500).json({ error: "GitHub token not configured. Upload manually to GitHub." });
@@ -659,7 +1125,7 @@ app.post("/api/upload", requireAuth, async (req, res) => {
 });
 
 // Delete ad file (admin only)
-app.delete('/api/admin/ads/:filename', requireAuth, async (req, res) => {
+app.delete('/api/admin/ads/:filename', requireAuth, requireRole("admin", "editor"), async (req, res) => {
   try {
       const filename = req.params.filename;
       
@@ -809,6 +1275,9 @@ async function startup() {
     // Check for initial migration or file sync
     try {
       const db = await facultyDB.connect();
+      const users = db.collection('users');
+      await users.createIndex({ usernameLower: 1 }, { unique: true });
+      await users.createIndex({ linkedFacultyName: 1 });
       const existingCount = await db.collection('faculty').countDocuments();
       
       console.log(`💾 Current database has ${existingCount} faculty records`);
@@ -855,6 +1324,8 @@ async function startup() {
           }
         }
       }
+
+      await ensureDefaultUsersFromFaculty();
     } catch (error) {
       console.log("⚠️ Migration/sync check failed:", error.message);
     }

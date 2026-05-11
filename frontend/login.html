@@ -448,7 +448,7 @@
       const destination = getRedirectDestination();
       setLoading(true);
       
-      fetch("https://faculty-status-display.onrender.com/api/login", {
+      fetch("https://faculty-status-display.onrender.com/api/auth/login", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ username, password })

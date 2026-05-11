@@ -1668,17 +1668,19 @@
                     📍 Empty Rooms
                 </button>
                 <span id="sessionInfo" class="session-info"></span>
+                <button id="changePasswordBtn" onclick="openChangePasswordModal()" class="btn btn-secondary">Change Password</button>
                 <button onclick="logout()" class="btn btn-danger">Logout</button>
             </div>
         </div>
 
         <div class="section">
             <div class="tabs">
-                <button class="tab active" onclick="showTab('control')">Control Panel</button>
-                <button class="tab" onclick="showTab('faculty')">Faculty</button>
-                <button class="tab" onclick="showTab('marquee')">Marquee</button>
-                <button class="tab" onclick="showTab('ads')">Ads</button>
-                <button class="tab" onclick="showTab('upload')">Upload Ads</button>
+                <button id="tab-control-btn" class="tab active" onclick="showTab('control')">Control Panel</button>
+                <button id="tab-faculty-btn" class="tab" onclick="showTab('faculty')">Faculty</button>
+                <button id="tab-marquee-btn" class="tab" onclick="showTab('marquee')">Marquee</button>
+                <button id="tab-ads-btn" class="tab" onclick="showTab('ads')">Ads</button>
+                <button id="tab-upload-btn" class="tab" onclick="showTab('upload')">Upload Ads</button>
+                <button id="tab-users-btn" class="tab hidden" onclick="showTab('users')">User Management</button>
             </div>
 
             <!-- Control Panel Tab -->
@@ -2020,6 +2022,23 @@
                     </div>
                 </div>
             </div>
+
+            <!-- User Management Tab -->
+            <div id="users-tab" class="tab-content hidden">
+                <div class="section">
+                    <h2>User Management</h2>
+                    <div class="file-info">
+                        <strong>Roles:</strong> Admin, Editor, User<br>
+                        <strong>Purpose:</strong> Update roles, reset passwords, and migrate existing faculty accounts.
+                    </div>
+                    <div class="btn-group" style="margin-bottom: 15px;">
+                        <button class="btn btn-primary" onclick="loadUsers()">Refresh Users</button>
+                        <button class="btn btn-warning" onclick="migrateFacultyAccounts()">Migrate Existing Faculty</button>
+                    </div>
+                    <div id="userMgmtMessage" class="file-info hidden"></div>
+                    <div id="usersList"></div>
+                </div>
+            </div>
         </div>
     </div>
 
@@ -2044,6 +2063,33 @@
         </div>
     </div>
 
+    <div class="custom-expiry-modal" id="changePasswordModal">
+        <div class="custom-expiry-content" style="max-width: 560px;">
+            <div class="custom-expiry-header">
+                <h3 class="custom-expiry-title">Change Password</h3>
+                <button class="custom-expiry-close" onclick="closeChangePasswordModal()">✕</button>
+            </div>
+            <div class="duration-section" style="margin-bottom: 0;">
+                <div class="form-group">
+                    <label for="currentPassword">Current Password</label>
+                    <input type="password" id="currentPassword" class="form-control" autocomplete="current-password">
+                </div>
+                <div class="form-group">
+                    <label for="newPassword">New Password</label>
+                    <input type="password" id="newPassword" class="form-control" autocomplete="new-password">
+                </div>
+                <div class="form-group">
+                    <label for="confirmPassword">Confirm New Password</label>
+                    <input type="password" id="confirmPassword" class="form-control" autocomplete="new-password">
+                </div>
+            </div>
+            <div class="custom-expiry-actions">
+                <button class="custom-expiry-btn cancel" onclick="closeChangePasswordModal()">Cancel</button>
+                <button class="custom-expiry-btn save" onclick="changePassword()">Update Password</button>
+            </div>
+        </div>
+    </div>
+
     <script>
         const API_BASE = 'https://faculty-status-display.onrender.com';
         const days = ['Saturday', 'Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday'];
@@ -2053,6 +2099,8 @@
         let pendingAdUploads = []; // Store ads waiting to be uploaded: [{file, base64, filename}]
         let pendingAdDeletions = []; // Store ad filenames waiting to be deleted
         let pendingFacultyImages = []; // Store faculty images waiting to be uploaded: [{filename, base64, facultyName}]
+        let currentUser = null;
+        let currentUserRole = 'guest';
         const SUPPORTED_AD_EXTENSIONS = ['jpg', 'jpeg', 'png', 'gif', 'webp', 'mp4', 'webm'];
 
         function getFileExtension(filename) {
@@ -2078,6 +2126,138 @@
         
         function clearAuthToken() {
             localStorage.removeItem('faculty_jwt_token');
+        }
+
+        function parseJwt(token) {
+            if (!token) return null;
+            try {
+                return JSON.parse(atob(token.split('.')[1].replace(/-/g, '+').replace(/_/g, '/')));
+            } catch (error) {
+                return null;
+            }
+        }
+
+        function getTokenUser() {
+            return parseJwt(getAuthToken());
+        }
+
+        function setCurrentUser(user) {
+            currentUser = user || null;
+            currentUserRole = currentUser?.role || getTokenUser()?.role || 'guest';
+        }
+
+        function isAdmin() {
+            return currentUserRole === 'admin';
+        }
+
+        function isEditor() {
+            return currentUserRole === 'editor';
+        }
+
+        function isUserRole() {
+            return currentUserRole === 'user';
+        }
+
+        function getCurrentFacultyName() {
+            return currentUser?.linkedFacultyName || getTokenUser()?.linkedFacultyName || currentUser?.username || null;
+        }
+
+        function canAccessTab(tabName) {
+            if (isAdmin()) return true;
+            if (isEditor()) {
+                return ['control', 'faculty', 'marquee', 'ads', 'upload'].includes(tabName);
+            }
+            if (isUserRole()) {
+                return ['control', 'faculty'].includes(tabName);
+            }
+            return false;
+        }
+
+        function applyRoleAccess() {
+            const allowedTabs = new Set();
+            if (isAdmin()) {
+                ['control', 'faculty', 'marquee', 'ads', 'upload', 'users'].forEach(tab => allowedTabs.add(tab));
+            } else if (isEditor()) {
+                ['control', 'faculty', 'marquee', 'ads', 'upload'].forEach(tab => allowedTabs.add(tab));
+            } else if (isUserRole()) {
+                ['control', 'faculty'].forEach(tab => allowedTabs.add(tab));
+            }
+
+            document.querySelectorAll('.tab').forEach(button => {
+                const tabName = button.getAttribute('onclick')?.match(/showTab\('([^']+)'\)/)?.[1];
+                if (tabName && allowedTabs.has(tabName)) {
+                    button.classList.remove('hidden');
+                } else {
+                    button.classList.add('hidden');
+                }
+            });
+
+            const userManagementTab = document.getElementById('users-tab');
+            if (userManagementTab) {
+                userManagementTab.classList.toggle('hidden', !isAdmin());
+            }
+
+            const changePasswordBtn = document.getElementById('changePasswordBtn');
+            if (changePasswordBtn) {
+                changePasswordBtn.classList.remove('hidden');
+            }
+
+            if (isUserRole()) {
+                const deployBtn = document.getElementById('deployBtn');
+                if (deployBtn) deployBtn.classList.remove('hidden');
+            }
+        }
+
+        function filterFacultyForCurrentUser(data) {
+            if (!Array.isArray(data)) return [];
+            if (!isUserRole()) return data;
+
+            const facultyName = getCurrentFacultyName();
+            return data.filter(f => f.name === facultyName);
+        }
+
+        function openChangePasswordModal() {
+            document.getElementById('currentPassword').value = '';
+            document.getElementById('newPassword').value = '';
+            document.getElementById('confirmPassword').value = '';
+            document.getElementById('changePasswordModal').classList.add('active');
+        }
+
+        function closeChangePasswordModal() {
+            document.getElementById('changePasswordModal').classList.remove('active');
+        }
+
+        async function changePassword() {
+            const currentPassword = document.getElementById('currentPassword').value.trim();
+            const newPassword = document.getElementById('newPassword').value.trim();
+            const confirmPassword = document.getElementById('confirmPassword').value.trim();
+
+            if (!currentPassword || !newPassword || !confirmPassword) {
+                showToast('Fill in all password fields', 'error');
+                return;
+            }
+
+            if (newPassword !== confirmPassword) {
+                showToast('New password and confirmation do not match', 'error');
+                return;
+            }
+
+            const response = await fetch(`${API_BASE}/api/auth/change-password`, {
+                method: 'POST',
+                headers: getAuthHeaders(),
+                body: JSON.stringify({ currentPassword, newPassword })
+            });
+
+            if (!response.ok) {
+                const error = await response.json().catch(() => ({}));
+                showToast(error.error || 'Failed to change password', 'error');
+                return;
+            }
+
+            closeChangePasswordModal();
+            clearAuthToken();
+            showToast('Password changed. Please sign in again.', 'success');
+            setTimeout(() => redirectToLogin(), 1200);
         }
 
         // Unicode-safe base64 encoding function
@@ -2126,10 +2306,17 @@
                     return;
                 }
 
+                setCurrentUser(data.user || getTokenUser());
+                applyRoleAccess();
+
                 document.getElementById('loadingOverlay').style.display = 'none';
                 document.getElementById('mainContent').style.display = 'block';
 
                 initializeAdminPanel();
+
+                if (currentUser?.mustChangePassword) {
+                    openChangePasswordModal();
+                }
 
             } catch (error) {
                 console.error('Auth check failed:', error);
@@ -2343,6 +2530,9 @@
         }
 
         function showTab(tabName) {
+            if (!canAccessTab(tabName)) {
+                return;
+            }
             document.querySelectorAll('.tab-content').forEach(tab => {
                 tab.classList.remove('active');
             });
@@ -2548,6 +2738,11 @@
 
         // Edit Faculty Function
         function editFaculty(name) {
+            if (isUserRole() && normalizeUsername(name) !== normalizeUsername(getCurrentFacultyName())) {
+                showToast('You can only edit your own faculty record', 'error');
+                return;
+            }
+
             const faculty = facultyData.find(f => f.name === name);
             if (!faculty) {
                 showToast(`Faculty ${name} not found`, 'error');
@@ -2760,6 +2955,11 @@
         document.getElementById('addFacultyForm').addEventListener('submit', async function (e) {
             e.preventDefault();
 
+            if (isUserRole() && document.getElementById('editMode').value !== 'true') {
+                showToast('Users cannot add new faculty records', 'error');
+                return;
+            }
+
             // Verify session is still active before submitting
             try {
                 const sessionCheck = await fetch(`${API_BASE}/api/check-login`, {
@@ -2964,10 +3164,10 @@
                 }
 
                 const faculty = await response.json();
-                facultyData = faculty; // Store for editing
+                facultyData = filterFacultyForCurrentUser(faculty); // Store for editing
 
                 // Sort faculty by precedence (lower numbers first), then by name
-                const sortedFaculty = faculty.sort((a, b) => {
+                const sortedFaculty = facultyData.sort((a, b) => {
                     const precedenceA = a.precedence || 50;
                     const precedenceB = b.precedence || 50;
                     
@@ -2981,7 +3181,9 @@
                 container.innerHTML = '';
 
                 if (sortedFaculty.length === 0) {
-                    container.innerHTML = '<p>No faculty found. Add some faculty members using the form above.</p>';
+                    container.innerHTML = currentUserRole === 'user'
+                        ? '<p>No faculty record is linked to your account.</p>'
+                        : '<p>No faculty found. Add some faculty members using the form above.</p>';
                     return;
                 }
 
@@ -3025,7 +3227,7 @@
                             </div>
                             <div class="faculty-actions">
                                 <button class="btn btn-primary" onclick="editFaculty('${f.name.replace(/'/g, "\\'")}')">Edit</button>
-                                <button class="btn btn-danger" onclick="deleteFaculty('${f.name.replace(/'/g, "\\'")}')">Delete</button>
+                                ${currentUserRole === 'user' ? '' : `<button class="btn btn-danger" onclick="deleteFaculty('${f.name.replace(/'/g, "\\'")}')">Delete</button>`}
                             </div>
                         </div>
                         <div class="faculty-info"><strong>Display Order:</strong> #${index + 1}</div>
@@ -3047,6 +3249,11 @@
         }
 
         async function deleteFaculty(name) {
+            if (isUserRole()) {
+                showToast('Users cannot delete faculty records', 'error');
+                return;
+            }
+
             if (!confirm(`Are you sure you want to delete ${name}?\n\nThis action cannot be undone.`)) return;
 
             try {
@@ -4316,7 +4523,8 @@
                 });
                 if (!res.ok) throw new Error("Failed to fetch faculty data");
                 const data = await res.json();
-                const sortedData = data.sort((a, b) => {
+                const filteredData = filterFacultyForCurrentUser(data);
+                const sortedData = filteredData.sort((a, b) => {
                     const precedenceA = a.precedence || 50;
                     const precedenceB = b.precedence || 50;
                     if (precedenceA !== precedenceB) return precedenceA - precedenceB;
@@ -5437,6 +5645,128 @@
             closeCustomExpiryModal();
         }
 
+        function showUserMgmtMessage(text, isError = false) {
+            const box = document.getElementById('userMgmtMessage');
+            if (!box) return;
+            box.classList.remove('hidden');
+            box.style.background = isError ? '#fef2f2' : '#f0f9ff';
+            box.style.borderColor = isError ? '#fca5a5' : '#93c5fd';
+            box.style.color = isError ? '#b91c1c' : '#1e3a8a';
+            box.textContent = text;
+        }
+
+        function renderUsersList(users) {
+            const container = document.getElementById('usersList');
+            if (!container) return;
+
+            if (!Array.isArray(users) || users.length === 0) {
+                container.innerHTML = '<p>No users found.</p>';
+                return;
+            }
+
+            container.innerHTML = users.map(user => `
+                <div class="faculty-card">
+                    <div class="faculty-header">
+                        <div>
+                            <div class="faculty-name">${user.username}</div>
+                            <div style="font-size: 12px; color: #6b7280; margin-top: 2px;">${user.linkedFacultyName || 'No faculty link'}</div>
+                        </div>
+                        <div class="faculty-actions">
+                            <button class="btn btn-primary" onclick="resetUserPassword('${user.username.replace(/'/g, "\\'")}')">Reset Password</button>
+                        </div>
+                    </div>
+                    <div class="form-group" style="max-width: 220px;">
+                        <label>Role</label>
+                        <select class="form-control" onchange="updateUserRole('${user.username.replace(/'/g, "\\'")}', this.value)">
+                            <option value="admin" ${user.role === 'admin' ? 'selected' : ''}>Admin</option>
+                            <option value="editor" ${user.role === 'editor' ? 'selected' : ''}>Editor</option>
+                            <option value="user" ${user.role === 'user' ? 'selected' : ''}>User</option>
+                        </select>
+                    </div>
+                    <div class="faculty-info"><strong>Must change password:</strong> ${user.mustChangePassword ? 'Yes' : 'No'}</div>
+                </div>
+            `).join('');
+        }
+
+        async function loadUsers() {
+            try {
+                const response = await fetch(`${API_BASE}/api/auth/users`, { headers: getAuthHeaders() });
+                if (!response.ok) {
+                    const error = await response.json().catch(() => ({}));
+                    throw new Error(error.error || 'Failed to load users');
+                }
+
+                const users = await response.json();
+                renderUsersList(users);
+                showUserMgmtMessage(`Loaded ${users.length} users`, false);
+            } catch (error) {
+                console.error(error);
+                showUserMgmtMessage(error.message || 'Failed to load users', true);
+            }
+        }
+
+        async function updateUserRole(username, role) {
+            try {
+                const response = await fetch(`${API_BASE}/api/auth/users/${encodeURIComponent(username)}`, {
+                    method: 'PUT',
+                    headers: getAuthHeaders(),
+                    body: JSON.stringify({ role })
+                });
+
+                if (!response.ok) {
+                    const error = await response.json().catch(() => ({}));
+                    throw new Error(error.error || 'Failed to update role');
+                }
+
+                showUserMgmtMessage(`Updated role for ${username} to ${role}`, false);
+            } catch (error) {
+                showUserMgmtMessage(error.message || 'Failed to update role', true);
+            }
+        }
+
+        async function resetUserPassword(username) {
+            if (!confirm(`Reset password for ${username}?`)) return;
+
+            try {
+                const response = await fetch(`${API_BASE}/api/auth/users/${encodeURIComponent(username)}/reset-password`, {
+                    method: 'POST',
+                    headers: getAuthHeaders()
+                });
+
+                if (!response.ok) {
+                    const error = await response.json().catch(() => ({}));
+                    throw new Error(error.error || 'Failed to reset password');
+                }
+
+                const data = await response.json();
+                showUserMgmtMessage(`Temporary password for ${data.username}: ${data.temporaryPassword}`, false);
+            } catch (error) {
+                showUserMgmtMessage(error.message || 'Failed to reset password', true);
+            }
+        }
+
+        async function migrateFacultyAccounts() {
+            if (!confirm('Create login accounts for all faculty that do not have one yet?')) return;
+
+            try {
+                const response = await fetch(`${API_BASE}/api/auth/migrate-faculty-accounts`, {
+                    method: 'POST',
+                    headers: getAuthHeaders()
+                });
+
+                if (!response.ok) {
+                    const error = await response.json().catch(() => ({}));
+                    throw new Error(error.error || 'Failed to migrate faculty accounts');
+                }
+
+                const data = await response.json();
+                showUserMgmtMessage(`Created ${data.createdCount} new accounts`, false);
+                loadUsers();
+            } catch (error) {
+                showUserMgmtMessage(error.message || 'Failed to migrate faculty accounts', true);
+            }
+        }
+
         // Initialize modal event listeners
         document.addEventListener('DOMContentLoaded', () => {
             document.querySelectorAll('.expiry-mode-btn').forEach(btn => {
@@ -5468,6 +5798,8 @@
                     // Always reload data when switching to control tab
                     controlPanelLoadData();
                 }
+            } else if (tabName === 'users' && isAdmin()) {
+                loadUsers();
             }
         };
     </script>
