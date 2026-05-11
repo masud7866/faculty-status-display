@@ -5004,10 +5004,16 @@
                 controlPanelTimerIntervals = [];
                 const controls = document.getElementById('controls');
                 controls.innerHTML = "";
-                controlPanelFacultyData.forEach(renderFaculty);
+                
+                // Filter to user's own record if User role
+                const displayFacultyData = isUserRole() 
+                    ? controlPanelFacultyData.filter(f => f.name === getCurrentFacultyName())
+                    : controlPanelFacultyData;
+                
+                displayFacultyData.forEach(renderFaculty);
 
                 // Create bulk timer button
-                let allManual = controlPanelFacultyData.every(f => !!f.manualOverride);
+                let allManual = displayFacultyData.every(f => !!f.manualOverride);
                 let bulkTimerBtn = document.getElementById("bulk-timer-btn");
                 if (!bulkTimerBtn) {
                     bulkTimerBtn = document.createElement("button");
@@ -5064,18 +5070,18 @@
                 };
 
                 if (allManual) {
-                    const times = controlPanelFacultyData.map(f => controlPanelGetRemainingTime(f.overrideExpiry)).filter(t => t !== "Expired");
+                    const times = displayFacultyData.map(f => controlPanelGetRemainingTime(f.overrideExpiry)).filter(t => t !== "Expired");
                     bulkTimerBtn.textContent = "Clear all overrides (" + (times.length ? times.sort()[0] : "Expired") + ")";
                     bulkTimerBtn.style.border = "1px solid #fd7e14";
                     bulkTimerBtn.style.background = "#fff7e6";
                     bulkTimerBtn.style.color = "#b45309";
                     bulkTimerBtn.disabled = false;
-                    bulkTimerBtn.classList.toggle('expiring', times.length && controlPanelFacultyData.some(f => controlPanelIsExpiringSoon(f.overrideExpiry)));
+                    bulkTimerBtn.classList.toggle('expiring', times.length && displayFacultyData.some(f => controlPanelIsExpiringSoon(f.overrideExpiry)));
 
                     if (controlPanelBulkTimerInterval) clearInterval(controlPanelBulkTimerInterval);
                     controlPanelBulkTimerInterval = setInterval(() => {
                         controlPanelUpdateBulkTimer();
-                        if (!controlPanelFacultyData.every(f => controlPanelHasValidManualOverride(f))) {
+                        if (!displayFacultyData.every(f => controlPanelHasValidManualOverride(f))) {
                             clearInterval(controlPanelBulkTimerInterval);
                             controlPanelBulkTimerInterval = null;
                             controlPanelRender();
@@ -5087,17 +5093,17 @@
                         controlPanelIsUpdating = true;
                         bulkTimerBtn.disabled = true;
 
-                        const facultyNames = controlPanelFacultyData.map(faculty => faculty.name);
+                        const facultyNames = displayFacultyData.map(faculty => faculty.name);
                         
                         try {
-                            await controlPanelUpdateFaculty(controlPanelFacultyData.map(f => ({
+                            await controlPanelUpdateFaculty(displayFacultyData.map(f => ({
                                 name: f.name,
                                 manualOverride: null,
                                 overrideExpiry: null
                             })));
 
                             facultyNames.forEach(name => controlPanelPendingLocalState.delete(name));
-                            controlPanelFacultyData.forEach(faculty => {
+                            displayFacultyData.forEach(faculty => {
                                 faculty.manualOverride = null;
                                 faculty.overrideExpiry = null;
                             });
@@ -5140,7 +5146,12 @@
                 expiry.setUTCHours(17, 59, 59, 999);
             }
 
-            controlPanelFacultyData.forEach(f => {
+            // Filter to displayed faculty (user's own record if User role)
+            const displayFacultyData = isUserRole() 
+                ? controlPanelFacultyData.filter(f => f.name === getCurrentFacultyName())
+                : controlPanelFacultyData;
+
+            displayFacultyData.forEach(f => {
                 f.manualOverride = status;
                 f.overrideExpiry = expiry.toISOString();
             });
@@ -5149,7 +5160,7 @@
             controlPanelRender();
             controlPanelIsUpdating = true;
 
-            const updates = controlPanelFacultyData.map(f => ({
+            const updates = displayFacultyData.map(f => ({
                 name: f.name,
                 manualOverride: f.manualOverride,
                 overrideExpiry: f.overrideExpiry
