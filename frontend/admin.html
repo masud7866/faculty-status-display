@@ -5440,11 +5440,14 @@
 
                 const teachers = controlPanelFacultyData.map(f => {
                     // Check if they have a class during this time slot
-                    const hasClassInSlot = Boolean(
-                        f.classTimes &&
+                    const classEntry = f.classTimes &&
                         f.classTimes[currentDay] &&
-                        Array.isArray(f.classTimes[currentDay]) &&
-                        f.classTimes[currentDay].some(ct => ct.start && ct.end && isTimeInRange(timeSlot, ct.start, ct.end))
+                        Array.isArray(f.classTimes[currentDay])
+                        ? f.classTimes[currentDay].find(ct => ct.start && ct.end && isTimeInRange(timeSlot, ct.start, ct.end))
+                        : null;
+
+                    const hasClassInSlot = Boolean(
+                        classEntry
                     );
 
                     // Check if they have office hours during this time slot
@@ -5505,7 +5508,13 @@
 
                     const available = slotStatus === 'at_dept';
 
-                    return { name: f.name, status: slotStatus, available };
+                    return {
+                        name: f.name,
+                        status: slotStatus,
+                        available,
+                        room: classEntry?.room || null,
+                        batch: classEntry?.batch || null
+                    };
                 });
 
                 const total = teachers.length;
@@ -5516,6 +5525,11 @@
                     <div class="teacher-tile ${t.available ? 'available' : ''}">
                         <div class="teacher-name">${t.name}</div>
                         <div class="status ${t.status}">${controlPanelLabels[t.status] || t.status}</div>
+                        ${t.status === 'in_class' && (t.room || t.batch) ? `
+                            <div style="font-size: 0.8rem; color: #6b7280; line-height: 1.3; white-space: pre-line;">
+                                ${t.room ? `Room: ${t.room}` : ''}${t.room && t.batch ? '\n' : ''}${t.batch ? `Batch: ${t.batch}` : ''}
+                            </div>
+                        ` : ''}
                     </div>
                 `).join('');
 
