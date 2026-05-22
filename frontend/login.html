@@ -71,7 +71,11 @@
     body {
       margin: 0;
       font-family: "Segoe UI", sans-serif;
-      background: linear-gradient(135deg, #7aa9ff 0%, #a7f3d0 50%, #c4b5fd 100%);
+      background:
+        radial-gradient(circle at 12% 20%, rgba(34, 211, 238, 0.56), transparent 20%),
+        radial-gradient(circle at 84% 18%, rgba(168, 85, 247, 0.46), transparent 22%),
+        radial-gradient(circle at 78% 80%, rgba(16, 185, 129, 0.40), transparent 24%),
+        linear-gradient(135deg, #07111f 0%, #0f2a4a 38%, #123d57 62%, #1d1740 100%);
       background-size: 220% 220%;
       animation: loginBaseDrift 18s ease-in-out infinite alternate;
       min-height: 100vh;
@@ -95,21 +99,25 @@
 
     body::before {
       background:
-        radial-gradient(circle at 18% 18%, rgba(255, 255, 255, 0.36), transparent 24%),
-        radial-gradient(circle at 82% 22%, rgba(59, 130, 246, 0.22), transparent 28%),
-        radial-gradient(circle at 78% 80%, rgba(16, 185, 129, 0.18), transparent 26%),
-        radial-gradient(circle at 14% 82%, rgba(196, 181, 253, 0.24), transparent 30%);
-      filter: blur(20px);
-      opacity: 0.96;
-      animation: loginBgFloat 22s ease-in-out infinite alternate;
+        radial-gradient(circle at 18% 18%, rgba(255, 255, 255, 0.5), transparent 14%),
+        radial-gradient(circle at 24% 28%, rgba(34, 211, 238, 0.68), transparent 12%),
+        radial-gradient(circle at 82% 22%, rgba(168, 85, 247, 0.6), transparent 16%),
+        radial-gradient(circle at 78% 80%, rgba(16, 185, 129, 0.56), transparent 14%),
+        radial-gradient(circle at 14% 82%, rgba(249, 115, 22, 0.38), transparent 18%),
+        radial-gradient(circle at 50% 52%, rgba(59, 130, 246, 0.28), transparent 32%);
+      filter: blur(30px) saturate(190%);
+      opacity: 0.98;
+      animation: loginBgFloat 12s ease-in-out infinite alternate, loginHueShift 14s linear infinite;
+      transform-origin: center;
     }
 
     body::after {
-      background-image: linear-gradient(rgba(255, 255, 255, 0.12) 1px, transparent 1px), linear-gradient(90deg, rgba(255, 255, 255, 0.12) 1px, transparent 1px);
-      background-size: 48px 48px;
-      opacity: 0.16;
-      mix-blend-mode: soft-light;
-      animation: loginBgGrid 36s linear infinite;
+      background:
+        conic-gradient(from 180deg at 50% 50%, rgba(255, 255, 255, 0.1), rgba(34, 211, 238, 0.18), rgba(168, 85, 247, 0.16), rgba(16, 185, 129, 0.18), rgba(255, 255, 255, 0.1));
+      background-size: 140% 140%;
+      opacity: 0.24;
+      mix-blend-mode: screen;
+      animation: loginBgGrid 14s linear infinite, loginPulse 5s ease-in-out infinite;
     }
 
     @keyframes loginBgFloat {
@@ -124,11 +132,33 @@
 
     @keyframes loginBgGrid {
       0% {
-        transform: translate3d(0, 0, 0);
+        transform: translate3d(-2%, -1%, 0) rotate(0deg) scale(1);
       }
 
       100% {
-        transform: translate3d(48px, 48px, 0);
+        transform: translate3d(2%, 1%, 0) rotate(12deg) scale(1.08);
+      }
+    }
+
+    @keyframes loginHueShift {
+      0% {
+        filter: blur(30px) saturate(190%) hue-rotate(0deg);
+      }
+
+      100% {
+        filter: blur(30px) saturate(190%) hue-rotate(360deg);
+      }
+    }
+
+    @keyframes loginPulse {
+      0%, 100% {
+        opacity: 0.18;
+        transform: scale(1);
+      }
+
+      50% {
+        opacity: 0.36;
+        transform: scale(1.12);
       }
     }
 
