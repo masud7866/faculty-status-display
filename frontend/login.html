@@ -77,6 +77,57 @@
       justify-content: center;
       align-items: center;
       padding: 1rem;
+      position: relative;
+      isolation: isolate;
+      overflow: hidden;
+    }
+
+    body::before,
+    body::after {
+      content: "";
+      position: fixed;
+      inset: -18vh -12vw;
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    body::before {
+      background:
+        radial-gradient(circle at 18% 18%, rgba(255, 255, 255, 0.36), transparent 24%),
+        radial-gradient(circle at 82% 22%, rgba(59, 130, 246, 0.22), transparent 28%),
+        radial-gradient(circle at 78% 80%, rgba(16, 185, 129, 0.18), transparent 26%),
+        radial-gradient(circle at 14% 82%, rgba(196, 181, 253, 0.24), transparent 30%);
+      filter: blur(20px);
+      opacity: 0.96;
+      animation: loginBgFloat 22s ease-in-out infinite alternate;
+    }
+
+    body::after {
+      background-image: linear-gradient(rgba(255, 255, 255, 0.12) 1px, transparent 1px), linear-gradient(90deg, rgba(255, 255, 255, 0.12) 1px, transparent 1px);
+      background-size: 48px 48px;
+      opacity: 0.16;
+      mix-blend-mode: soft-light;
+      animation: loginBgGrid 36s linear infinite;
+    }
+
+    @keyframes loginBgFloat {
+      0% {
+        transform: translate3d(-1.5%, -1%, 0) scale(1);
+      }
+
+      100% {
+        transform: translate3d(1.5%, 1%, 0) scale(1.05);
+      }
+    }
+
+    @keyframes loginBgGrid {
+      0% {
+        transform: translate3d(0, 0, 0);
+      }
+
+      100% {
+        transform: translate3d(48px, 48px, 0);
+      }
     }
 
     .login-box {
@@ -91,6 +142,7 @@
       max-width: 420px;
       position: relative;
       overflow: hidden;
+      z-index: 1;
     }
 
     .login-box:before {
@@ -101,6 +153,7 @@
         radial-gradient(circle at 85% 15%, rgba(59, 130, 246, .18), transparent 60%),
         radial-gradient(circle at 10% 90%, rgba(16, 185, 129, .15), transparent 65%);
       pointer-events: none;
+      z-index: -1;
     }
 
     h2 {
