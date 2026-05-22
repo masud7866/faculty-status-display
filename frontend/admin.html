@@ -16,7 +16,7 @@
 
         body {
             font-family: 'Inter', 'Segoe UI', Arial, sans-serif;
-            background: linear-gradient(135deg, #eef2f7, #dbe5f5);
+            background: linear-gradient(135deg, #7aa9ff 0%, #a7f3d0 50%, #c4b5fd 100%);
             padding: 10px;
             min-height: 100vh;
             font-size: 14px;
@@ -28,9 +28,12 @@
         }
 
         .header {
-            background: #fff;
+            background: rgba(255, 255, 255, 0.55);
+            border: 1px solid rgba(255, 255, 255, 0.65);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
             border-radius: 12px;
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            box-shadow: 0 12px 28px -12px rgba(15, 23, 42, 0.35);
             padding: 15px;
             margin-bottom: 15px;
             display: flex;
@@ -166,9 +169,12 @@
         }
 
         .section {
-            background: #fff;
+            background: rgba(255, 255, 255, 0.55);
+            border: 1px solid rgba(255, 255, 255, 0.65);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
             border-radius: 12px;
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            box-shadow: 0 12px 28px -12px rgba(15, 23, 42, 0.35);
             padding: 15px;
             margin-bottom: 15px;
         }
@@ -734,10 +740,11 @@
         }
 
         .control-panel-bulk-status {
-            background: #fff;
+            background: rgba(255, 255, 255, 0.58);
+            border: 1px solid rgba(255, 255, 255, 0.65);
             padding: 1.2rem;
             border-radius: 12px;
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            box-shadow: 0 12px 28px -12px rgba(15, 23, 42, 0.25);
             display: flex;
             flex-direction: column;
             gap: 0.7rem;
@@ -788,9 +795,10 @@
         }
 
         .control-panel-faculty-card {
-            background: #fff;
+            background: rgba(255, 255, 255, 0.58);
+            border: 1px solid rgba(255, 255, 255, 0.65);
             border-radius: 12px;
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            box-shadow: 0 12px 28px -12px rgba(15, 23, 42, 0.25);
             padding: 1.2rem;
             display: flex;
             flex-direction: column;
@@ -799,7 +807,7 @@
         }
 
         .control-panel-faculty-card:nth-child(even) {
-            background: #f8fafc;
+            background: rgba(248, 250, 252, 0.55);
         }
 
         .control-panel-faculty-card label {
