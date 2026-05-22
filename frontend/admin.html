@@ -16,13 +16,9 @@
 
         body {
             font-family: 'Inter', 'Segoe UI', Arial, sans-serif;
-            background:
-                radial-gradient(circle at 14% 18%, rgba(34, 211, 238, 0.55), transparent 22%),
-                radial-gradient(circle at 84% 16%, rgba(168, 85, 247, 0.45), transparent 24%),
-                radial-gradient(circle at 78% 78%, rgba(16, 185, 129, 0.42), transparent 24%),
-                linear-gradient(135deg, #07111f 0%, #0f2a4a 38%, #123d57 62%, #1d1740 100%);
-            background-size: 220% 220%;
-            animation: adminBaseDrift 18s ease-in-out infinite alternate;
+            background: linear-gradient(135deg, #7aa9ff 0%, #a7f3d0 50%, #c4b5fd 100%);
+            background-size: 200% 200%;
+            animation: adminBaseDrift 12s ease-in-out infinite alternate;
             padding: 10px;
             min-height: 100vh;
             font-size: 14px;
@@ -42,66 +38,40 @@
 
         body::before {
             background:
-                radial-gradient(circle at 15% 20%, rgba(255, 255, 255, 0.52), transparent 16%),
-                radial-gradient(circle at 28% 26%, rgba(34, 211, 238, 0.65), transparent 14%),
-                radial-gradient(circle at 82% 18%, rgba(168, 85, 247, 0.58), transparent 18%),
-                radial-gradient(circle at 80% 78%, rgba(16, 185, 129, 0.56), transparent 16%),
-                radial-gradient(circle at 20% 84%, rgba(249, 115, 22, 0.38), transparent 20%),
-                radial-gradient(circle at 52% 52%, rgba(59, 130, 246, 0.28), transparent 34%);
-            filter: blur(28px) saturate(180%);
-            opacity: 0.98;
-            animation: adminBgDrift 12s ease-in-out infinite alternate, adminHueShift 16s linear infinite;
-            transform-origin: center;
+                radial-gradient(circle at 15% 20%, rgba(255, 255, 255, 0.34), transparent 22%),
+                radial-gradient(circle at 82% 18%, rgba(59, 130, 246, 0.24), transparent 26%),
+                radial-gradient(circle at 80% 78%, rgba(16, 185, 129, 0.20), transparent 24%),
+                radial-gradient(circle at 20% 84%, rgba(196, 181, 253, 0.25), transparent 28%);
+            filter: blur(18px);
+            opacity: 0.96;
+            animation: adminBgDrift 8s ease-in-out infinite alternate;
         }
 
         body::after {
-            background:
-                conic-gradient(from 180deg at 50% 50%, rgba(255, 255, 255, 0.12), rgba(34, 211, 238, 0.18), rgba(168, 85, 247, 0.14), rgba(16, 185, 129, 0.18), rgba(255, 255, 255, 0.12));
-            background-size: 140% 140%;
-            opacity: 0.22;
-            mix-blend-mode: screen;
-            animation: adminBgPan 16s linear infinite, adminPulse 5.5s ease-in-out infinite;
+            background-image: linear-gradient(rgba(255, 255, 255, 0.10) 1px, transparent 1px), linear-gradient(90deg, rgba(255, 255, 255, 0.10) 1px, transparent 1px);
+            background-size: 56px 56px;
+            opacity: 0.24;
+            mix-blend-mode: soft-light;
+            animation: adminBgPan 10s linear infinite;
         }
 
         @keyframes adminBgDrift {
             0% {
-                transform: translate3d(-1.5%, -1%, 0) scale(1);
+                transform: translate3d(-2%, -1.5%, 0) scale(1);
             }
 
             100% {
-                transform: translate3d(1.5%, 1%, 0) scale(1.06);
+                transform: translate3d(2%, 1.5%, 0) scale(1.08);
             }
         }
 
         @keyframes adminBgPan {
             0% {
-                transform: translate3d(-2%, -1%, 0) rotate(0deg) scale(1);
+                transform: translate3d(0, 0, 0);
             }
 
             100% {
-                transform: translate3d(2%, 1%, 0) rotate(12deg) scale(1.08);
-            }
-        }
-
-        @keyframes adminHueShift {
-            0% {
-                filter: blur(28px) saturate(180%) hue-rotate(0deg);
-            }
-
-            100% {
-                filter: blur(28px) saturate(180%) hue-rotate(360deg);
-            }
-        }
-
-        @keyframes adminPulse {
-            0%, 100% {
-                opacity: 0.16;
-                transform: scale(1);
-            }
-
-            50% {
-                opacity: 0.34;
-                transform: scale(1.12);
+                transform: translate3d(56px, 56px, 0);
             }
         }
 
