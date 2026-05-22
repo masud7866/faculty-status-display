@@ -17,6 +17,8 @@
         body {
             font-family: 'Inter', 'Segoe UI', Arial, sans-serif;
             background: linear-gradient(135deg, #7aa9ff 0%, #a7f3d0 50%, #c4b5fd 100%);
+            background-size: 220% 220%;
+            animation: adminBaseDrift 18s ease-in-out infinite alternate;
             padding: 10px;
             min-height: 100vh;
             font-size: 14px;
@@ -70,6 +72,16 @@
 
             100% {
                 transform: translate3d(56px, 56px, 0);
+            }
+        }
+
+        @keyframes adminBaseDrift {
+            0% {
+                background-position: 0% 50%;
+            }
+
+            100% {
+                background-position: 100% 50%;
             }
         }
 

@@ -72,6 +72,8 @@
       margin: 0;
       font-family: "Segoe UI", sans-serif;
       background: linear-gradient(135deg, #7aa9ff 0%, #a7f3d0 50%, #c4b5fd 100%);
+      background-size: 220% 220%;
+      animation: loginBaseDrift 18s ease-in-out infinite alternate;
       min-height: 100vh;
       display: flex;
       justify-content: center;
@@ -127,6 +129,16 @@
 
       100% {
         transform: translate3d(48px, 48px, 0);
+      }
+    }
+
+    @keyframes loginBaseDrift {
+      0% {
+        background-position: 0% 50%;
+      }
+
+      100% {
+        background-position: 100% 50%;
       }
     }
 
