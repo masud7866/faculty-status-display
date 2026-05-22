@@ -426,6 +426,41 @@
       background: linear-gradient(90deg, #dc2626, #ef4444);
       box-shadow: 0 0 4px rgba(239, 68, 68, 0.5);
     }
+
+    #connectivityBadge {
+      position: fixed;
+      right: 1vw;
+      top: 1vh;
+      z-index: 10006;
+      display: none;
+      align-items: center;
+      gap: 0.45em;
+      padding: 0.45em 0.8em;
+      border-radius: 999px;
+      background: rgba(220, 38, 38, 0.95);
+      color: #fff;
+      font-family: 'Orbitron', 'Inter', Arial, sans-serif;
+      font-size: 0.72rem;
+      font-weight: 700;
+      letter-spacing: 0.04em;
+      box-shadow: 0 10px 24px rgba(127, 29, 29, 0.28);
+      pointer-events: none;
+      user-select: none;
+    }
+
+    #connectivityBadge::before {
+      content: '';
+      width: 0.55em;
+      height: 0.55em;
+      border-radius: 50%;
+      background: #fff;
+      box-shadow: 0 0 0 4px rgba(255, 255, 255, 0.18);
+      flex: 0 0 auto;
+    }
+
+    #connectivityBadge.show {
+      display: inline-flex;
+    }
   </style>
 </head>
 
@@ -438,6 +473,8 @@
     </div>
     <!-- <img src="images/cse_logo.png" alt="CSE Logo" class="logo"> -->
   </header>
+
+  <div id="connectivityBadge" role="status" aria-live="polite">Offline</div>
 
   <div id="grid" class="grid"></div>
 
@@ -486,6 +523,7 @@
     let dateDisplay = null;
     let currentMarqueeText = '';
     let marqueeCheckInterval = null;
+    let connectivityBadge = null;
 
     // Global variables for smooth animation
     let countdownAnimationId = null;
@@ -594,6 +632,20 @@
       const timeString = `${h.toString().padStart(2, '0')}:${m.toString().padStart(2, '0')}:${s.toString().padStart(2, '0')} ${ampm}`;
       
       clockContainer.textContent = timeString;
+    }
+
+    function updateConnectivityBadge() {
+      if (!connectivityBadge) {
+        connectivityBadge = document.getElementById("connectivityBadge");
+      }
+
+      if (!connectivityBadge) {
+        return;
+      }
+
+      const offline = !navigator.onLine;
+      connectivityBadge.classList.toggle("show", offline);
+      connectivityBadge.textContent = offline ? "Offline" : "";
     }
 
     function adjustLayout() {
@@ -1141,6 +1193,7 @@
     document.addEventListener("DOMContentLoaded", function () {
       updateClock();
       updateDate();
+      updateConnectivityBadge();
       loadFaculty();
       loadMarquee(true);
       loadAds();
@@ -1162,6 +1215,8 @@
     });
 
     window.addEventListener("resize", adjustLayout);
+    window.addEventListener("online", updateConnectivityBadge);
+    window.addEventListener("offline", updateConnectivityBadge);
   </script>
 </body>
 
