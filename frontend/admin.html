@@ -2005,7 +2005,7 @@
                 <!-- Existing Faculty Section - Shown First -->
                 <div class="section">
                     <h2>Existing Faculty</h2>
-                    <div class="btn-group" style="margin-bottom: 15px;">
+                    <div id="adminFacultyActions" class="btn-group" style="margin-bottom:15px;">
                         <button onclick="loadFaculty()" class="btn btn-primary">Refresh List</button>
                         <button onclick="exportFaculty()" class="btn btn-secondary">Export JSON</button>
                         <button onclick="syncDatabaseToJSON()" class="btn btn-warning">Sync to JSON File</button>
@@ -2466,6 +2466,13 @@
             if (isUserRole()) {
                 const deployBtn = document.getElementById('deployBtn');
                 if (deployBtn) deployBtn.classList.remove('hidden');
+            }
+
+            // Faculty admin action buttons
+            const adminFacultyActions = document.getElementById('adminFacultyActions');
+            if (adminFacultyActions) {
+                adminFacultyActions.style.display =
+                    (isAdmin() || isEditor()) ? 'flex' : 'none';
             }
 
             syncFacultyFormVisibility();
