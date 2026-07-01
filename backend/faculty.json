@@ -423,7 +423,9 @@
       ]
     },
     "status": {
-      "status": "at_dept"
+      "status": "in_class",
+      "room": "B2-303",
+      "batch": "8th-CSE-A"
     },
     "manualOverride": null,
     "overrideExpiry": null,
@@ -673,9 +675,7 @@
       ]
     },
     "status": {
-      "status": "in_class",
-      "room": "B2-402",
-      "batch": "3rd-CSE-B"
+      "status": "at_dept"
     },
     "manualOverride": null,
     "overrideExpiry": null,
@@ -1100,7 +1100,9 @@
       ]
     },
     "status": {
-      "status": "at_dept"
+      "status": "in_class",
+      "room": "B1-307",
+      "batch": "8th-CSE-B"
     },
     "manualOverride": null,
     "overrideExpiry": null,
@@ -1225,7 +1227,9 @@
       ]
     },
     "status": {
-      "status": "at_dept"
+      "status": "in_class",
+      "room": "B2-206",
+      "batch": "7th-CSE-B"
     },
     "manualOverride": null,
     "overrideExpiry": null,
@@ -1242,28 +1246,28 @@
     ],
     "officeHours": {
       "Saturday": [
-        "21:00",
-        "20:00"
+        "09:00",
+        "17:00"
       ],
       "Sunday": [
         "09:00",
-        "18:00"
+        "17:00"
       ],
       "Monday": [
         "09:00",
-        "18:00"
+        "17:00"
       ],
       "Tuesday": [
         "09:00",
-        "18:00"
+        "17:00"
       ],
       "Wednesday": [
         "09:00",
-        "18:00"
+        "17:00"
       ],
       "Friday": [
-        "16:00",
-        "19:00"
+        "09:00",
+        "17:00"
       ]
     },
     "classTimes": {
@@ -1472,7 +1476,7 @@
     "email": "ugv.galibjaman@gmail.com",
     "image": "/images/fac13.jpg",
     "weekend": [
-      "Wednesday"
+      "Thursday"
     ],
     "officeHours": {
       "Saturday": [
@@ -1481,23 +1485,23 @@
       ],
       "Sunday": [
         "09:00",
-        "17:00"
+        "16:00"
       ],
       "Monday": [
-        "09:00",
-        "17:00"
+        "08:00",
+        "16:00"
       ],
       "Tuesday": [
-        "09:00",
+        "08:00",
         "17:00"
       ],
-      "Thursday": [
-        "09:00",
+      "Wednesday": [
+        "08:00",
         "17:00"
       ],
       "Friday": [
         "09:00",
-        "17:00"
+        "16:00"
       ]
     },
     "classTimes": {
@@ -1533,14 +1537,6 @@
           "batch": "EEE-2nd"
         }
       ],
-      "Thursday": [
-        {
-          "start": "09:00",
-          "end": "17:00",
-          "room": "B2-204",
-          "batch": "CSE-6th"
-        }
-      ],
       "Friday": [
         {
           "start": "09:00",
@@ -1557,7 +1553,7 @@
       ]
     },
     "status": {
-      "status": "on_weekend"
+      "status": "at_dept"
     },
     "manualOverride": null,
     "overrideExpiry": null,
@@ -1574,8 +1570,8 @@
     ],
     "officeHours": {
       "Saturday": [
-        "09:00",
-        "17:00"
+        "08:00",
+        "16:00"
       ],
       "Sunday": [
         "09:00",
@@ -1586,8 +1582,8 @@
         "17:00"
       ],
       "Tuesday": [
-        "09:00",
-        "17:00"
+        "08:00",
+        "16:00"
       ],
       "Wednesday": [
         "09:00",
@@ -1700,32 +1696,32 @@
     "email": "fazriislam.work@gmail.com",
     "image": "/images/fazriislam.jpg",
     "weekend": [
-      "Saturday"
+      "Thursday"
     ],
     "officeHours": {
+      "Saturday": [
+        "09:00",
+        "17:00"
+      ],
       "Sunday": [
         "09:00",
-        "17:00"
+        "16:00"
       ],
       "Monday": [
-        "09:00",
-        "17:00"
+        "08:00",
+        "16:00"
       ],
       "Tuesday": [
-        "09:00",
+        "10:00",
         "17:00"
       ],
       "Wednesday": [
-        "09:00",
-        "17:00"
-      ],
-      "Thursday": [
-        "09:00",
+        "08:00",
         "17:00"
       ],
       "Friday": [
         "09:00",
-        "17:00"
+        "18:00"
       ]
     },
     "classTimes": {
@@ -1754,20 +1750,6 @@
         }
       ],
       "Wednesday": [
-        {
-          "start": "09:00",
-          "end": "13:00",
-          "room": "B2-205",
-          "batch": "4th-CSE-A"
-        },
-        {
-          "start": "14:00",
-          "end": "17:00",
-          "room": "B2-205",
-          "batch": "4th-CSE-B"
-        }
-      ],
-      "Thursday": [
         {
           "start": "09:00",
           "end": "13:00",
