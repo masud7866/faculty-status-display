@@ -2104,6 +2104,22 @@
                         </div>
 
                         <div class="schedule-section">
+
+                            <div
+                                style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px;margin-bottom:12px;">
+                                <h3 style="margin:0;">Schedule</h3>
+
+                                <div class="btn-group">
+                                    <button type="button" class="btn btn-secondary" onclick="importScheduleJSON()">
+                                        📥 Import Schedule
+                                    </button>
+
+                                    <button type="button" class="btn btn-secondary" onclick="exportScheduleJSON()">
+                                        📤 Export Schedule
+                                    </button>
+                                </div>
+                            </div>
+
                             <h3>Weekend Days</h3>
                             <div class="checkbox-group">
                                 <div class="checkbox-item">
@@ -3344,6 +3360,88 @@
             if (!container) return;
             container.innerHTML = '';
             addOfficeTime(day, '', '', true);
+        }
+
+        function exportScheduleJSON() {
+            const schedule = {
+                weekend: [],
+                officeHours: {},
+                classTimes: {}
+            };
+
+            // Weekend days
+            days.forEach(day => {
+                const weekendCheckbox = document.getElementById(`weekend-${day}`);
+                if (weekendCheckbox?.checked) {
+                    schedule.weekend.push(day);
+                }
+            });
+
+            // Office Hours
+            days.forEach(day => {
+                const container = document.getElementById(`office-slots-${day}`);
+                if (!container) return;
+
+                const rows = container.querySelectorAll('.time-row');
+                const officeTimes = [];
+
+                rows.forEach(row => {
+                    const start = row.querySelector('.start-time')?.value;
+                    const end = row.querySelector('.end-time')?.value;
+
+                    if (start && end) {
+                        officeTimes.push(start, end);
+                    }
+                });
+
+                if (officeTimes.length > 0) {
+                    schedule.officeHours[day] = officeTimes;
+                }
+            });
+
+            // Class Times
+            days.forEach(day => {
+                const container = document.getElementById(`classes-${day}`);
+                if (!container) return;
+
+                const rows = container.querySelectorAll('.time-row');
+                const classes = [];
+
+                rows.forEach(row => {
+                    const start = row.querySelector('.start-time')?.value;
+                    const end = row.querySelector('.end-time')?.value;
+                    const room = row.querySelector('.room-input')?.value.trim();
+                    const batch = row.querySelector('.batch-input')?.value.trim();
+
+                    if (start && end) {
+                        classes.push({
+                            start,
+                            end,
+                            room,
+                            batch
+                        });
+                    }
+                });
+
+                if (classes.length > 0) {
+                    schedule.classTimes[day] = classes;
+                }
+            });
+
+            const json = JSON.stringify(schedule, null, 2);
+
+            navigator.clipboard.writeText(json)
+                .then(() => {
+                    showToast("Schedule JSON copied to clipboard", "success");
+                })
+                .catch(() => {
+                    console.log(json);
+                    showToast("Clipboard unavailable. JSON written to console.", "info");
+                });
+        }
+
+        function importScheduleJSON() {
+
         }
 
         function resetForm() {
