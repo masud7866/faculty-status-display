@@ -456,7 +456,7 @@
       "Wednesday": [
         {
           "start": "08:00",
-          "end": "22:00",
+          "end": "10:00",
           "room": "B2-203",
           "batch": "7th-CSE-B"
         },
@@ -475,9 +475,7 @@
       ]
     },
     "status": {
-      "status": "in_class",
-      "room": "B2-203",
-      "batch": "7th-CSE-B"
+      "status": "at_dept"
     },
     "manualOverride": null,
     "overrideExpiry": null,
