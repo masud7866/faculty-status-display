@@ -1959,6 +1959,42 @@
                 width: 100%;
             }
         }
+
+        @media (max-width: 768px) {
+
+            .schedule-tools-header {
+                flex-direction: column;
+                align-items: stretch;
+            }
+
+            .schedule-tools .btn-group {
+                width: 100%;
+                justify-content: stretch;
+            }
+
+            .schedule-tools .btn-group .btn {
+                flex: 1;
+                min-width: 140px;
+            }
+
+            .schedule-tools-tip {
+                font-size: 13px;
+                line-height: 1.5;
+            }
+
+        }
+
+        @media (max-width: 480px) {
+
+            .schedule-tools .btn-group {
+                flex-direction: column;
+            }
+
+            .schedule-tools .btn {
+                width: 100%;
+            }
+
+        }
     </style>
 </head>
 
@@ -2199,11 +2235,11 @@
                                 </div>
 
                                 <div class="schedule-tools-tip">
-                                    <strong>💡 Tip:</strong>
-                                    Export your current schedule as JSON for backup, sharing, or editing.
-                                    Import accepts <strong>Weekend Days</strong>, <strong>Office Hours</strong>,
-                                    <strong>Class Times</strong>, or any combination. Only the sections included
-                                    in the JSON will be updated; everything else remains unchanged.
+                                    <strong>💡 Tip:</strong> Configure one faculty schedule, export it as JSON, then
+                                    import it into another faculty to save time.<br><br>
+
+                                    Only the sections included in the JSON (Weekend Days, Office Hours, or Class Times)
+                                    will be updated.
                                 </div>
                                 <hr class="schedule-divider">
 
