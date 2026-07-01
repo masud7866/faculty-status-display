@@ -549,29 +549,29 @@
     "email": "mehadi.cou106@gmail.com",
     "image": "/images/fac10.jpg",
     "weekend": [
-      "Monday",
-      "Tuesday"
+      "Thursday",
+      "Friday"
     ],
     "officeHours": {
       "Saturday": [
-        "08:00",
-        "16:00"
+        "09:00",
+        "20:00"
       ],
       "Sunday": [
-        "08:00",
-        "16:00"
+        "09:00",
+        "17:00"
+      ],
+      "Monday": [
+        "09:00",
+        "17:00"
+      ],
+      "Tuesday": [
+        "09:00",
+        "17:00"
       ],
       "Wednesday": [
-        "10:00",
-        "16:00"
-      ],
-      "Thursday": [
-        "13:00",
-        "22:00"
-      ],
-      "Friday": [
-        "10:00",
-        "19:00"
+        "09:00",
+        "17:00"
       ]
     },
     "classTimes": {
@@ -663,82 +663,6 @@
           "end": "14:00",
           "room": "B2-307",
           "batch": "3rd-CSE-A"
-        }
-      ],
-      "Thursday": [
-        {
-          "start": "13:00",
-          "end": "14:00",
-          "room": "B2-303",
-          "batch": "3rd-CSE-A"
-        },
-        {
-          "start": "14:00",
-          "end": "15:00",
-          "room": "B2-303",
-          "batch": "3rd-CSE-B"
-        },
-        {
-          "start": "16:00",
-          "end": "17:00",
-          "room": "B2-305",
-          "batch": "6th-CSE-Evn"
-        },
-        {
-          "start": "17:00",
-          "end": "18:00",
-          "room": "B2-003",
-          "batch": "3rd-CSE-Evn"
-        },
-        {
-          "start": "18:00",
-          "end": "19:00",
-          "room": "B2-402",
-          "batch": "6th-CSE-Evn"
-        },
-        {
-          "start": "21:00",
-          "end": "22:00",
-          "room": "B2-402",
-          "batch": "5th-CSE-Evn"
-        }
-      ],
-      "Friday": [
-        {
-          "start": "10:00",
-          "end": "23:00",
-          "room": "B2-303",
-          "batch": "3rd-CSE-Evn"
-        },
-        {
-          "start": "12:00",
-          "end": "13:00",
-          "room": "B2-406",
-          "batch": "8th-EEE-Evn"
-        },
-        {
-          "start": "15:00",
-          "end": "16:00",
-          "room": "B2-303",
-          "batch": "6th-CSE-Evn"
-        },
-        {
-          "start": "16:00",
-          "end": "17:00",
-          "room": "B2-303",
-          "batch": "6th-CSE-Evn"
-        },
-        {
-          "start": "17:00",
-          "end": "18:00",
-          "room": "B2-303",
-          "batch": "5th-CSE-Evn"
-        },
-        {
-          "start": "18:00",
-          "end": "19:00",
-          "room": "B2-303",
-          "batch": "5th-EEE-Evn"
         }
       ]
     },
