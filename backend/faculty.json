@@ -379,30 +379,76 @@
       ]
     },
     "classTimes": {
-      "Monday": [
+      "Saturday": [
         {
-          "start": "12:00",
+          "start": "11:00",
           "end": "13:00",
-          "room": "B2-303",
-          "batch": "8th-CSE-A"
+          "room": "B2-102",
+          "batch": "7th-CSE-C"
         },
         {
-          "start": "14:00",
-          "end": "15:00",
+          "start": "17:00",
+          "end": "18:00",
+          "room": "B2-501",
+          "batch": "2nd-CSE-Evn"
+        },
+        {
+          "start": "18:00",
+          "end": "19:00",
+          "room": "B2-307",
+          "batch": "7th-CSE-Evn"
+        }
+      ],
+      "Sunday": [
+        {
+          "start": "15:00",
+          "end": "16:00",
+          "room": "B2-405",
+          "batch": "7th-CSE-C"
+        },
+        {
+          "start": "16:00",
+          "end": "17:00",
           "room": "B2-303",
-          "batch": "8th-CSE-B"
+          "batch": "7th-CSE-A"
+        }
+      ],
+      "Monday": [
+        {
+          "start": "11:00",
+          "end": "12:00",
+          "room": "B2-403",
+          "batch": "2nd-EEE-A"
+        },
+        {
+          "start": "15:00",
+          "end": "16:00",
+          "room": "B2-306",
+          "batch": "7th-CSE-A"
         }
       ],
       "Tuesday": [
         {
+          "start": "09:00",
+          "end": "11:00",
+          "room": "B2-102",
+          "batch": "2nd-EEE-A"
+        },
+        {
           "start": "11:00",
-          "end": "12:00",
-          "room": "B2-303",
+          "end": "13:00",
+          "room": "B2-206",
           "batch": "7th-CSE-A"
         },
         {
-          "start": "12:00",
-          "end": "13:00",
+          "start": "15:00",
+          "end": "16:00",
+          "room": "B2-405",
+          "batch": "7th-CSE-C"
+        },
+        {
+          "start": "16:00",
+          "end": "17:00",
           "room": "B2-303",
           "batch": "7th-CSE-B"
         }
@@ -423,9 +469,7 @@
       ]
     },
     "status": {
-      "status": "in_class",
-      "room": "B2-303",
-      "batch": "8th-CSE-A"
+      "status": "at_dept"
     },
     "manualOverride": null,
     "overrideExpiry": null,
@@ -538,7 +582,9 @@
       ]
     },
     "status": {
-      "status": "at_dept"
+      "status": "in_class",
+      "room": "B2-305",
+      "batch": "7th-CSE-A"
     },
     "manualOverride": null,
     "overrideExpiry": null,
@@ -675,11 +721,13 @@
       ]
     },
     "status": {
-      "status": "at_dept"
+      "status": "in_class",
+      "room": "B2-307",
+      "batch": "3rd-CSE-A"
     },
     "manualOverride": null,
     "overrideExpiry": null,
-    "precedence": 7
+    "precedence": 6
   },
   {
     "name": "Saif Bashar",
@@ -798,7 +846,7 @@
     },
     "manualOverride": null,
     "overrideExpiry": null,
-    "precedence": 8
+    "precedence": 7
   },
   {
     "name": "Akash Hasnat",
@@ -997,7 +1045,7 @@
     },
     "manualOverride": null,
     "overrideExpiry": null,
-    "precedence": 9
+    "precedence": 8
   },
   {
     "name": "Hasanat Nihal",
@@ -1101,12 +1149,12 @@
     },
     "status": {
       "status": "in_class",
-      "room": "B1-307",
-      "batch": "8th-CSE-B"
+      "room": "B2-303",
+      "batch": "7th-CSE-B"
     },
     "manualOverride": null,
     "overrideExpiry": null,
-    "precedence": 10
+    "precedence": 9
   },
   {
     "name": "Syed Mahfuzur Rahman",
@@ -1228,12 +1276,12 @@
     },
     "status": {
       "status": "in_class",
-      "room": "B2-206",
-      "batch": "7th-CSE-B"
+      "room": "B2-305",
+      "batch": "7th-CSE-A"
     },
     "manualOverride": null,
     "overrideExpiry": null,
-    "precedence": 11
+    "precedence": 10
   },
   {
     "name": "Abdul Aziz",
@@ -1349,7 +1397,7 @@
     },
     "manualOverride": null,
     "overrideExpiry": null,
-    "precedence": 12
+    "precedence": 11
   },
   {
     "name": "Ahad Khan",
@@ -1467,97 +1515,7 @@
     },
     "manualOverride": null,
     "overrideExpiry": null,
-    "precedence": 13
-  },
-  {
-    "name": "Galib Jaman",
-    "designation": "Lab Instructor",
-    "contact": "01766555213",
-    "email": "ugv.galibjaman@gmail.com",
-    "image": "/images/fac13.jpg",
-    "weekend": [
-      "Thursday"
-    ],
-    "officeHours": {
-      "Saturday": [
-        "09:00",
-        "17:00"
-      ],
-      "Sunday": [
-        "09:00",
-        "16:00"
-      ],
-      "Monday": [
-        "08:00",
-        "16:00"
-      ],
-      "Tuesday": [
-        "08:00",
-        "17:00"
-      ],
-      "Wednesday": [
-        "08:00",
-        "17:00"
-      ],
-      "Friday": [
-        "09:00",
-        "16:00"
-      ]
-    },
-    "classTimes": {
-      "Saturday": [
-        {
-          "start": "09:00",
-          "end": "17:00",
-          "room": "B2-204",
-          "batch": "CSE-8th"
-        }
-      ],
-      "Sunday": [
-        {
-          "start": "09:00",
-          "end": "17:00",
-          "room": "B2-204",
-          "batch": "CSE-7th"
-        }
-      ],
-      "Monday": [
-        {
-          "start": "09:00",
-          "end": "17:00",
-          "room": "B2-204",
-          "batch": "CSE-7th"
-        }
-      ],
-      "Tuesday": [
-        {
-          "start": "09:00",
-          "end": "17:00",
-          "room": "B2-204",
-          "batch": "EEE-2nd"
-        }
-      ],
-      "Friday": [
-        {
-          "start": "09:00",
-          "end": "10:00",
-          "room": "B2-204",
-          "batch": "CSE-6th-Eve"
-        },
-        {
-          "start": "12:00",
-          "end": "13:00",
-          "room": "B2-204",
-          "batch": "CSE-6th-Eve"
-        }
-      ]
-    },
-    "status": {
-      "status": "at_dept"
-    },
-    "manualOverride": null,
-    "overrideExpiry": null,
-    "precedence": 14
+    "precedence": 12
   },
   {
     "name": "Md. Sakib Uz Zaman",
@@ -1681,13 +1639,101 @@
       ]
     },
     "status": {
-      "status": "in_class",
-      "room": "B1-402",
-      "batch": "BBA-1st"
+      "status": "at_dept"
     },
     "manualOverride": null,
     "overrideExpiry": null,
-    "precedence": 15
+    "precedence": 13
+  },
+  {
+    "name": "Galib Jaman",
+    "designation": "Lab Instructor",
+    "contact": "01766555213",
+    "email": "ugv.galibjaman@gmail.com",
+    "image": "/images/fac13.jpg",
+    "weekend": [
+      "Thursday"
+    ],
+    "officeHours": {
+      "Saturday": [
+        "09:00",
+        "17:00"
+      ],
+      "Sunday": [
+        "09:00",
+        "16:00"
+      ],
+      "Monday": [
+        "08:00",
+        "16:00"
+      ],
+      "Tuesday": [
+        "08:00",
+        "17:00"
+      ],
+      "Wednesday": [
+        "08:00",
+        "17:00"
+      ],
+      "Friday": [
+        "09:00",
+        "16:00"
+      ]
+    },
+    "classTimes": {
+      "Saturday": [
+        {
+          "start": "09:00",
+          "end": "17:00",
+          "room": "B2-204",
+          "batch": "CSE-8th"
+        }
+      ],
+      "Sunday": [
+        {
+          "start": "09:00",
+          "end": "17:00",
+          "room": "B2-204",
+          "batch": "CSE-7th"
+        }
+      ],
+      "Monday": [
+        {
+          "start": "09:00",
+          "end": "17:00",
+          "room": "B2-204",
+          "batch": "CSE-7th"
+        }
+      ],
+      "Tuesday": [
+        {
+          "start": "09:00",
+          "end": "17:00",
+          "room": "B2-204",
+          "batch": "EEE-2nd"
+        }
+      ],
+      "Friday": [
+        {
+          "start": "09:00",
+          "end": "10:00",
+          "room": "B2-204",
+          "batch": "CSE-6th-Eve"
+        },
+        {
+          "start": "12:00",
+          "end": "13:00",
+          "room": "B2-204",
+          "batch": "CSE-6th-Eve"
+        }
+      ]
+    },
+    "status": {
+      "status": "at_dept"
+    },
+    "manualOverride": null,
+    "overrideExpiry": null,
+    "precedence": 14
   },
   {
     "name": "Fazri Islam",
@@ -1803,12 +1849,10 @@
       ]
     },
     "status": {
-      "status": "in_class",
-      "room": "B2-205",
-      "batch": "4th-CSE-A"
+      "status": "at_dept"
     },
     "manualOverride": null,
     "overrideExpiry": null,
-    "precedence": 16
+    "precedence": 15
   }
 ]
