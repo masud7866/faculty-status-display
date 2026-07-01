@@ -1886,6 +1886,64 @@
             .custom-expiry-btn {
                 width: 100%;
             }
+
+            .schedule-tools {
+                background: linear-gradient(135deg, #eff6ff 0%, #f8fafc 100%);
+                border: 1px solid #bfdbfe;
+                border-radius: 10px;
+                padding: 16px;
+                margin-bottom: 18px;
+            }
+
+            .schedule-tools-header {
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+                gap: 12px;
+                flex-wrap: wrap;
+            }
+
+            .schedule-tools-header h3 {
+                margin: 0;
+                color: #1e40af;
+            }
+
+            .schedule-tools .btn-group {
+                display: flex;
+                gap: 8px;
+                flex-wrap: wrap;
+            }
+
+            .schedule-tools-tip {
+                margin-top: 12px;
+                padding: 12px;
+                background: #ffffff;
+                border-left: 4px solid #3b82f6;
+                border-radius: 8px;
+                color: #475569;
+                font-size: 0.92rem;
+                line-height: 1.5;
+            }
+
+            .btn-info {
+                background: #0ea5e9;
+                color: white;
+                border: none;
+            }
+
+            .btn-info:hover {
+                background: #0284c7;
+            }
+
+            .btn-success {
+                background: #16a34a;
+                color: white;
+                border: none;
+            }
+
+            .btn-success:hover {
+                background: #15803d;
+            }
         }
     </style>
 </head>
@@ -2109,20 +2167,31 @@
 
                         <div class="schedule-section">
 
-                            <div
-                                style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px;margin-bottom:12px;">
-                                <h3 style="margin:0;">Schedule</h3>
+                            <div class="schedule-tools">
 
-                                <div class="btn-group">
-                                    <button type="button" class="btn btn-secondary"
-                                        onclick="openScheduleJsonModal('import')">
-                                        📥 Import Schedule
-                                    </button>
+                                <div class="schedule-tools-header">
+                                    <h3>📅 Schedule Management</h3>
 
-                                    <button type="button" class="btn btn-secondary" onclick="exportScheduleJSON()">
-                                        📤 Export Schedule
-                                    </button>
+                                    <div class="btn-group">
+                                        <button type="button" class="btn btn-info"
+                                            onclick="openScheduleJsonModal('import')">
+                                            📥 Import Schedule
+                                        </button>
+
+                                        <button type="button" class="btn btn-success" onclick="exportScheduleJSON()">
+                                            📤 Export Schedule
+                                        </button>
+                                    </div>
                                 </div>
+
+                                <div class="schedule-tools-tip">
+                                    <strong>💡 Tip:</strong>
+                                    Export your current schedule as JSON for backup, sharing, or editing.
+                                    Import accepts <strong>Weekend Days</strong>, <strong>Office Hours</strong>,
+                                    <strong>Class Times</strong>, or any combination. Only the sections included
+                                    in the JSON will be updated; everything else remains unchanged.
+                                </div>
+
                             </div>
 
                             <h3>Weekend Days</h3>
