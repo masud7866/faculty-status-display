@@ -381,28 +381,28 @@
     "email": "masud7866@gmail.com",
     "image": "/images/fac5.jpg",
     "weekend": [
-      "Saturday",
-      "Sunday"
+      "Thursday",
+      "Friday"
     ],
     "officeHours": {
+      "Saturday": [
+        "11:00",
+        "20:00"
+      ],
+      "Sunday": [
+        "09:00",
+        "17:00"
+      ],
       "Monday": [
-        "12:00",
+        "09:00",
         "17:00"
       ],
       "Tuesday": [
-        "08:00",
+        "09:00",
         "17:00"
       ],
       "Wednesday": [
-        "08:00",
-        "17:00"
-      ],
-      "Thursday": [
-        "10:00",
-        "20:00"
-      ],
-      "Friday": [
-        "08:00",
+        "09:00",
         "15:00"
       ]
     },
@@ -448,62 +448,10 @@
           "room": "B2-303",
           "batch": "8th-CSE-B"
         }
-      ],
-      "Thursday": [
-        {
-          "start": "11:00",
-          "end": "12:00",
-          "room": "B2-303",
-          "batch": "7th-CSE-A"
-        },
-        {
-          "start": "12:00",
-          "end": "13:00",
-          "room": "B2-303",
-          "batch": "7th-CSE-B"
-        },
-        {
-          "start": "17:00",
-          "end": "19:00",
-          "room": "B2-303",
-          "batch": "8th-CSE-Evn"
-        },
-        {
-          "start": "19:00",
-          "end": "20:00",
-          "room": "B2-303",
-          "batch": "7th-CSE-Evn"
-        },
-        {
-          "start": "15:00",
-          "end": "16:00",
-          "room": "B2-304",
-          "batch": "1st-CSE-MSc"
-        }
-      ],
-      "Friday": [
-        {
-          "start": "10:00",
-          "end": "11:00",
-          "room": "B2-303",
-          "batch": "7th-CSE-Evn"
-        },
-        {
-          "start": "11:00",
-          "end": "13:00",
-          "room": "B2-303",
-          "batch": "8th-CSE-Evn"
-        },
-        {
-          "start": "14:00",
-          "end": "15:00",
-          "room": "B2-303",
-          "batch": "1st-CSE-MSc"
-        }
       ]
     },
     "status": {
-      "status": "at_dept"
+      "status": "off_duty"
     },
     "manualOverride": null,
     "overrideExpiry": null,
