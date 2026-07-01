@@ -248,6 +248,8 @@
 
         .btn-export:hover {
             background: #15803d;
+            transform: translateY(-1px);
+            box-shadow: 0 4px 10px rgba(37, 99, 235, .25);
         }
 
         .btn-warning {
@@ -310,6 +312,53 @@
             display: grid;
             grid-template-columns: 1fr;
             gap: 12px;
+        }
+
+
+        .schedule-tools {
+            background: linear-gradient(135deg, #f8fbff 0%, #eef6ff 100%);
+            border: 1px solid #c7dcff;
+            border-left: 5px solid #2563eb;
+            border-radius: 12px;
+            padding: 18px;
+            margin-bottom: 22px;
+            box-shadow: 0 3px 10px rgba(0, 0, 0, .06);
+        }
+
+        .schedule-tools-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 12px;
+            flex-wrap: wrap;
+        }
+
+        .schedule-tools-header h3 {
+            margin: 0;
+            color: #1e40af;
+        }
+
+        .schedule-tools .btn-group {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+
+        .schedule-tools-tip {
+            margin-top: 16px;
+            padding: 14px 16px;
+            background: #ffffff;
+            border: 1px solid #dbeafe;
+            border-left: 4px solid #2563eb;
+            border-radius: 8px;
+            color: #475569;
+            line-height: 1.6;
+        }
+
+        .schedule-divider {
+            border: none;
+            border-top: 1px solid #dbe4ee;
+            margin: 18px 0;
         }
 
         @media (min-width: 640px) {
@@ -1908,52 +1957,6 @@
 
             .custom-expiry-btn {
                 width: 100%;
-            }
-
-            .schedule-tools {
-                background: linear-gradient(135deg, #f8fbff 0%, #eef6ff 100%);
-                border: 1px solid #c7dcff;
-                border-left: 5px solid #2563eb;
-                border-radius: 12px;
-                padding: 18px;
-                margin-bottom: 22px;
-                box-shadow: 0 3px 10px rgba(0, 0, 0, .06);
-            }
-
-            .schedule-tools-header {
-                display: flex;
-                justify-content: space-between;
-                align-items: center;
-                gap: 12px;
-                flex-wrap: wrap;
-            }
-
-            .schedule-tools-header h3 {
-                margin: 0;
-                color: #1e40af;
-            }
-
-            .schedule-tools .btn-group {
-                display: flex;
-                gap: 8px;
-                flex-wrap: wrap;
-            }
-
-            .schedule-tools-tip {
-                margin-top: 16px;
-                padding: 14px 16px;
-                background: #ffffff;
-                border: 1px solid #dbeafe;
-                border-left: 4px solid #2563eb;
-                border-radius: 8px;
-                color: #475569;
-                line-height: 1.6;
-            }
-
-            .schedule-divider {
-                border: none;
-                border-top: 1px solid #dbe4ee;
-                margin: 18px 0;
             }
         }
     </style>
