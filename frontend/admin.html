@@ -735,6 +735,7 @@
         }
 
         @media (max-width: 479px) {
+
             .class-input,
             .office-input {
                 grid-template-columns: 1fr;
@@ -1079,13 +1080,13 @@
             margin: 0;
         }
 
-        .control-panel-faculty-card label > div {
+        .control-panel-faculty-card label>div {
             display: flex;
             flex-direction: column;
             gap: 0.15rem;
         }
 
-        .control-panel-faculty-card label > div:last-child {
+        .control-panel-faculty-card label>div:last-child {
             font-size: 0.8rem;
             color: #6b7280;
             white-space: pre-line;
@@ -1094,6 +1095,7 @@
 
         /* Desktop sizing constraints for control elements to avoid overly wide selectors */
         @media (min-width: 1024px) {
+
             .control-panel-bulk-status select,
             .control-panel-faculty-card select {
                 width: auto;
@@ -1148,19 +1150,50 @@
         }
 
         @media (max-width: 768px) {
-            .control-panel-container { gap: 1.2rem; }
-            .control-panel-header { flex-direction: column; gap: 12px; }
-            .control-panel-bulk-status { padding: 1rem; gap: 0.6rem; }
-            .control-panel-faculty-card { padding: 1rem; gap: 0.7rem; }
-            .control-panel-faculty-card label { font-size: 0.95rem; }
-            .control-panel-faculty-card img { width: 40px; height: 40px; }
+            .control-panel-container {
+                gap: 1.2rem;
+            }
+
+            .control-panel-header {
+                flex-direction: column;
+                gap: 12px;
+            }
+
+            .control-panel-bulk-status {
+                padding: 1rem;
+                gap: 0.6rem;
+            }
+
+            .control-panel-faculty-card {
+                padding: 1rem;
+                gap: 0.7rem;
+            }
+
+            .control-panel-faculty-card label {
+                font-size: 0.95rem;
+            }
+
+            .control-panel-faculty-card img {
+                width: 40px;
+                height: 40px;
+            }
         }
 
         @media (max-width: 600px) {
+
             .control-panel-bulk-status,
-            .control-panel-faculty-card { padding: 0.9rem; }
-            .control-panel-controls { gap: 0.6rem; }
-            .control-panel-faculty-card img { width: 36px; height: 36px; }
+            .control-panel-faculty-card {
+                padding: 0.9rem;
+            }
+
+            .control-panel-controls {
+                gap: 0.6rem;
+            }
+
+            .control-panel-faculty-card img {
+                width: 36px;
+                height: 36px;
+            }
         }
 
         .empty-rooms-btn {
@@ -1464,8 +1497,15 @@
         }
 
         @keyframes pulse {
-            0%, 100% { box-shadow: 0 8px 20px rgba(245, 158, 11, 0.12); }
-            50% { box-shadow: 0 8px 28px rgba(245, 158, 11, 0.2); }
+
+            0%,
+            100% {
+                box-shadow: 0 8px 20px rgba(245, 158, 11, 0.12);
+            }
+
+            50% {
+                box-shadow: 0 8px 28px rgba(245, 158, 11, 0.2);
+            }
         }
 
         .time-slot-header {
@@ -1785,9 +1825,12 @@
         }
 
         @keyframes pulse {
-            0%, 100% {
+
+            0%,
+            100% {
                 border-color: #fd7e14;
             }
+
             50% {
                 border-color: #f97316;
             }
@@ -1855,14 +1898,16 @@
                 <button id="deployBtn" class="btn btn-success" onclick="deployChanges()" disabled>
                     📤 Deploy Changes (<span id="changeCount">0</span>)
                 </button>
-                <button id="availableTeachersBtn" class="empty-rooms-btn small" onclick="toggleAvailableTeachersOverlay()" aria-label="Show Available Teachers">
+                <button id="availableTeachersBtn" class="empty-rooms-btn small"
+                    onclick="toggleAvailableTeachersOverlay()" aria-label="Show Available Teachers">
                     🎓 Available Teachers
                 </button>
                 <button class="empty-rooms-btn small" onclick="toggleEmptyRoomsOverlay()" aria-label="Show Empty Rooms">
                     📍 Empty Rooms
                 </button>
                 <span id="sessionInfo" class="session-info"></span>
-                <button id="changePasswordBtn" onclick="openChangePasswordModal()" class="btn btn-secondary">Change Password</button>
+                <button id="changePasswordBtn" onclick="openChangePasswordModal()" class="btn btn-secondary">Change
+                    Password</button>
                 <button onclick="logout()" class="btn btn-danger">Logout</button>
             </div>
         </div>
@@ -1883,18 +1928,21 @@
                     <div class="control-panel-header">
                         <div>
                             <h2 style="margin: 0 0 12px 0; font-size: 1.5rem;">Faculty Status Control</h2>
-                            <div class="control-panel-header-info">Manage faculty status, overrides, and room/batch assignments</div>
+                            <div class="control-panel-header-info">Manage faculty status, overrides, and room/batch
+                                assignments</div>
                         </div>
                     </div>
 
                     <div class="control-panel-bulk-status" role="region" aria-labelledby="bulkStatusLabel">
                         <label id="bulkStatusLabel" for="bulkStatus">Set Status for All Faculty:</label>
-                        <select id="bulkStatus" onchange="setStatusForAll(this.value)" aria-label="Bulk status selector">
+                        <select id="bulkStatus" onchange="setStatusForAll(this.value)"
+                            aria-label="Bulk status selector">
                             <option value="">-- Select Status --</option>
                         </select>
                     </div>
 
-                    <div class="control-panel-controls" id="controls" role="main" aria-label="Faculty Status Controls"></div>
+                    <div class="control-panel-controls" id="controls" role="main" aria-label="Faculty Status Controls">
+                    </div>
 
                     <!-- Custom Expiry Modal -->
                     <div class="custom-expiry-modal" id="customExpiryModal">
@@ -1940,7 +1988,8 @@
                             </div>
 
                             <div class="custom-expiry-actions">
-                                <button class="custom-expiry-btn cancel" onclick="closeCustomExpiryModal()">Cancel</button>
+                                <button class="custom-expiry-btn cancel"
+                                    onclick="closeCustomExpiryModal()">Cancel</button>
                                 <button class="custom-expiry-btn save" onclick="saveCustomExpiry()">Set Expiry</button>
                             </div>
                         </div>
@@ -1960,8 +2009,10 @@
                         <button onclick="showPriorityManager()" class="btn btn-success">🔢 Set Display Order</button>
                     </div>
                     <div class="file-info" style="margin-bottom: 15px;">
-                        <strong>Persistence:</strong> Faculty changes are now automatically saved to both database and JSON file.<br>
-                        <strong>Manual Sync:</strong> Use "Sync to JSON File" button if you suspect data is out of sync.<br>
+                        <strong>Persistence:</strong> Faculty changes are now automatically saved to both database and
+                        JSON file.<br>
+                        <strong>Manual Sync:</strong> Use "Sync to JSON File" button if you suspect data is out of
+                        sync.<br>
                         <strong>File Location:</strong> backend/faculty.json (updated automatically)
                     </div>
                     <div id="facultyList"></div>
@@ -2003,8 +2054,10 @@
                             </div>
                             <div class="form-group" id="customPositionGroup" style="display: none;">
                                 <label for="customPosition">Position Number</label>
-                                <input type="number" id="customPosition" class="form-control" min="1" placeholder="e.g., 5">
-                                <small style="color: #6b7280; font-size: 11px;">Total faculty: <span id="totalFacultyCount">0</span>
+                                <input type="number" id="customPosition" class="form-control" min="1"
+                                    placeholder="e.g., 5">
+                                <small style="color: #6b7280; font-size: 11px;">Total faculty: <span
+                                        id="totalFacultyCount">0</span>
                                 </small>
                             </div>
                         </div>
@@ -2086,10 +2139,13 @@
                         <div class="form-actions" id="facultyFormActions">
                             <button type="submit" class="btn btn-success" id="submitBtn">Add Faculty</button>
                             <button type="button" onclick="resetForm()" class="btn btn-secondary">Reset Form</button>
-                            <button type="button" onclick="cancelEdit()" class="btn btn-warning hidden" id="cancelEditBtn">Cancel Edit</button>
+                            <button type="button" onclick="cancelEdit()" class="btn btn-warning hidden"
+                                id="cancelEditBtn">Cancel Edit</button>
                         </div>
-                        <div class="file-info" style="margin-top: 15px; background: #fef3c7; border-color: #f59e0b; color: #92400e;">
-                            ⚠️ <strong>Remember:</strong> After adding/updating faculty, click the <strong>"📤 Deploy Changes"</strong> button at the top to push your changes to GitHub.
+                        <div class="file-info"
+                            style="margin-top: 15px; background: #fef3c7; border-color: #f59e0b; color: #92400e;">
+                            ⚠️ <strong>Remember:</strong> After adding/updating faculty, click the <strong>"📤 Deploy
+                                Changes"</strong> button at the top to push your changes to GitHub.
                         </div>
                     </form>
                 </div>
@@ -2123,8 +2179,10 @@
                         <button onclick="resetMarqueeToDefault()" class="btn btn-warning">Reset to Default</button>
                     </div>
 
-                    <div class="file-info" style="margin: 15px 0; background: #fef3c7; border-color: #f59e0b; color: #92400e;">
-                        ⚠️ <strong>Remember:</strong> After updating the marquee text, click the <strong>"📤 Deploy Changes"</strong> button at the top to push your changes to GitHub.
+                    <div class="file-info"
+                        style="margin: 15px 0; background: #fef3c7; border-color: #f59e0b; color: #92400e;">
+                        ⚠️ <strong>Remember:</strong> After updating the marquee text, click the <strong>"📤 Deploy
+                            Changes"</strong> button at the top to push your changes to GitHub.
                     </div>
 
                     <div id="marqueePreview" class="hidden"
@@ -2166,8 +2224,10 @@
                             Selected</button>
                     </div>
 
-                    <div class="file-info" style="margin-bottom: 15px; background: #fef3c7; border-color: #f59e0b; color: #92400e;">
-                        ⚠️ <strong>Remember:</strong> After deleting ads, click the <strong>"📤 Deploy Changes"</strong> button at the top to permanently remove them from GitHub.
+                    <div class="file-info"
+                        style="margin-bottom: 15px; background: #fef3c7; border-color: #f59e0b; color: #92400e;">
+                        ⚠️ <strong>Remember:</strong> After deleting ads, click the <strong>"📤 Deploy Changes"</strong>
+                        button at the top to permanently remove them from GitHub.
                     </div>
 
                     <div id="adsList" class="ads-grid"></div>
@@ -2202,7 +2262,8 @@
                     </div>
 
                     <div class="file-info" style="background: #fef3c7; border-color: #f59e0b; color: #92400e;">
-                        ⚠️ <strong>Remember:</strong> After uploading ads here, click the <strong>"📤 Deploy Changes"</strong> button at the top to push your files to GitHub.
+                        ⚠️ <strong>Remember:</strong> After uploading ads here, click the <strong>"📤 Deploy
+                            Changes"</strong> button at the top to push your files to GitHub.
                     </div>
 
                     <div class="file-info">
@@ -2227,7 +2288,8 @@
                     </div>
                     <div class="btn-group" style="margin-bottom: 15px;">
                         <button class="btn btn-primary" onclick="loadUsers()">Refresh Users</button>
-                        <button class="btn btn-warning" onclick="migrateFacultyAccounts()">Migrate Existing Faculty</button>
+                        <button class="btn btn-warning" onclick="migrateFacultyAccounts()">Migrate Existing
+                            Faculty</button>
                     </div>
                     <div id="userMgmtMessage" class="file-info hidden"></div>
                     <div id="usersList"></div>
@@ -2240,7 +2302,8 @@
         <div class="empty-rooms-content">
             <div class="empty-rooms-header">
                 <h3 class="empty-rooms-title">📍 Available Rooms and Batches</h3>
-                <button class="close-overlay-btn" onclick="toggleEmptyRoomsOverlay()" aria-label="Close Empty Rooms">✕</button>
+                <button class="close-overlay-btn" onclick="toggleEmptyRoomsOverlay()"
+                    aria-label="Close Empty Rooms">✕</button>
             </div>
             <div class="empty-rooms-body"></div>
         </div>
@@ -2251,7 +2314,8 @@
         <div class="empty-rooms-content">
             <div class="empty-rooms-header">
                 <h3 class="empty-rooms-title">👩‍🏫 Available Teachers</h3>
-                <button class="close-overlay-btn" onclick="toggleAvailableTeachersOverlay()" aria-label="Close Available Teachers">✕</button>
+                <button class="close-overlay-btn" onclick="toggleAvailableTeachersOverlay()"
+                    aria-label="Close Available Teachers">✕</button>
             </div>
             <div class="available-teachers-body"></div>
         </div>
@@ -2306,7 +2370,7 @@
         function getAuthToken() {
             return localStorage.getItem('faculty_jwt_token');
         }
-        
+
         function getAuthHeaders() {
             const token = getAuthToken();
             const headers = {
@@ -2317,7 +2381,7 @@
             }
             return headers;
         }
-        
+
         function clearAuthToken() {
             localStorage.removeItem('faculty_jwt_token');
         }
@@ -2516,7 +2580,7 @@
         // Unicode-safe base64 encoding function
         function base64Encode(str) {
             // Convert string to UTF-8 bytes, then to base64
-            return btoa(encodeURIComponent(str).replace(/%([0-9A-F]{2})/g, function(match, p1) {
+            return btoa(encodeURIComponent(str).replace(/%([0-9A-F]{2})/g, function (match, p1) {
                 return String.fromCharCode('0x' + p1);
             }));
         }
@@ -2541,7 +2605,7 @@
                     redirectToLogin();
                     return;
                 }
-                
+
                 const response = await fetch(`${API_BASE}/api/check-login`, {
                     headers: {
                         'Authorization': `Bearer ${token}`
@@ -2602,26 +2666,26 @@
         let keepAliveInterval = null;
         let lastActivityTime = Date.now();
         let sessionWarningShown = false;
-        
+
         // Track user activity
         function trackUserActivity() {
             lastActivityTime = Date.now();
             sessionWarningShown = false; // Reset warning flag on activity
         }
-        
+
         // Set up activity listeners
         document.addEventListener('DOMContentLoaded', () => {
             ['mousedown', 'keydown', 'scroll', 'touchstart'].forEach(event => {
                 document.addEventListener(event, trackUserActivity, { passive: true });
             });
         });
-        
+
         function startSessionKeepAlive() {
             // Clear any existing interval
             if (keepAliveInterval) {
                 clearInterval(keepAliveInterval);
             }
-            
+
             // Check token validity every 3 minutes
             keepAliveInterval = setInterval(async () => {
                 try {
@@ -2632,7 +2696,7 @@
                         setTimeout(() => redirectToLogin(), 2000);
                         return;
                     }
-                    
+
                     const response = await fetch(`${API_BASE}/api/check-login`, {
                         headers: {
                             'Authorization': `Bearer ${token}`,
@@ -2640,11 +2704,11 @@
                         },
                         cache: 'no-cache' // Prevent caching of token checks
                     });
-                    
+
                     if (!response.ok) {
                         throw new Error(`HTTP ${response.status}`);
                     }
-                    
+
                     const data = await response.json();
                     if (!data.loggedIn) {
                         clearInterval(keepAliveInterval);
@@ -2653,20 +2717,20 @@
                         setTimeout(() => redirectToLogin(), 2000);
                         return;
                     }
-                    
+
                     // Update session info display
                     updateSessionInfo(data.sessionAge, data.remainingMinutes);
                     console.log(`✅ Token valid (age: ${data.sessionAge || 0} min, remaining: ${data.remainingMinutes || 0} min)`);
-                    
+
                 } catch (error) {
                     console.error('Token check failed:', error);
                     // Don't redirect on network errors - might be temporary
                 }
             }, 3 * 60 * 1000); // Every 3 minutes
-            
+
             console.log('🔐 Token validity checks started (every 3 min)');
         }
-        
+
         function stopSessionKeepAlive() {
             if (keepAliveInterval) {
                 clearInterval(keepAliveInterval);
@@ -2680,13 +2744,13 @@
                 const hours = Math.floor(ageInMinutes / 60);
                 const mins = ageInMinutes % 60;
                 let displayText = '';
-                
+
                 if (hours > 0) {
                     displayText = `🔐 Token: ${hours}h ${mins}m`;
                 } else {
                     displayText = `🔐 Token: ${mins}m`;
                 }
-                
+
                 // Add remaining time if available
                 if (remainingMinutes !== null && remainingMinutes >= 0) {
                     const remHours = Math.floor(remainingMinutes / 60);
@@ -2697,16 +2761,16 @@
                         displayText += ` (expires in ${remMins}m)`;
                     }
                 }
-                
+
                 sessionInfo.textContent = displayText;
-                
+
                 // Visual warning if token is expiring soon
                 if (remainingMinutes !== null && remainingMinutes < 30) {
                     sessionInfo.style.background = '#fee2e2';
                     sessionInfo.style.color = '#991b1b';
                     sessionInfo.style.padding = '4px 8px';
                     sessionInfo.style.borderRadius = '4px';
-                    
+
                     if (!sessionWarningShown) {
                         showToast('⚠️ Token expiring soon. Please save and re-login.', 'warning');
                         sessionWarningShown = true;
@@ -2730,7 +2794,7 @@
             }
         }
 
-        document.getElementById('displayPosition').addEventListener('change', function() {
+        document.getElementById('displayPosition').addEventListener('change', function () {
             const customGroup = document.getElementById('customPositionGroup');
             if (this.value === 'custom') {
                 customGroup.style.display = 'block';
@@ -2771,7 +2835,7 @@
         function updateDeployButton() {
             const deployBtn = document.getElementById('deployBtn');
             const changeCount = document.getElementById('changeCount');
-            
+
             if (hasPendingChanges && pendingChanges.size > 0) {
                 deployBtn.disabled = false;
                 deployBtn.style.opacity = '1';
@@ -3103,14 +3167,14 @@
                 if (classContainer) {
                     const inputs = classContainer.querySelectorAll('input, select');
                     const buttons = classContainer.querySelectorAll('button');
-                    
+
                     inputs.forEach(input => {
                         input.disabled = isWeekend;
                         input.style.opacity = isWeekend ? '0.5' : '1';
                         input.style.cursor = isWeekend ? 'not-allowed' : 'text';
                         input.style.backgroundColor = isWeekend ? '#fef2f2' : '#f9fafb';
                     });
-                    
+
                     buttons.forEach(button => {
                         button.disabled = isWeekend;
                         button.style.opacity = isWeekend ? '0.5' : '1';
@@ -3545,7 +3609,7 @@
                         'Accept': 'application/json'
                     }
                 });
-                
+
                 const sessionData = await sessionCheck.json();
                 if (!sessionData.loggedIn) {
                     showToast('Session expired. Please login again.', 'error');
@@ -3597,7 +3661,7 @@
             } else {
                 // NEW FACULTY - Handle display position
                 const displayPosition = document.getElementById('displayPosition').value;
-                
+
                 if (displayPosition === 'first') {
                     newFacultyData.precedence = 1;
                     // Shift all existing faculty down by 1
@@ -3610,13 +3674,13 @@
                         });
                     });
                     await Promise.all(updatePromises);
-                    
+
                 } else if (displayPosition === 'custom') {
                     const customPos = parseInt(document.getElementById('customPosition').value);
                     const targetPrecedence = customPos || facultyData.length + 1;
-                    
+
                     newFacultyData.precedence = targetPrecedence;
-                    
+
                     // Shift all faculty with precedence >= targetPrecedence down by 1
                     const updatePromises = facultyData
                         .filter(f => (f.precedence || 50) >= targetPrecedence)
@@ -3628,12 +3692,12 @@
                                 body: JSON.stringify({ precedence: newPrecedence })
                             });
                         });
-                    
+
                     if (updatePromises.length > 0) {
                         await Promise.all(updatePromises);
                         showToast(`Moved ${updatePromises.length} faculty member(s) down to make room`, 'info');
                     }
-                    
+
                 } else { // 'last'
                     const maxPrecedence = Math.max(...facultyData.map(f => f.precedence || 50), 0);
                     newFacultyData.precedence = maxPrecedence + 1;
@@ -3758,7 +3822,7 @@
                 const sortedFaculty = facultyData.sort((a, b) => {
                     const precedenceA = a.precedence || 50;
                     const precedenceB = b.precedence || 50;
-                    
+
                     if (precedenceA !== precedenceB) {
                         return precedenceA - precedenceB; // Lower numbers first
                     }
@@ -4045,7 +4109,7 @@
                 if (uploadIndex !== -1) {
                     pendingAdUploads.splice(uploadIndex, 1);
                     showToast(`Removed ${filename} from pending uploads`, 'success');
-                    
+
                     // If no more pending ads, remove from changes
                     if (pendingAdUploads.length === 0 && pendingAdDeletions.length === 0) {
                         pendingChanges.delete('ads');
@@ -4060,7 +4124,7 @@
                         showToast(`${filename} marked for deletion`, 'success');
                     }
                 }
-                
+
                 await loadAds(); // Refresh display
 
             } catch (error) {
@@ -4272,14 +4336,14 @@
                     const base64 = await fileToBase64(file);
                     const timestamp = Date.now();
                     const filename = `ad_${timestamp}_${file.name}`;
-                    
+
                     pendingAdUploads.push({
                         file: file,
                         base64: base64,
                         filename: filename,
                         originalName: file.name
                     });
-                    
+
                     processedCount++;
 
                     const progress = (i + 1) / totalFiles * 100;
@@ -4425,10 +4489,10 @@
 
         function logout() {
             stopSessionKeepAlive(); // Stop keep-alive when logging out
-            
+
             // Clear token from localStorage
             clearAuthToken();
-            
+
             // Call logout endpoint (optional, for server-side logging)
             fetch(`${API_BASE}/api/logout`, {
                 method: 'POST',
@@ -4450,12 +4514,12 @@
                 if (pendingAdUploads.length > 0) changesList.push(`- ${pendingAdUploads.length} new ad(s)`);
                 if (pendingAdDeletions.length > 0) changesList.push(`- Delete ${pendingAdDeletions.length} ad(s)`);
             }
-            
+
             if (changesList.length === 0) {
                 showToast('No pending changes to deploy', 'info');
                 return;
             }
-            
+
             if (!confirm(`Deploy all pending changes to GitHub?\n\nThis will update:\n${changesList.join('\n')}\n\nContinue?`)) {
                 return;
             }
@@ -4470,7 +4534,7 @@
                 if (pendingChanges.has('faculty')) {
                     try {
                         showToast('Deploying faculty data...', 'info');
-                        
+
                         // Get latest faculty data from database
                         const facultyResponse = await fetch(`${API_BASE}/api/faculty`, { credentials: 'include' });
                         if (facultyResponse.ok) {
@@ -4507,7 +4571,7 @@
                     try {
                         showToast('Deploying marquee text...', 'info');
                         const marqueeText = document.getElementById('marqueeText').value;
-                        
+
                         const marqueeUpdateResponse = await fetch(`${API_BASE}/api/upload`, {
                             method: 'POST',
                             headers: getAuthHeaders(),
@@ -4516,7 +4580,7 @@
                                 content: base64Encode(marqueeText),
                             })
                         });
-                        
+
                         if (marqueeUpdateResponse.ok) {
                             successCount++;
                             showToast('✅ Marquee text deployed to GitHub!', 'success');
@@ -4540,7 +4604,7 @@
                             if (base64Content.includes(',')) {
                                 base64Content = imageData.base64.split(',')[1];
                             }
-                            
+
                             const uploadResponse = await fetch(`${API_BASE}/api/upload`, {
                                 method: 'POST',
                                 headers: getAuthHeaders(),
@@ -4564,7 +4628,7 @@
                             errors.push(`Image ${imageData.filename}: ${error.message}`);
                         }
                     }
-                    
+
                     if (errorCount === 0) {
                         showToast(`✅ Uploaded ${pendingFacultyImages.length} faculty image(s) to GitHub!`, 'success');
                         pendingFacultyImages = [];
@@ -4582,7 +4646,7 @@
                             if (base64Content.includes(',')) {
                                 base64Content = ad.base64.split(',')[1];
                             }
-                            
+
                             const uploadResponse = await fetch(`${API_BASE}/api/upload`, {
                                 method: 'POST',
                                 headers: getAuthHeaders(),
@@ -4606,7 +4670,7 @@
                             errors.push(`Ad ${ad.originalName}: ${error.message}`);
                         }
                     }
-                    
+
                     if (errorCount === 0) {
                         showToast(`✅ Uploaded ${pendingAdUploads.length} ad(s) to GitHub!`, 'success');
                     }
@@ -4636,7 +4700,7 @@
                             errors.push(`Delete ${filename}: ${error.message}`);
                         }
                     }
-                    
+
                     if (errorCount === 0 || (errorCount < pendingAdDeletions.length)) {
                         showToast(`✅ Deleted ${pendingAdDeletions.length - errorCount} ad(s) from GitHub!`, 'success');
                     }
@@ -4741,7 +4805,7 @@
 
                     const adDiv = document.createElement('div');
                     adDiv.className = 'ad-item';
-                    
+
                     if (markedForDeletion) {
                         adDiv.style.borderColor = '#ef4444';
                         adDiv.style.background = '#fee2e2';
@@ -4830,7 +4894,7 @@
                 });
 
                 updateSelection(); // Update button states
-                
+
                 const totalCount = ads.length + pendingAdUploads.length;
                 if (totalCount > 0) {
                     showToast(`Loaded ${totalCount} ad file(s)`, 'info');
@@ -4934,7 +4998,7 @@
                     cursor: move;
                     transition: all 0.2s;
                 `;
-                
+
                 priorityItem.innerHTML = `
                     <span style="background: #2563eb; color: white; padding: 4px 8px; border-radius: 4px; font-size: 12px; min-width: 40px; text-align: center;">#${index + 1}</span>
                     <span style="flex: 1; font-weight: 500;">${faculty.name}</span>
@@ -4964,20 +5028,20 @@
                 priorityItem.addEventListener('drop', (e) => {
                     e.preventDefault();
                     priorityItem.style.background = '#f9fafb';
-                    
+
                     const draggedName = e.dataTransfer.getData('text/plain');
                     const draggedElement = priorityList.querySelector(`[data-faculty-name="${draggedName}"]`);
-                    
+
                     if (draggedElement && draggedElement !== priorityItem) {
                         const rect = priorityItem.getBoundingClientRect();
                         const midpoint = rect.top + rect.height / 2;
-                        
+
                         if (e.clientY < midpoint) {
                             priorityList.insertBefore(draggedElement, priorityItem);
                         } else {
                             priorityList.insertBefore(draggedElement, priorityItem.nextSibling);
                         }
-                        
+
                         updatePriorityNumbers();
                     }
                 });
@@ -5022,7 +5086,7 @@
                         const response = await fetch(`${API_BASE}/api/admin/faculty/${encodeURIComponent(update.name)}`, {
                             method: 'PUT',
                             headers: getAuthHeaders(),
-                            body: JSON.stringify({ 
+                            body: JSON.stringify({
                                 precedence: update.precedence,
                                 // Include other existing data to prevent overwrites
                                 name: faculty.name,
@@ -5047,10 +5111,10 @@
                 }
 
                 modal.remove();
-                
+
                 // Refresh faculty data from server to ensure we have the latest
                 await loadFaculty();
-                
+
                 showToast('Display order updated in database!', 'success');
                 markPendingChange('faculty');
 
@@ -5306,7 +5370,7 @@
             const renderFaculty = (f, i) => {
                 let div = document.getElementById(`faculty-card-${f.name}`);
                 const isNew = !div;
-                
+
                 if (isNew || !div) {
                     div = document.createElement("div");
                     div.id = `faculty-card-${f.name}`;
@@ -5345,7 +5409,7 @@
                     }
                     return;
                 }
-                
+
                 // If select exists but value doesn't match, force full re-render of card
                 if (select && !isNew) {
                     div.innerHTML = "";
@@ -5412,7 +5476,7 @@
                     controlPanelIsUpdating = true;
                     const newValue = selectElement.value;
                     const facultyName = f.name;
-        
+
                     const now = new Date();
                     let expiry = new Date(now);
                     if (["in_class", "at_dept", "in_meeting"].includes(newValue)) {
@@ -5421,7 +5485,7 @@
                         expiry.setUTCHours(17, 59, 59, 999);
                     }
 
-                    controlPanelApplyLocalUpdates([{ 
+                    controlPanelApplyLocalUpdates([{
                         name: facultyName,
                         manualOverride: newValue,
                         overrideExpiry: expiry.toISOString()
@@ -5534,12 +5598,12 @@
                 controlPanelTimerIntervals = [];
                 const controls = document.getElementById('controls');
                 controls.innerHTML = "";
-                
+
                 // Filter to user's own record if User role
-                const displayFacultyData = isUserRole() 
+                const displayFacultyData = isUserRole()
                     ? controlPanelFacultyData.filter(f => f.name === getCurrentFacultyName())
                     : controlPanelFacultyData;
-                
+
                 displayFacultyData.forEach(renderFaculty);
 
                 // Create bulk timer button
@@ -5624,7 +5688,7 @@
                         bulkTimerBtn.disabled = true;
 
                         const facultyNames = displayFacultyData.map(faculty => faculty.name);
-                        
+
                         try {
                             await controlPanelUpdateFaculty(displayFacultyData.map(f => ({
                                 name: f.name,
@@ -5677,7 +5741,7 @@
             }
 
             // Filter to displayed faculty (user's own record if User role)
-            const displayFacultyData = isUserRole() 
+            const displayFacultyData = isUserRole()
                 ? controlPanelFacultyData.filter(f => f.name === getCurrentFacultyName())
                 : controlPanelFacultyData;
 
@@ -6248,7 +6312,7 @@
                     }]);
 
                     if (success) {
-                            await controlPanelReloadDataAndRender(`Custom expiry set for ${currentExpiryTarget}`);
+                        await controlPanelReloadDataAndRender(`Custom expiry set for ${currentExpiryTarget}`);
                     }
                 }
             }
@@ -6446,7 +6510,7 @@
 
         // Modify showTab to initialize control panel when tab is shown
         const originalShowTab = showTab;
-        showTab = function(tabName) {
+        showTab = function (tabName) {
             originalShowTab.call(this, tabName);
             if (tabName === 'control') {
                 if (!controlPanelInitialized) {
