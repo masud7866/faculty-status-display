@@ -2110,7 +2110,8 @@
                                 <h3 style="margin:0;">Schedule</h3>
 
                                 <div class="btn-group">
-                                    <button type="button" class="btn btn-secondary" onclick="importScheduleJSON()">
+                                    <button type="button" class="btn btn-secondary"
+                                        onclick="openScheduleJsonModal('import')">
                                         📥 Import Schedule
                                     </button>
 
@@ -2375,6 +2376,38 @@
         </div>
     </div>
 
+    <div id="scheduleJsonModal" class="modal hidden">
+        <div class="modal-content" style="max-width:900px;">
+            <div class="modal-header">
+                <h2 id="scheduleJsonModalTitle" class="modal-title">
+                    Schedule JSON Editor
+                </h2>
+
+                <button class="close-btn" type="button" onclick="closeScheduleJsonModal()">
+                    ×
+                </button>
+            </div>
+
+            <div class="form-group">
+                <textarea id="scheduleJsonText" class="form-control" rows="22"
+                    style="font-family:Consolas,monospace;resize:vertical;"></textarea>
+            </div>
+
+            <div class="form-actions">
+                <button id="scheduleJsonPrimaryBtn" type="button" class="btn btn-success">
+                </button>
+
+                <button id="scheduleJsonCopyBtn" type="button" class="btn btn-secondary" onclick="copyScheduleJSON()">
+                    📋 Copy
+                </button>
+
+                <button type="button" class="btn btn-secondary" onclick="closeScheduleJsonModal()">
+                    Close
+                </button>
+            </div>
+        </div>
+    </div>
+
     <script>
         const API_BASE = 'https://faculty-status-display.onrender.com';
         const days = ['Saturday', 'Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday'];
@@ -2386,6 +2419,7 @@
         let pendingFacultyImages = []; // Store faculty images waiting to be uploaded: [{filename, base64, facultyName}]
         let currentUser = null;
         let currentUserRole = 'guest';
+        let scheduleJsonMode = 'import';
         const SUPPORTED_AD_EXTENSIONS = ['jpg', 'jpeg', 'png', 'gif', 'webp', 'mp4', 'webm'];
 
         function getFileExtension(filename) {
@@ -3430,94 +3464,180 @@
 
             const json = JSON.stringify(schedule, null, 2);
 
-            navigator.clipboard.writeText(json)
-                .then(() => {
-                    showToast("Schedule JSON copied to clipboard", "success");
-                })
-                .catch(() => {
-                    console.log(json);
-                    showToast("Clipboard unavailable. JSON written to console.", "info");
-                });
+            document.getElementById("scheduleJsonText").value = json;
+
+            openScheduleJsonModal("export");
         }
 
-        function importScheduleJSON() {
-            const text = prompt("Paste Schedule JSON");
+        function importScheduleJSON(text) {
 
-            if (!text) return;
+            if (!text.trim()) return false;
 
             let schedule;
 
             try {
                 schedule = JSON.parse(text);
+                if (typeof schedule !== "object" || schedule === null) {
+                    showToast("Invalid schedule format", "error");
+                    return false;
+                }
+
+                if (
+                    schedule.weekend === undefined &&
+                    schedule.officeHours === undefined &&
+                    schedule.classTimes === undefined
+                ) {
+                    showToast(
+                        "JSON must contain at least one of: weekend, officeHours, or classTimes.",
+                        "error"
+                    );
+                    return false;
+                }
             } catch (e) {
                 showToast("Invalid JSON", "error");
-                return;
+                return false;
             }
 
             // ------------------------
             // Weekend Days
             // ------------------------
-            days.forEach(day => {
-                const checkbox = document.getElementById(`weekend-${day}`);
-                if (checkbox) {
-                    checkbox.checked = Array.isArray(schedule.weekend) &&
-                        schedule.weekend.includes(day);
-                }
-            });
+            if (Array.isArray(schedule.weekend)) {
+
+                days.forEach(day => {
+                    const checkbox = document.getElementById(`weekend-${day}`);
+                    if (checkbox) {
+                        checkbox.checked = schedule.weekend.includes(day);
+                    }
+                });
+
+            }
 
             // ------------------------
             // Office Hours
             // ------------------------
-            days.forEach(day => {
-                const container = document.getElementById(`office-slots-${day}`);
-                if (!container) return;
+            if (schedule.officeHours) {
 
-                container.innerHTML = "";
+                Object.keys(schedule.officeHours).forEach(day => {
 
-                const office = schedule.officeHours?.[day];
+                    const container = document.getElementById(`office-slots-${day}`);
+                    if (!container) return;
 
-                if (Array.isArray(office) && office.length >= 2) {
+                    container.innerHTML = "";
 
-                    for (let i = 0; i < office.length; i += 2) {
-                        addOfficeTime(
-                            day,
-                            office[i],
-                            office[i + 1] || "",
-                            true
-                        );
+                    const office = schedule.officeHours[day];
+
+                    if (Array.isArray(office) && office.length >= 2) {
+
+                        for (let i = 0; i < office.length; i += 2) {
+                            addOfficeTime(
+                                day,
+                                office[i],
+                                office[i + 1] || "",
+                                true
+                            );
+                        }
+
+                    } else {
+
+                        addOfficeTime(day, "", "", true);
+
                     }
 
-                } else {
+                });
 
-                    // keep one blank row
-                    addOfficeTime(day, "", "", true);
-                }
-            });
-
+            }
             // ------------------------
             // Class Times
             // ------------------------
-            days.forEach(day => {
+            if (schedule.classTimes) {
 
-                const container = document.getElementById(`classes-${day}`);
-                if (!container) return;
+                Object.keys(schedule.classTimes).forEach(day => {
 
-                container.innerHTML = "";
+                    const container = document.getElementById(`classes-${day}`);
+                    if (!container) return;
 
-                const classes = schedule.classTimes?.[day];
+                    container.innerHTML = "";
 
-                if (Array.isArray(classes)) {
+                    const classes = schedule.classTimes[day];
 
-                    classes.forEach(cls => {
-                        addClass(day, cls, true);
-                    });
+                    if (Array.isArray(classes)) {
 
-                }
-            });
+                        classes.forEach(cls => {
+                            addClass(day, cls, true);
+                        });
 
+                    }
+
+                });
+
+            }
             updateScheduleDisabledState();
 
             showToast("Schedule imported successfully", "success");
+            return true;
+        }
+
+        function openScheduleJsonModal(mode = "import") {
+
+            scheduleJsonMode = mode;
+
+            const title = document.getElementById("scheduleJsonModalTitle");
+            const textarea = document.getElementById("scheduleJsonText");
+            const primary = document.getElementById("scheduleJsonPrimaryBtn");
+            const copyBtn = document.getElementById("scheduleJsonCopyBtn");
+
+            if (mode === "import") {
+
+                title.textContent = "Import Schedule JSON";
+                textarea.value = "";
+
+                primary.textContent = "📥 Import";
+                primary.onclick = confirmScheduleImport;
+
+                copyBtn.classList.add("hidden");
+
+            } else {
+
+                title.textContent = "Export Schedule JSON";
+
+                primary.textContent = "📋 Copy";
+                primary.onclick = copyScheduleJSON;
+
+                copyBtn.classList.add("hidden");
+            }
+
+            document.getElementById("scheduleJsonModal").classList.remove("hidden");
+        }
+
+        function closeScheduleJsonModal() {
+            document.getElementById("scheduleJsonModal").classList.add("hidden");
+        }
+
+        function confirmScheduleImport() {
+
+            const success = importScheduleJSON(
+                document.getElementById("scheduleJsonText").value
+            );
+
+            if (success) {
+                closeScheduleJsonModal();
+            }
+
+        }
+
+        function copyScheduleJSON() {
+
+            navigator.clipboard.writeText(
+                document.getElementById("scheduleJsonText").value
+            ).then(() => {
+
+                showToast("Copied to clipboard", "success");
+
+            }).catch(() => {
+
+                showToast("Copy failed", "error");
+
+            });
         }
 
         function resetForm() {
