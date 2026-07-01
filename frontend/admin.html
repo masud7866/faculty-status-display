@@ -2005,11 +2005,19 @@
                 <!-- Existing Faculty Section - Shown First -->
                 <div class="section">
                     <h2>Existing Faculty</h2>
-                    <div id="adminFacultyActions" class="btn-group" style="margin-bottom:15px;">
-                        <button onclick="loadFaculty()" class="btn btn-primary">Refresh List</button>
-                        <button onclick="exportFaculty()" class="btn btn-secondary">Export JSON</button>
-                        <button onclick="syncDatabaseToJSON()" class="btn btn-warning">Sync to JSON File</button>
-                        <button onclick="showPriorityManager()" class="btn btn-success">🔢 Set Display Order</button>
+                    <div class="btn-group" style="margin-bottom:15px;">
+
+                        <div id="adminFacultyActions" class="btn-group">
+                            <button onclick="loadFaculty()" class="btn btn-primary">Refresh List</button>
+                            <button onclick="exportFaculty()" class="btn btn-secondary">Export JSON</button>
+                            <button onclick="showPriorityManager()" class="btn btn-success">🔢 Set Display
+                                Order</button>
+                        </div>
+
+                        <button onclick="syncDatabaseToJSON()" class="btn btn-warning">
+                            Sync to JSON File
+                        </button>
+
                     </div>
                     <div class="file-info" style="margin-bottom: 15px;">
                         <strong>Persistence:</strong> Faculty changes are now automatically saved to both database and
