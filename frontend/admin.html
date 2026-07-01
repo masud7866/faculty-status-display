@@ -1539,16 +1539,15 @@
 
         .custom-expiry-modal {
             position: fixed;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background: rgba(0, 0, 0, 0.7);
+            inset: 0;
+            background: rgba(15, 23, 42, 0.42);
+            backdrop-filter: blur(2px);
             z-index: 2000;
             display: flex;
             justify-content: center;
-            align-items: center;
-            padding: 20px;
+            align-items: flex-start;
+            padding: min(8vh, 56px) 20px 20px;
+            overflow-y: auto;
             opacity: 0;
             visibility: hidden;
             transition: all 0.3s ease;
@@ -1570,6 +1569,11 @@
             box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
             transform: scale(0.9);
             transition: transform 0.3s ease;
+            margin: 0 auto;
+        }
+
+        body.modal-open {
+            overflow: hidden;
         }
 
         .custom-expiry-modal.active .custom-expiry-content {
@@ -2466,10 +2470,14 @@
             document.getElementById('newPassword').value = '';
             document.getElementById('confirmPassword').value = '';
             document.getElementById('changePasswordModal').classList.add('active');
+            document.body.classList.add('modal-open');
         }
 
         function closeChangePasswordModal() {
             document.getElementById('changePasswordModal').classList.remove('active');
+            if (!document.getElementById('customExpiryModal')?.classList.contains('active')) {
+                document.body.classList.remove('modal-open');
+            }
         }
 
         async function changePassword() {
@@ -6132,6 +6140,7 @@
 
             switchExpiryMode('duration');
             modal.classList.add('active');
+            document.body.classList.add('modal-open');
         }
 
         function closeCustomExpiryModal() {
@@ -6139,6 +6148,9 @@
             modal.classList.remove('active');
             currentExpiryTarget = null;
             isBulkExpiry = false;
+            if (!document.getElementById('changePasswordModal')?.classList.contains('active')) {
+                document.body.classList.remove('modal-open');
+            }
         }
 
         function switchExpiryMode(mode) {
@@ -6409,6 +6421,11 @@
 
         // Initialize modal event listeners
         document.addEventListener('DOMContentLoaded', () => {
+            const customExpiryModal = document.getElementById('customExpiryModal');
+            if (customExpiryModal && customExpiryModal.parentElement !== document.body) {
+                document.body.appendChild(customExpiryModal);
+            }
+
             document.querySelectorAll('.expiry-mode-btn').forEach(btn => {
                 btn.addEventListener('click', () => switchExpiryMode(btn.dataset.mode));
             });
