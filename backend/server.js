@@ -1187,6 +1187,29 @@ app.delete('/api/admin/ads/:filename', requireAuth, requireRole("admin", "editor
 });
 
 // === AUTO STATUS LOGIC ===
+function normalizeOfficeRanges(dayOfficeHours) {
+  if (!Array.isArray(dayOfficeHours)) {
+    return [];
+  }
+
+  const isLegacyPair =
+    dayOfficeHours.length === 2 &&
+    typeof dayOfficeHours[0] === "string" &&
+    typeof dayOfficeHours[1] === "string";
+
+  if (isLegacyPair) {
+    return [[dayOfficeHours[0], dayOfficeHours[1]]];
+  }
+
+  return dayOfficeHours.filter(
+    range =>
+      Array.isArray(range) &&
+      range.length === 2 &&
+      typeof range[0] === "string" &&
+      typeof range[1] === "string"
+  );
+}
+
 function getCurrentStatus(faculty) {
   const now = new Date();
   const day = new Intl.DateTimeFormat('en-US', {
@@ -1231,9 +1254,8 @@ function getCurrentStatus(faculty) {
   }
 
   // Check if now is within office hours
-  const office = faculty.officeHours?.[day];
-  if (Array.isArray(office) && office.length === 2) {
-    const [start, end] = office;
+  const officeRanges = normalizeOfficeRanges(faculty.officeHours?.[day]);
+  for (const [start, end] of officeRanges) {
     if (start < end && timeStr >= start && timeStr < end) {
       return { status: "at_dept" };
     }

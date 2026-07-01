@@ -323,16 +323,89 @@
         }
 
         .time-input,
-        .class-input {
+        .class-input,
+        .office-input {
             display: grid;
             gap: 8px;
             margin-bottom: 8px;
             grid-template-columns: 1fr 1fr auto;
         }
 
+        .schedule-day-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 10px;
+            flex-wrap: wrap;
+            margin-bottom: 8px;
+        }
+
+        .day-select-chip {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 12px;
+            color: #475569;
+            background: #f1f5f9;
+            border: 1px solid #cbd5e1;
+            border-radius: 999px;
+            padding: 4px 10px;
+            user-select: none;
+        }
+
+        .day-actions {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+            margin-bottom: 6px;
+        }
+
+        .mini-btn {
+            border: 1px solid #cbd5e1;
+            background: #f8fafc;
+            color: #334155;
+            border-radius: 6px;
+            padding: 4px 8px;
+            font-size: 12px;
+            cursor: pointer;
+        }
+
+        .mini-btn:hover {
+            background: #eef2ff;
+            border-color: #93c5fd;
+        }
+
+        .time-shortcuts {
+            grid-column: 1 / -1;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 6px;
+            align-items: center;
+        }
+
+        .quick-range-btn {
+            border: 1px solid #cbd5e1;
+            background: white;
+            color: #334155;
+            border-radius: 999px;
+            padding: 3px 8px;
+            font-size: 11px;
+            cursor: pointer;
+            line-height: 1.2;
+        }
+
+        .quick-range-btn:hover {
+            background: #eff6ff;
+            border-color: #60a5fa;
+        }
+
         @media (min-width: 768px) {
             .class-input {
                 grid-template-columns: 1fr 1fr 1fr 1fr auto;
+            }
+
+            .office-input {
+                grid-template-columns: 1fr 1fr auto;
             }
         }
 
@@ -619,27 +692,32 @@
             }
 
             /* Adjust class input spacing on mobile */
-            .class-input {
+            .class-input,
+            .office-input {
                 gap: 6px;
             }
 
-            .class-input .form-group label {
+            .class-input .form-group label,
+            .office-input .form-group label {
                 margin-bottom: 2px;
             }
         }
 
         @media (max-width: 479px) {
-            .class-input {
+            .class-input,
+            .office-input {
                 grid-template-columns: 1fr;
                 /* Stack all fields vertically on very small screens */
                 gap: 8px;
             }
 
-            .class-input .form-group {
+            .class-input .form-group,
+            .office-input .form-group {
                 margin-bottom: 8px;
             }
 
-            .class-input button {
+            .class-input button,
+            .office-input button {
                 justify-self: center;
                 width: 100px;
             }
@@ -730,6 +808,10 @@
             .class-input {
                 grid-template-columns: 1fr 1fr 1fr auto;
                 /* Small screens: Add Room */
+            }
+
+            .office-input {
+                grid-template-columns: 1fr 1fr auto;
             }
         }
 
@@ -2688,6 +2770,133 @@
             attachWeekendListeners();
         }
 
+        const QUICK_TIME_RANGES = [
+            ['08:00', '09:00'],
+            ['09:00', '10:00'],
+            ['10:00', '11:00'],
+            ['11:00', '12:00'],
+            ['12:00', '13:00'],
+            ['13:00', '14:00'],
+            ['14:00', '15:00'],
+            ['15:00', '16:00'],
+            ['16:00', '17:00']
+        ];
+
+        function normalizeOfficeHourRanges(dayHours) {
+            if (!Array.isArray(dayHours)) return [];
+
+            const looksLikeLegacyPair =
+                dayHours.length === 2 &&
+                typeof dayHours[0] === 'string' &&
+                typeof dayHours[1] === 'string';
+
+            if (looksLikeLegacyPair) {
+                return [[dayHours[0], dayHours[1]]];
+            }
+
+            return dayHours.filter(range =>
+                Array.isArray(range) &&
+                range.length === 2 &&
+                typeof range[0] === 'string' &&
+                typeof range[1] === 'string'
+            );
+        }
+
+        function getQuickRangeButtonsMarkup() {
+            return QUICK_TIME_RANGES.map(([start, end]) =>
+                `<button type="button" class="quick-range-btn" onclick="applyPresetToRow(this, '${start}', '${end}')">${start}-${end}</button>`
+            ).join('');
+        }
+
+        function applyPresetToRow(button, start, end) {
+            const row = button.closest('.time-row');
+            if (!row) return;
+
+            const startInput = row.querySelector('.start-time');
+            const endInput = row.querySelector('.end-time');
+            if (startInput) startInput.value = start;
+            if (endInput) endInput.value = end;
+        }
+
+        function copyPreviousRange(button) {
+            const row = button.closest('.time-row');
+            if (!row) return;
+
+            const prev = row.previousElementSibling;
+            if (!prev || !prev.classList.contains('time-row')) {
+                showToast('No previous row to copy from', 'info');
+                return;
+            }
+
+            const prevStart = prev.querySelector('.start-time')?.value || '';
+            const prevEnd = prev.querySelector('.end-time')?.value || '';
+            if (!prevStart || !prevEnd) {
+                showToast('Previous row has no time set', 'info');
+                return;
+            }
+
+            row.querySelector('.start-time').value = prevStart;
+            row.querySelector('.end-time').value = prevEnd;
+        }
+
+        function applyRangeToSelectedDays(button, type, sourceDay) {
+            const row = button.closest('.time-row');
+            if (!row) return;
+
+            const start = row.querySelector('.start-time')?.value;
+            const end = row.querySelector('.end-time')?.value;
+            if (!start || !end) {
+                showToast('Set start and end time first', 'error');
+                return;
+            }
+
+            const selectedDays = days.filter(day => {
+                if (day === sourceDay) return false;
+                const checkbox = document.getElementById(`${type}-select-${day}`);
+                return checkbox && checkbox.checked;
+            });
+
+            if (selectedDays.length === 0) {
+                showToast('Select at least one target day using Select Day chip', 'info');
+                return;
+            }
+
+            selectedDays.forEach(day => {
+                const weekendCheckbox = document.getElementById(`weekend-${day}`);
+                if (weekendCheckbox && weekendCheckbox.checked) {
+                    return;
+                }
+
+                if (type === 'office') {
+                    const targetContainer = document.getElementById(`office-slots-${day}`);
+                    if (!targetContainer) return;
+                    let targetRow = targetContainer.querySelector('.time-row');
+                    if (!targetRow) {
+                        addOfficeTime(day);
+                        targetRow = targetContainer.querySelector('.time-row');
+                    }
+                    if (targetRow) {
+                        targetRow.querySelector('.start-time').value = start;
+                        targetRow.querySelector('.end-time').value = end;
+                    }
+                } else {
+                    const targetContainer = document.getElementById(`classes-${day}`);
+                    if (!targetContainer) return;
+                    let targetRow = targetContainer.querySelector('.time-row');
+                    if (!targetRow) {
+                        addClass(day);
+                        targetRow = targetContainer.querySelector('.time-row');
+                    }
+                    if (targetRow) {
+                        targetRow.querySelector('.start-time').value = start;
+                        targetRow.querySelector('.end-time').value = end;
+                    }
+                }
+            });
+
+            showToast(`Applied ${start}-${end} to ${selectedDays.length} day(s)`, 'success');
+        }
+
         function attachWeekendListeners() {
             // Add event listeners to all weekend checkboxes
             document.querySelectorAll('[id^="weekend-"]').forEach(checkbox => {
@@ -2702,21 +2911,32 @@
                 const weekendCheckbox = document.getElementById(`weekend-${day}`);
                 const isWeekend = weekendCheckbox && weekendCheckbox.checked;
 
-                // Disable/enable office hours inputs (but don't clear values)
-                const officeStart = document.getElementById(`office-${day}-start`);
-                const officeEnd = document.getElementById(`office-${day}-end`);
-                if (officeStart) {
-                    officeStart.disabled = isWeekend;
-                    officeStart.style.opacity = isWeekend ? '0.5' : '1';
-                    officeStart.style.cursor = isWeekend ? 'not-allowed' : 'text';
-                    officeStart.style.backgroundColor = isWeekend ? '#fef2f2' : '#f9fafb';
+                // Disable/enable office time inputs and buttons (but don't clear)
+                const officeContainer = document.getElementById(`office-slots-${day}`);
+                if (officeContainer) {
+                    const inputs = officeContainer.querySelectorAll('input');
+                    const buttons = officeContainer.querySelectorAll('button');
+                    inputs.forEach(input => {
+                        input.disabled = isWeekend;
+                        input.style.opacity = isWeekend ? '0.5' : '1';
+                        input.style.cursor = isWeekend ? 'not-allowed' : 'text';
+                        input.style.backgroundColor = isWeekend ? '#fef2f2' : '#f9fafb';
+                    });
+                    buttons.forEach(button => {
+                        button.disabled = isWeekend;
+                        button.style.opacity = isWeekend ? '0.5' : '1';
+                        button.style.cursor = isWeekend ? 'not-allowed' : 'pointer';
+                    });
                 }
-                if (officeEnd) {
-                    officeEnd.disabled = isWeekend;
-                    officeEnd.style.opacity = isWeekend ? '0.5' : '1';
-                    officeEnd.style.cursor = isWeekend ? 'not-allowed' : 'text';
-                    officeEnd.style.backgroundColor = isWeekend ? '#fef2f2' : '#f9fafb';
-                }
+
+                const addOfficeBtn = document.getElementById(`add-office-${day}`);
+                const clearOfficeBtn = document.getElementById(`clear-office-${day}`);
+                [addOfficeBtn, clearOfficeBtn].forEach(btn => {
+                    if (!btn) return;
+                    btn.disabled = isWeekend;
+                    btn.style.opacity = isWeekend ? '0.5' : '1';
+                    btn.style.cursor = isWeekend ? 'not-allowed' : 'pointer';
+                });
 
                 // Disable/enable class time inputs and buttons (but don't clear)
                 const classContainer = document.getElementById(`classes-${day}`);
@@ -2756,21 +2976,68 @@
                 const dayDiv = document.createElement('div');
                 dayDiv.className = 'schedule-day';
                 dayDiv.innerHTML = `
-                    <h4>${day}</h4>
-                    <div class="time-input">
-                        <div class="form-group">
-                            <label>Start</label>
-                            <input type="time" class="form-control" id="office-${day}-start">
-                        </div>
-                        <div class="form-group">
-                            <label>End</label>
-                            <input type="time" class="form-control" id="office-${day}-end">
-                        </div>
-                        <button type="button" class="btn btn-secondary" onclick="clearOfficeHours('${day}')">Clear</button>
+                    <div class="schedule-day-header">
+                        <h4>${day}</h4>
+                        <label class="day-select-chip">
+                            <input type="checkbox" id="office-select-${day}">
+                            Select Day
+                        </label>
                     </div>
+                    <div class="day-actions">
+                        <button type="button" id="add-office-${day}" class="mini-btn" onclick="addOfficeTime('${day}')">+ Add Office Time</button>
+                        <button type="button" id="clear-office-${day}" class="mini-btn" onclick="clearOfficeHours('${day}')">Clear Day</button>
+                    </div>
+                    <div id="office-slots-${day}"></div>
                 `;
                 container.appendChild(dayDiv);
+                addOfficeTime(day, '', '', true);
             });
+        }
+
+        function addOfficeTime(day, start = '', end = '', allowWeekend = false) {
+            const weekendCheckbox = document.getElementById(`weekend-${day}`);
+            if (!allowWeekend && weekendCheckbox && weekendCheckbox.checked) {
+                showToast(`Cannot add office time on ${day} - marked as weekend`, 'error');
+                return;
+            }
+
+            const container = document.getElementById(`office-slots-${day}`);
+            if (!container) return;
+
+            const row = document.createElement('div');
+            row.className = 'office-input time-row';
+            row.dataset.day = day;
+            row.dataset.type = 'office';
+            row.innerHTML = `
+                <div class="form-group">
+                    <label>Start</label>
+                    <input type="time" class="form-control start-time" value="${start}">
+                </div>
+                <div class="form-group">
+                    <label>End</label>
+                    <input type="time" class="form-control end-time" value="${end}">
+                </div>
+                <button type="button" class="btn btn-danger" onclick="removeOfficeTime(this)">Remove</button>
+                <div class="time-shortcuts">
+                    ${getQuickRangeButtonsMarkup()}
+                    <button type="button" class="quick-range-btn" onclick="copyPreviousRange(this)">Copy Previous</button>
+                    <button type="button" class="quick-range-btn" onclick="applyRangeToSelectedDays(this, 'office', '${day}')">Apply To Selected Days</button>
+                </div>
+            `;
+
+            container.appendChild(row);
+            updateScheduleDisabledState();
+        }
+
+        function removeOfficeTime(button) {
+            const row = button.closest('.time-row');
+            const container = row?.parentElement;
+            row?.remove();
+
+            if (container && container.querySelectorAll('.time-row').length === 0) {
+                const day = container.id.replace('office-slots-', '');
+                addOfficeTime(day, '', '', true);
+            }
         }
 
         function generateClassTimes() {
@@ -2781,7 +3048,13 @@
                 const dayDiv = document.createElement('div');
                 dayDiv.className = 'schedule-day';
                 dayDiv.innerHTML = `
-                    <h4>${day}</h4>
+                    <div class="schedule-day-header">
+                        <h4>${day}</h4>
+                        <label class="day-select-chip">
+                            <input type="checkbox" id="class-select-${day}">
+                            Select Day
+                        </label>
+                    </div>
                     <div id="classes-${day}"></div>
                     <button type="button" class="btn btn-secondary" onclick="addClass('${day}')">Add Class</button>
                 `;
@@ -2789,38 +3062,45 @@
             });
         }
 
-        function addClass(day) {
+        function addClass(day, classInfo = {}, allowWeekend = false) {
             // Check if day is marked as weekend
             const weekendCheckbox = document.getElementById(`weekend-${day}`);
-            if (weekendCheckbox && weekendCheckbox.checked) {
+            if (!allowWeekend && weekendCheckbox && weekendCheckbox.checked) {
                 showToast(`Cannot add class on ${day} - marked as weekend`, 'error');
                 return;
             }
 
             const container = document.getElementById(`classes-${day}`);
-            const classIndex = container.children.length;
             const classDiv = document.createElement('div');
-            classDiv.className = 'class-input';
+            classDiv.className = 'class-input time-row';
+            classDiv.dataset.day = day;
+            classDiv.dataset.type = 'class';
             classDiv.innerHTML = `
                 <div class="form-group">
                     <label>Start</label>
-                    <input type="time" class="form-control" id="class-${day}-${classIndex}-start">
+                    <input type="time" class="form-control start-time" value="${classInfo.start || ''}">
                 </div>
                 <div class="form-group">
                     <label>End</label>
-                    <input type="time" class="form-control" id="class-${day}-${classIndex}-end">
+                    <input type="time" class="form-control end-time" value="${classInfo.end || ''}">
                 </div>
                 <div class="form-group">
                     <label>Room</label>
-                    <input type="text" class="form-control" id="class-${day}-${classIndex}-room" placeholder="B2-103">
+                    <input type="text" class="form-control room-input" value="${classInfo.room || ''}" placeholder="B2-103">
                 </div>
                 <div class="form-group">
                     <label>Batch</label>
-                    <input type="text" class="form-control" id="class-${day}-${classIndex}-batch" placeholder="1st-CSE-A">
+                    <input type="text" class="form-control batch-input" value="${classInfo.batch || ''}" placeholder="1st-CSE-A">
                 </div>
                 <button type="button" class="btn btn-danger" onclick="removeClass(this)">Remove</button>
+                <div class="time-shortcuts">
+                    ${getQuickRangeButtonsMarkup()}
+                    <button type="button" class="quick-range-btn" onclick="copyPreviousRange(this)">Copy Previous</button>
+                    <button type="button" class="quick-range-btn" onclick="applyRangeToSelectedDays(this, 'class', '${day}')">Apply To Selected Days</button>
+                </div>
             `;
             container.appendChild(classDiv);
+            updateScheduleDisabledState();
         }
 
         function removeClass(button) {
@@ -2828,8 +3108,10 @@
         }
 
         function clearOfficeHours(day) {
-            document.getElementById(`office-${day}-start`).value = '';
-            document.getElementById(`office-${day}-end`).value = '';
+            const container = document.getElementById(`office-slots-${day}`);
+            if (!container) return;
+            container.innerHTML = '';
+            addOfficeTime(day, '', '', true);
         }
 
         function resetForm() {
@@ -2942,12 +3224,16 @@
             // Set office hours
             if (faculty.officeHours) {
                 Object.entries(faculty.officeHours).forEach(([day, times]) => {
-                    if (times && times.length === 2) {
-                        const startInput = document.getElementById(`office-${day}-start`);
-                        const endInput = document.getElementById(`office-${day}-end`);
-                        if (startInput) startInput.value = times[0];
-                        if (endInput) endInput.value = times[1];
-                    }
+                    const ranges = normalizeOfficeHourRanges(times);
+                    if (!ranges.length) return;
+
+                    const slotContainer = document.getElementById(`office-slots-${day}`);
+                    if (!slotContainer) return;
+                    slotContainer.innerHTML = '';
+
+                    ranges.forEach(([start, end]) => {
+                        addOfficeTime(day, start || '', end || '', true);
+                    });
                 });
             }
 
@@ -2955,18 +3241,12 @@
             if (faculty.classTimes) {
                 Object.entries(faculty.classTimes).forEach(([day, classes]) => {
                     if (classes && Array.isArray(classes)) {
-                        classes.forEach((classInfo, index) => {
-                            addClass(day);
+                        const classContainer = document.getElementById(`classes-${day}`);
+                        if (!classContainer) return;
+                        classContainer.innerHTML = '';
 
-                            const startInput = document.getElementById(`class-${day}-${index}-start`);
-                            const endInput = document.getElementById(`class-${day}-${index}-end`);
-                            const roomInput = document.getElementById(`class-${day}-${index}-room`);
-                            const batchInput = document.getElementById(`class-${day}-${index}-batch`);
-
-                            if (startInput) startInput.value = classInfo.start || '';
-                            if (endInput) endInput.value = classInfo.end || '';
-                            if (roomInput) roomInput.value = classInfo.room || '';
-                            if (batchInput) batchInput.value = classInfo.batch || '';
+                        classes.forEach((classInfo) => {
+                            addClass(day, classInfo || {}, true);
                         });
                     }
                 });
@@ -3210,10 +3490,21 @@
                     // Don't include office hours for weekend days
                     return;
                 }
-                const start = document.getElementById(`office-${day}-start`).value;
-                const end = document.getElementById(`office-${day}-end`).value;
-                if (start && end) {
-                    newFacultyData.officeHours[day] = [start, end];
+
+                const ranges = [];
+                const officeContainer = document.getElementById(`office-slots-${day}`);
+                Array.from(officeContainer?.querySelectorAll('.time-row') || []).forEach(row => {
+                    const start = row.querySelector('.start-time')?.value;
+                    const end = row.querySelector('.end-time')?.value;
+                    if (start && end) {
+                        ranges.push([start, end]);
+                    }
+                });
+
+                if (ranges.length === 1) {
+                    newFacultyData.officeHours[day] = ranges[0];
+                } else if (ranges.length > 1) {
+                    newFacultyData.officeHours[day] = ranges;
                 }
             });
 
@@ -3226,11 +3517,11 @@
                 }
                 const classes = [];
                 const container = document.getElementById(`classes-${day}`);
-                Array.from(container.children).forEach((classDiv, index) => {
-                    const start = document.getElementById(`class-${day}-${index}-start`)?.value;
-                    const end = document.getElementById(`class-${day}-${index}-end`)?.value;
-                    const room = document.getElementById(`class-${day}-${index}-room`)?.value || '';
-                    const batch = document.getElementById(`class-${day}-${index}-batch`)?.value || '';
+                Array.from(container?.querySelectorAll('.time-row') || []).forEach((classDiv) => {
+                    const start = classDiv.querySelector('.start-time')?.value;
+                    const end = classDiv.querySelector('.end-time')?.value;
+                    const room = classDiv.querySelector('.room-input')?.value || '';
+                    const batch = classDiv.querySelector('.batch-input')?.value || '';
 
                     if (start && end) {
                         classes.push({ start, end, room, batch });
@@ -5528,14 +5819,9 @@
                     );
 
                     // Check if they have office hours during this time slot
-                    const hasOfficeHoursInSlot = Boolean(
-                        f.officeHours &&
-                        f.officeHours[currentDay] &&
-                        Array.isArray(f.officeHours[currentDay]) &&
-                        f.officeHours[currentDay].length >= 2 &&
-                        f.officeHours[currentDay][0] &&
-                        f.officeHours[currentDay][1] &&
-                        isTimeInRange(timeSlot, f.officeHours[currentDay][0], f.officeHours[currentDay][1])
+                    const officeRanges = normalizeOfficeHourRanges(f.officeHours?.[currentDay]);
+                    const hasOfficeHoursInSlot = officeRanges.some(([start, end]) =>
+                        start && end && isTimeInRange(timeSlot, start, end)
                     );
 
                     const hasWeekendInDay = Boolean(
