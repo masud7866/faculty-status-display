@@ -626,7 +626,7 @@
             const sortedData = data.sort((a, b) => {
               const precedenceA = a.precedence || 50;
               const precedenceB = b.precedence || 50;
-              
+
               if (precedenceA !== precedenceB) {
                 return precedenceA - precedenceB;
               }
@@ -712,7 +712,7 @@
       h = h ? h : 12;
 
       const timeString = `${h.toString().padStart(2, '0')}:${m.toString().padStart(2, '0')}:${s.toString().padStart(2, '0')} ${ampm}`;
-      
+
       clockContainer.textContent = timeString;
     }
 
@@ -793,11 +793,23 @@
       fetch("https://faculty-status-display.onrender.com/api/ads")
         .then(r => r.json())
         .then(data => {
-          ads = data;
+          ads = data || [];
           console.log("Ads loaded:", ads.length);
 
-          // Only try to start if we're not in break period and not already running
-          if (!inBreakPeriod && !adCycleRunning && ads.length > 0) {
+          if (ads.length === 0) {
+            adCycleRunning = false;
+            hideOverlay();
+            stopSmoothCountdown();
+
+            if (nextAdTimeout) {
+              clearTimeout(nextAdTimeout);
+              nextAdTimeout = null;
+            }
+
+            return;
+          }
+
+          if (!inBreakPeriod && !adCycleRunning) {
             checkAndStartAds();
           }
         })
@@ -882,7 +894,13 @@
     }
 
     function runAdSequence() {
-      if (inBreakPeriod || adCycleRunning || !ads.length) {
+      if (!ads.length) {
+        hideOverlay();
+        stopSmoothCountdown();
+        adCycleRunning = false;
+        return;
+      }
+      if (inBreakPeriod || adCycleRunning) {
         console.log("⚠️ Cannot start ads:", {
           inBreak: inBreakPeriod,
           running: adCycleRunning,
@@ -919,7 +937,7 @@
       }
 
       function playNextAd() {
-        if (current >= ads.length) {
+        if (!ads.length || current >= ads.length) {
           finishAdSequence();
           return;
         }
