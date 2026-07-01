@@ -3171,13 +3171,15 @@
                 }
 
                 // Disable/enable "Select Day" checkbox
-                const selectDayCheckbox = document.getElementById(`select-day-${day}`);
+                const selectDayCheckbox = document.getElementById(`office-select-${day}`);
                 if (selectDayCheckbox) {
-                    if (isWeekend) selectDayCheckbox.checked = false;
+                    if (isWeekend) {
+                        selectDayCheckbox.checked = false;
+                    }
 
                     selectDayCheckbox.disabled = isWeekend;
 
-                    const label = selectDayCheckbox.closest('label');
+                    const label = selectDayCheckbox.closest('.day-select-chip');
                     if (label) {
                         label.style.opacity = isWeekend ? '0.5' : '1';
                         label.style.cursor = isWeekend ? 'not-allowed' : 'pointer';
