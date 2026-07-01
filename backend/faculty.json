@@ -455,21 +455,29 @@
       ],
       "Wednesday": [
         {
-          "start": "12:00",
-          "end": "13:00",
-          "room": "B2-303",
-          "batch": "8th-CSE-A"
+          "start": "08:00",
+          "end": "22:00",
+          "room": "B2-203",
+          "batch": "7th-CSE-B"
         },
         {
-          "start": "14:00",
-          "end": "15:00",
-          "room": "B2-303",
-          "batch": "8th-CSE-B"
+          "start": "10:00",
+          "end": "11:00",
+          "room": "B2-403",
+          "batch": "2nd-EEE-A"
+        },
+        {
+          "start": "11:00",
+          "end": "12:00",
+          "room": "B2-405",
+          "batch": "7th-CSE-B"
         }
       ]
     },
     "status": {
-      "status": "at_dept"
+      "status": "in_class",
+      "room": "B2-203",
+      "batch": "7th-CSE-B"
     },
     "manualOverride": null,
     "overrideExpiry": null,
