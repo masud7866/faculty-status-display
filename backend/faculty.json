@@ -100,7 +100,9 @@
       ]
     },
     "status": {
-      "status": "at_dept"
+      "status": "in_class",
+      "room": "B2-405",
+      "batch": "7th-CSE-A"
     },
     "manualOverride": null,
     "overrideExpiry": null,
@@ -538,7 +540,7 @@
     "status": {
       "status": "in_class",
       "room": "B2-304",
-      "batch": "1st-CSE-B"
+      "batch": "1st-CSE-A"
     },
     "manualOverride": null,
     "overrideExpiry": null,
@@ -807,29 +809,29 @@
     "email": "akashhasnat1378@gmail.com",
     "image": "/images/akashhasnat.jpg",
     "weekend": [
-      "Wednesday",
-      "Thursday"
+      "Thursday",
+      "Friday"
     ],
     "officeHours": {
       "Saturday": [
-        "08:00",
+        "10:00",
         "20:00"
       ],
       "Sunday": [
-        "08:00",
-        "16:00"
+        "09:00",
+        "17:00"
       ],
       "Monday": [
-        "08:00",
-        "16:00"
+        "09:00",
+        "17:00"
       ],
       "Tuesday": [
-        "08:00",
-        "16:00"
+        "10:00",
+        "17:00"
       ],
-      "Friday": [
-        "09:00",
-        "13:00"
+      "Wednesday": [
+        "10:00",
+        "17:00"
       ]
     },
     "classTimes": {
@@ -990,30 +992,10 @@
           "room": "B2-406",
           "batch": "8th-CSE-A"
         }
-      ],
-      "Friday": [
-        {
-          "start": "09:00",
-          "end": "10:00",
-          "room": "B2-305",
-          "batch": "2nd-CSE-Evn"
-        },
-        {
-          "start": "10:00",
-          "end": "11:00",
-          "room": "B2-405",
-          "batch": "6th-CSE-Evn"
-        },
-        {
-          "start": "12:00",
-          "end": "01:00",
-          "room": "B2-203",
-          "batch": "2nd-ME-Evn"
-        }
       ]
     },
     "status": {
-      "status": "on_weekend"
+      "status": "at_dept"
     },
     "manualOverride": null,
     "overrideExpiry": null,
@@ -1172,7 +1154,9 @@
       ]
     },
     "status": {
-      "status": "at_dept"
+      "status": "in_class",
+      "room": "B2-405",
+      "batch": "7th-CSE-A"
     },
     "manualOverride": null,
     "overrideExpiry": null,
@@ -1344,8 +1328,8 @@
     },
     "status": {
       "status": "in_class",
-      "room": "B2-305",
-      "batch": "8th-CSE-A"
+      "room": "B2-403",
+      "batch": "8th-CSE-B"
     },
     "manualOverride": null,
     "overrideExpiry": null,
