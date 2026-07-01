@@ -3170,9 +3170,11 @@
                     addClassBtn.style.cursor = isWeekend ? 'not-allowed' : 'pointer';
                 }
 
-                // Disable/enable "Select Day" checkbox
-                const selectDayCheckbox = document.getElementById(`office-select-${day}`);
-                if (selectDayCheckbox) {
+                // Disable/enable "Select Day" checkboxes
+                ['office', 'class'].forEach(type => {
+                    const selectDayCheckbox = document.getElementById(`${type}-select-${day}`);
+                    if (!selectDayCheckbox) return;
+
                     if (isWeekend) {
                         selectDayCheckbox.checked = false;
                     }
@@ -3184,7 +3186,7 @@
                         label.style.opacity = isWeekend ? '0.5' : '1';
                         label.style.cursor = isWeekend ? 'not-allowed' : 'pointer';
                     }
-                }
+                });
 
             });
         }
