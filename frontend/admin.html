@@ -399,6 +399,37 @@
             border-color: #60a5fa;
         }
 
+        .time-selector-wrap {
+            display: grid;
+            grid-template-columns: 1fr auto 1fr auto 1fr;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .time-selector-wrap .time-divider {
+            color: #64748b;
+            font-weight: 600;
+            text-align: center;
+        }
+
+        .time-select {
+            width: 100%;
+            border: 1px solid #d1d5db;
+            border-radius: 6px;
+            background: #f9fafb;
+            color: #374151;
+            min-height: 36px;
+            padding: 6px;
+            font-size: 13px;
+        }
+
+        .time-select:focus {
+            outline: none;
+            border-color: #2563eb;
+            background: #fff;
+            box-shadow: 0 0 0 2px rgba(37, 99, 235, 0.1);
+        }
+
         @media (min-width: 768px) {
             .class-input {
                 grid-template-columns: 1fr 1fr 1fr 1fr auto;
@@ -1899,7 +1930,7 @@
                                     </div>
                                     <div class="datetime-input">
                                         <label for="expiryTime">Time</label>
-                                        <input type="time" id="expiryTime">
+                                        <input type="time" id="expiryTime" step="60">
                                     </div>
                                 </div>
                             </div>
@@ -2782,6 +2813,9 @@
             ['16:00', '17:00']
         ];
 
+        const TIME_HOUR_OPTIONS = Array.from({ length: 12 }, (_, i) => String(i + 1).padStart(2, '0'));
+        const TIME_MINUTE_OPTIONS = Array.from({ length: 12 }, (_, i) => String(i * 5).padStart(2, '0'));
+
         function normalizeOfficeHourRanges(dayHours) {
             if (!Array.isArray(dayHours)) return [];
 
@@ -2802,9 +2836,119 @@
             );
         }
 
+        function formatTime12Hour(time24) {
+            if (!time24 || typeof time24 !== 'string' || !time24.includes(':')) return time24 || '';
+            const [hourStr, minuteStr] = time24.split(':');
+            const hour = parseInt(hourStr, 10);
+            const minute = parseInt(minuteStr, 10);
+
+            if (Number.isNaN(hour) || Number.isNaN(minute)) return time24;
+
+            const suffix = hour >= 12 ? 'PM' : 'AM';
+            const hour12 = hour % 12 || 12;
+            return `${hour12}:${String(minute).padStart(2, '0')} ${suffix}`;
+        }
+
+        function parse24HourTime(time24) {
+            if (!time24 || typeof time24 !== 'string' || !time24.includes(':')) {
+                return { hour: '08', minute: '00', ampm: 'AM' };
+            }
+
+            const [hourStr, minuteStr] = time24.split(':');
+            const hour24 = parseInt(hourStr, 10);
+            const minute = parseInt(minuteStr, 10);
+
+            if (Number.isNaN(hour24) || Number.isNaN(minute)) {
+                return { hour: '08', minute: '00', ampm: 'AM' };
+            }
+
+            const ampm = hour24 >= 12 ? 'PM' : 'AM';
+            const hour12 = hour24 % 12 || 12;
+            return {
+                hour: String(hour12).padStart(2, '0'),
+                minute: String(minute).padStart(2, '0'),
+                ampm
+            };
+        }
+
+        function to24HourTime(hour, minute, ampm) {
+            let hourNum = parseInt(hour, 10);
+            let minuteNum = parseInt(minute, 10);
+
+            if (Number.isNaN(hourNum)) hourNum = 8;
+            if (Number.isNaN(minuteNum)) minuteNum = 0;
+
+            if (hourNum < 1) hourNum = 1;
+            if (hourNum > 12) hourNum = 12;
+            if (minuteNum < 0) minuteNum = 0;
+            if (minuteNum > 59) minuteNum = 59;
+
+            let hour24 = hourNum % 12;
+            if (ampm === 'PM') hour24 += 12;
+
+            return `${String(hour24).padStart(2, '0')}:${String(minuteNum).padStart(2, '0')}`;
+        }
+
+        function getTimeSelectOptionsMarkup(options, selectedValue) {
+            return options.map(value => `<option value="${value}" ${value === selectedValue ? 'selected' : ''}>${value}</option>`).join('');
+        }
+
+        function buildTimeSelectorMarkup(type, time24) {
+            const { hour, minute, ampm } = parse24HourTime(time24);
+
+            return `
+                <div class="time-selector-wrap" data-time-type="${type}">
+                    <select class="time-select ${type}-hour">${getTimeSelectOptionsMarkup(TIME_HOUR_OPTIONS, hour)}</select>
+                    <span class="time-divider">:</span>
+                    <select class="time-select ${type}-minute">${getTimeSelectOptionsMarkup(TIME_MINUTE_OPTIONS, minute)}</select>
+                    <span class="time-divider"></span>
+                    <select class="time-select ${type}-ampm">${getTimeSelectOptionsMarkup(['AM', 'PM'], ampm)}</select>
+                </div>
+                <input type="hidden" class="${type}-time ${type}-time-hidden ${type}-time-value ${type === 'start' ? 'start-time' : 'end-time'}" value="${time24 || ''}">
+            `;
+        }
+
+        function syncTimeSelectorFromHidden(row, type) {
+            const hidden = row.querySelector(`.${type}-time-hidden`);
+            const hourSelect = row.querySelector(`.${type}-hour`);
+            const minuteSelect = row.querySelector(`.${type}-minute`);
+            const ampmSelect = row.querySelector(`.${type}-ampm`);
+            if (!hidden || !hourSelect || !minuteSelect || !ampmSelect) return;
+
+            const parsed = parse24HourTime(hidden.value);
+            hourSelect.value = parsed.hour;
+            minuteSelect.value = TIME_MINUTE_OPTIONS.includes(parsed.minute) ? parsed.minute : '00';
+            ampmSelect.value = parsed.ampm;
+        }
+
+        function syncHiddenFromTimeSelector(row, type) {
+            const hidden = row.querySelector(`.${type}-time-hidden`);
+            const hourSelect = row.querySelector(`.${type}-hour`);
+            const minuteSelect = row.querySelector(`.${type}-minute`);
+            const ampmSelect = row.querySelector(`.${type}-ampm`);
+            if (!hidden || !hourSelect || !minuteSelect || !ampmSelect) return;
+
+            hidden.value = to24HourTime(hourSelect.value, minuteSelect.value, ampmSelect.value);
+        }
+
+        function initializeRowTimeSelectors(row) {
+            ['start', 'end'].forEach(type => {
+                syncTimeSelectorFromHidden(row, type);
+
+                const hourSelect = row.querySelector(`.${type}-hour`);
+                const minuteSelect = row.querySelector(`.${type}-minute`);
+                const ampmSelect = row.querySelector(`.${type}-ampm`);
+
+                [hourSelect, minuteSelect, ampmSelect].forEach(el => {
+                    if (!el) return;
+                    el.addEventListener('change', () => syncHiddenFromTimeSelector(row, type));
+                });
+            });
+        }
+
         function getQuickRangeButtonsMarkup() {
             return QUICK_TIME_RANGES.map(([start, end]) =>
-                `<button type="button" class="quick-range-btn" onclick="applyPresetToRow(this, '${start}', '${end}')">${start}-${end}</button>`
+                `<button type="button" class="quick-range-btn" onclick="applyPresetToRow(this, '${start}', '${end}')">${formatTime12Hour(start)}-${formatTime12Hour(end)}</button>`
             ).join('');
         }
 
@@ -2816,6 +2960,8 @@
             const endInput = row.querySelector('.end-time');
             if (startInput) startInput.value = start;
             if (endInput) endInput.value = end;
+            syncTimeSelectorFromHidden(row, 'start');
+            syncTimeSelectorFromHidden(row, 'end');
         }
 
         function copyPreviousRange(button) {
@@ -2837,6 +2983,8 @@
 
             row.querySelector('.start-time').value = prevStart;
             row.querySelector('.end-time').value = prevEnd;
+            syncTimeSelectorFromHidden(row, 'start');
+            syncTimeSelectorFromHidden(row, 'end');
         }
 
         function applyRangeToSelectedDays(button, type, sourceDay) {
@@ -2878,6 +3026,8 @@
                     if (targetRow) {
                         targetRow.querySelector('.start-time').value = start;
                         targetRow.querySelector('.end-time').value = end;
+                        syncTimeSelectorFromHidden(targetRow, 'start');
+                        syncTimeSelectorFromHidden(targetRow, 'end');
                     }
                 } else {
                     const targetContainer = document.getElementById(`classes-${day}`);
@@ -2890,11 +3040,13 @@
                     if (targetRow) {
                         targetRow.querySelector('.start-time').value = start;
                         targetRow.querySelector('.end-time').value = end;
+                        syncTimeSelectorFromHidden(targetRow, 'start');
+                        syncTimeSelectorFromHidden(targetRow, 'end');
                     }
                 }
             });
 
-            showToast(`Applied ${start}-${end} to ${selectedDays.length} day(s)`, 'success');
+            showToast(`Applied ${formatTime12Hour(start)}-${formatTime12Hour(end)} to ${selectedDays.length} day(s)`, 'success');
         }
 
         function attachWeekendListeners() {
@@ -2914,7 +3066,7 @@
                 // Disable/enable office time inputs and buttons (but don't clear)
                 const officeContainer = document.getElementById(`office-slots-${day}`);
                 if (officeContainer) {
-                    const inputs = officeContainer.querySelectorAll('input');
+                    const inputs = officeContainer.querySelectorAll('input, select');
                     const buttons = officeContainer.querySelectorAll('button');
                     inputs.forEach(input => {
                         input.disabled = isWeekend;
@@ -2941,7 +3093,7 @@
                 // Disable/enable class time inputs and buttons (but don't clear)
                 const classContainer = document.getElementById(`classes-${day}`);
                 if (classContainer) {
-                    const inputs = classContainer.querySelectorAll('input');
+                    const inputs = classContainer.querySelectorAll('input, select');
                     const buttons = classContainer.querySelectorAll('button');
                     
                     inputs.forEach(input => {
@@ -3011,11 +3163,11 @@
             row.innerHTML = `
                 <div class="form-group">
                     <label>Start</label>
-                    <input type="time" class="form-control start-time" value="${start}">
+                    ${buildTimeSelectorMarkup('start', start)}
                 </div>
                 <div class="form-group">
                     <label>End</label>
-                    <input type="time" class="form-control end-time" value="${end}">
+                    ${buildTimeSelectorMarkup('end', end)}
                 </div>
                 <button type="button" class="btn btn-danger" onclick="removeOfficeTime(this)">Remove</button>
                 <div class="time-shortcuts">
@@ -3026,6 +3178,7 @@
             `;
 
             container.appendChild(row);
+            initializeRowTimeSelectors(row);
             updateScheduleDisabledState();
         }
 
@@ -3078,11 +3231,11 @@
             classDiv.innerHTML = `
                 <div class="form-group">
                     <label>Start</label>
-                    <input type="time" class="form-control start-time" value="${classInfo.start || ''}">
+                    ${buildTimeSelectorMarkup('start', classInfo.start || '')}
                 </div>
                 <div class="form-group">
                     <label>End</label>
-                    <input type="time" class="form-control end-time" value="${classInfo.end || ''}">
+                    ${buildTimeSelectorMarkup('end', classInfo.end || '')}
                 </div>
                 <div class="form-group">
                     <label>Room</label>
@@ -3100,6 +3253,7 @@
                 </div>
             `;
             container.appendChild(classDiv);
+            initializeRowTimeSelectors(classDiv);
             updateScheduleDisabledState();
         }
 
