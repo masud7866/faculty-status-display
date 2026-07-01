@@ -100,9 +100,7 @@
       ]
     },
     "status": {
-      "status": "in_class",
-      "room": "B2-405",
-      "batch": "7th-CSE-A"
+      "status": "at_dept"
     },
     "manualOverride": null,
     "overrideExpiry": null,
@@ -538,9 +536,7 @@
       ]
     },
     "status": {
-      "status": "in_class",
-      "room": "B2-304",
-      "batch": "1st-CSE-A"
+      "status": "at_dept"
     },
     "manualOverride": null,
     "overrideExpiry": null,
@@ -677,7 +673,9 @@
       ]
     },
     "status": {
-      "status": "at_dept"
+      "status": "in_class",
+      "room": "B2-402",
+      "batch": "3rd-CSE-B"
     },
     "manualOverride": null,
     "overrideExpiry": null,
@@ -1102,9 +1100,7 @@
       ]
     },
     "status": {
-      "status": "in_class",
-      "room": "B2-405",
-      "batch": "7th-CSE-A"
+      "status": "at_dept"
     },
     "manualOverride": null,
     "overrideExpiry": null,
@@ -1117,28 +1113,28 @@
     "email": "mahfuzrahman129@gmail.com",
     "image": "/images/syedmahfuzurrahman.jpg",
     "weekend": [
-      "Saturday",
-      "Sunday"
+      "Thursday",
+      "Friday"
     ],
     "officeHours": {
-      "Monday": [
+      "Saturday": [
+        "11:00",
+        "20:00"
+      ],
+      "Sunday": [
         "09:00",
+        "17:00"
+      ],
+      "Monday": [
+        "08:00",
         "17:00"
       ],
       "Tuesday": [
-        "09:00",
-        "17:00"
+        "10:00",
+        "16:00"
       ],
       "Wednesday": [
-        "09:00",
-        "17:00"
-      ],
-      "Thursday": [
-        "09:00",
-        "18:00"
-      ],
-      "Friday": [
-        "10:00",
+        "08:00",
         "17:00"
       ]
     },
@@ -1226,58 +1222,10 @@
           "room": "B2-305",
           "batch": "7th-CSE-A"
         }
-      ],
-      "Thursday": [
-        {
-          "start": "09:00",
-          "end": "10:00",
-          "room": "B2-303",
-          "batch": "3rd-CSE-A"
-        },
-        {
-          "start": "10:00",
-          "end": "11:00",
-          "room": "B2-304",
-          "batch": "3rd-CSE-B"
-        },
-        {
-          "start": "12:00",
-          "end": "13:00",
-          "room": "B2-206",
-          "batch": "2nd-EEE-A"
-        },
-        {
-          "start": "14:00",
-          "end": "15:00",
-          "room": "B2-303",
-          "batch": "3rd-CSE-B"
-        },
-        {
-          "start": "15:00",
-          "end": "16:00",
-          "room": "B2-305",
-          "batch": "3rd-CSE-A"
-        },
-        {
-          "start": "17:00",
-          "end": "18:00",
-          "room": "B2-205",
-          "batch": "2nd-EEE-Evn"
-        }
-      ],
-      "Friday": [
-        {
-          "start": "12:00",
-          "end": "13:00",
-          "room": "B2-206",
-          "batch": "2nd-EEE-Evn"
-        }
       ]
     },
     "status": {
-      "status": "in_class",
-      "room": "B2-403",
-      "batch": "8th-CSE-B"
+      "status": "at_dept"
     },
     "manualOverride": null,
     "overrideExpiry": null,
@@ -1739,7 +1687,7 @@
     "status": {
       "status": "in_class",
       "room": "B1-402",
-      "batch": "English-1st"
+      "batch": "BBA-1st"
     },
     "manualOverride": null,
     "overrideExpiry": null,
