@@ -106,6 +106,9 @@
             align-items: flex-start;
             flex-wrap: wrap;
             gap: 10px;
+            position: sticky;
+            top: 0;
+            z-index: 1000;
         }
 
         .header-left {
@@ -379,7 +382,7 @@
             grid-column: 1 / -1;
             display: flex;
             flex-wrap: wrap;
-            gap: 6px;
+            gap: 4px;
             align-items: center;
         }
 
@@ -388,8 +391,8 @@
             background: white;
             color: #334155;
             border-radius: 999px;
-            padding: 3px 8px;
-            font-size: 11px;
+            padding: 2px 6px;
+            font-size: 10px;
             cursor: pointer;
             line-height: 1.2;
         }
@@ -3036,29 +3039,6 @@
             syncTimeSelectorFromHidden(row, 'end');
         }
 
-        function copyPreviousRange(button) {
-            const row = button.closest('.time-row');
-            if (!row) return;
-
-            const prev = row.previousElementSibling;
-            if (!prev || !prev.classList.contains('time-row')) {
-                showToast('No previous row to copy from', 'info');
-                return;
-            }
-
-            const prevStart = prev.querySelector('.start-time')?.value || '';
-            const prevEnd = prev.querySelector('.end-time')?.value || '';
-            if (!prevStart || !prevEnd) {
-                showToast('Previous row has no time set', 'info');
-                return;
-            }
-
-            row.querySelector('.start-time').value = prevStart;
-            row.querySelector('.end-time').value = prevEnd;
-            syncTimeSelectorFromHidden(row, 'start');
-            syncTimeSelectorFromHidden(row, 'end');
-        }
-
         function applyRangeToSelectedDays(button, type, sourceDay) {
             const row = button.closest('.time-row');
             if (!row) return;
@@ -3244,7 +3224,6 @@
                 <button type="button" class="btn btn-danger" onclick="removeOfficeTime(this)">Remove</button>
                 <div class="time-shortcuts">
                     ${getQuickRangeButtonsMarkup()}
-                    <button type="button" class="quick-range-btn" onclick="copyPreviousRange(this)">Copy Previous</button>
                     <button type="button" class="quick-range-btn" onclick="applyRangeToSelectedDays(this, 'office', '${day}')">Apply To Selected Days</button>
                 </div>
             `;
@@ -3320,7 +3299,6 @@
                 <button type="button" class="btn btn-danger" onclick="removeClass(this)">Remove</button>
                 <div class="time-shortcuts">
                     ${getQuickRangeButtonsMarkup()}
-                    <button type="button" class="quick-range-btn" onclick="copyPreviousRange(this)">Copy Previous</button>
                     <button type="button" class="quick-range-btn" onclick="applyRangeToSelectedDays(this, 'class', '${day}')">Apply To Selected Days</button>
                 </div>
             `;
