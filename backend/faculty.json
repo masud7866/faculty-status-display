@@ -6,29 +6,29 @@
     "email": "riadnwu@gmail.com",
     "image": "/images/fac3.jpg",
     "weekend": [
-      "Monday",
-      "Tuesday"
+      "Thursday",
+      "Friday"
     ],
     "officeHours": {
       "Saturday": [
         "10:00",
-        "21:00"
+        "20:00"
       ],
       "Sunday": [
         "10:00",
         "17:00"
       ],
-      "Wednesday": [
-        "10:00",
+      "Monday": [
+        "09:00",
         "17:00"
       ],
-      "Thursday": [
-        "10:00",
-        "19:00"
+      "Tuesday": [
+        "09:00",
+        "17:00"
       ],
-      "Friday": [
-        "15:00",
-        "21:00"
+      "Wednesday": [
+        "09:00",
+        "17:00"
       ]
     },
     "classTimes": {
@@ -96,46 +96,6 @@
           "end": "00:00",
           "room": "B2-406",
           "batch": "7th-CSE-B"
-        }
-      ],
-      "Thursday": [
-        {
-          "start": "10:00",
-          "end": "11:00",
-          "room": "B2-405",
-          "batch": "7th-CSE-A"
-        },
-        {
-          "start": "11:00",
-          "end": "12:00",
-          "room": "B2-307",
-          "batch": "7th-CSE-B"
-        }
-      ],
-      "Friday": [
-        {
-          "start": "17:00",
-          "end": "18:00",
-          "room": "B3-303",
-          "batch": "1st-CSE-MSc"
-        },
-        {
-          "start": "18:00",
-          "end": "19:00",
-          "room": "B2-404",
-          "batch": "4th-CSE-Evn"
-        },
-        {
-          "start": "19:00",
-          "end": "20:00",
-          "room": "B2-402",
-          "batch": "7th-CSE-Evn"
-        },
-        {
-          "start": "20:00",
-          "end": "21:00",
-          "room": "B3-304",
-          "batch": "4th-CSE-Evn"
         }
       ]
     },
