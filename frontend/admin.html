@@ -3273,10 +3273,6 @@
                 dayDiv.innerHTML = `
                     <div class="schedule-day-header">
                         <h4>${day}</h4>
-                        <label class="day-select-chip">
-                            <input type="checkbox" id="class-select-${day}">
-                            Select Day
-                        </label>
                     </div>
                     <div id="classes-${day}"></div>
                     <button type="button" class="btn btn-secondary" onclick="addClass('${day}')">Add Class</button>
@@ -3316,10 +3312,6 @@
                     <input type="text" class="form-control batch-input" value="${classInfo.batch || ''}" placeholder="1st-CSE-A">
                 </div>
                 <button type="button" class="btn btn-danger" onclick="removeClass(this)">Remove</button>
-                <div class="time-shortcuts">
-                    ${getQuickRangeButtonsMarkup()}
-                    <button type="button" class="quick-range-btn" onclick="applyRangeToSelectedDays(this, 'class', '${day}')">Apply To Selected Days</button>
-                </div>
             `;
             container.appendChild(classDiv);
             initializeRowTimeSelectors(classDiv);
