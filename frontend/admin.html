@@ -3441,7 +3441,83 @@
         }
 
         function importScheduleJSON() {
+            const text = prompt("Paste Schedule JSON");
 
+            if (!text) return;
+
+            let schedule;
+
+            try {
+                schedule = JSON.parse(text);
+            } catch (e) {
+                showToast("Invalid JSON", "error");
+                return;
+            }
+
+            // ------------------------
+            // Weekend Days
+            // ------------------------
+            days.forEach(day => {
+                const checkbox = document.getElementById(`weekend-${day}`);
+                if (checkbox) {
+                    checkbox.checked = Array.isArray(schedule.weekend) &&
+                        schedule.weekend.includes(day);
+                }
+            });
+
+            // ------------------------
+            // Office Hours
+            // ------------------------
+            days.forEach(day => {
+                const container = document.getElementById(`office-slots-${day}`);
+                if (!container) return;
+
+                container.innerHTML = "";
+
+                const office = schedule.officeHours?.[day];
+
+                if (Array.isArray(office) && office.length >= 2) {
+
+                    for (let i = 0; i < office.length; i += 2) {
+                        addOfficeTime(
+                            day,
+                            office[i],
+                            office[i + 1] || "",
+                            true
+                        );
+                    }
+
+                } else {
+
+                    // keep one blank row
+                    addOfficeTime(day, "", "", true);
+                }
+            });
+
+            // ------------------------
+            // Class Times
+            // ------------------------
+            days.forEach(day => {
+
+                const container = document.getElementById(`classes-${day}`);
+                if (!container) return;
+
+                container.innerHTML = "";
+
+                const classes = schedule.classTimes?.[day];
+
+                if (Array.isArray(classes)) {
+
+                    classes.forEach(cls => {
+                        addClass(day, cls, true);
+                    });
+
+                }
+            });
+
+            updateScheduleDisabledState();
+
+            showToast("Schedule imported successfully", "success");
         }
 
         function resetForm() {
