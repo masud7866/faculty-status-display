@@ -3242,7 +3242,6 @@
                 </div>
                 <button type="button" class="btn btn-danger" onclick="removeOfficeTime(this)">Remove</button>
                 <div class="time-shortcuts">
-                    ${getQuickRangeButtonsMarkup()}
                     <button type="button" class="quick-range-btn" onclick="applyRangeToSelectedDays(this, 'office', '${day}')">Apply To Selected Days</button>
                 </div>
             `;
@@ -3312,6 +3311,9 @@
                     <input type="text" class="form-control batch-input" value="${classInfo.batch || ''}" placeholder="1st-CSE-A">
                 </div>
                 <button type="button" class="btn btn-danger" onclick="removeClass(this)">Remove</button>
+                <div class="time-shortcuts">
+                    ${getQuickRangeButtonsMarkup()}
+                </div>
             `;
             container.appendChild(classDiv);
             initializeRowTimeSelectors(classDiv);
