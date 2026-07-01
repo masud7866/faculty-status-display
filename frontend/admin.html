@@ -3169,6 +3169,21 @@
                     addClassBtn.style.opacity = isWeekend ? '0.5' : '1';
                     addClassBtn.style.cursor = isWeekend ? 'not-allowed' : 'pointer';
                 }
+
+                // Disable/enable "Select Day" checkbox
+                const selectDayCheckbox = document.getElementById(`select-day-${day}`);
+                if (selectDayCheckbox) {
+                    if (isWeekend) selectDayCheckbox.checked = false;
+
+                    selectDayCheckbox.disabled = isWeekend;
+
+                    const label = selectDayCheckbox.closest('label');
+                    if (label) {
+                        label.style.opacity = isWeekend ? '0.5' : '1';
+                        label.style.cursor = isWeekend ? 'not-allowed' : 'pointer';
+                    }
+                }
+
             });
         }
 
