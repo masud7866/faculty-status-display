@@ -2662,6 +2662,7 @@
 
         function syncFacultyFormVisibility() {
             const editMode = document.getElementById('editMode')?.value === 'true';
+            const formSection = document.getElementById('facultyFormSection');
             const submitBtn = document.getElementById('submitBtn');
             const resetBtn = document.querySelector('#facultyFormActions .btn.btn-secondary');
             const cancelBtn = document.getElementById('cancelEditBtn');
@@ -2669,6 +2670,9 @@
             const displayPositionGroup = document.getElementById('displayPositionGroup');
 
             if (isUserRole()) {
+                if (formSection) {
+                    formSection.classList.toggle('hidden', !editMode);
+                }
                 if (formTitle) {
                     formTitle.textContent = 'Edit Your Info';
                 }
@@ -2692,6 +2696,9 @@
                 return;
             }
 
+            if (formSection) {
+                formSection.classList.remove('hidden');
+            }
             if (formTitle) {
                 formTitle.textContent = 'Add New Faculty';
             }
@@ -3835,6 +3842,7 @@
             document.getElementById('submitBtn').className = 'btn btn-warning';
             document.getElementById('cancelEditBtn').classList.remove('hidden');
             document.getElementById('facultyFormSection').classList.add('edit-mode');
+            syncFacultyFormVisibility();
 
             // Fill basic info
             document.getElementById('name').value = faculty.name;
@@ -3912,7 +3920,6 @@
             });
 
             showToast(`Editing ${name}`, 'info');
-            syncFacultyFormVisibility();
         }
 
         // Faculty Image Upload
