@@ -3084,6 +3084,13 @@
             ['16:00', '17:00']
         ];
 
+        const QUICK_OFFICETIME_RANGES = [
+            ['09:00', '17:00'],
+            ['08:00', '16:00'],
+            ['10:00', '17:00'],
+            ['09:00', '15:00']
+        ];
+
         const TIME_HOUR_OPTIONS = Array.from({ length: 12 }, (_, i) => String(i + 1).padStart(2, '0'));
         const TIME_MINUTE_OPTIONS = Array.from({ length: 12 }, (_, i) => String(i * 5).padStart(2, '0'));
 
@@ -3219,6 +3226,12 @@
 
         function getQuickRangeButtonsMarkup() {
             return QUICK_TIME_RANGES.map(([start, end]) =>
+                `<button type="button" class="quick-range-btn" onclick="applyPresetToRow(this, '${start}', '${end}')">${formatTime12Hour(start)}-${formatTime12Hour(end)}</button>`
+            ).join('');
+        }
+
+        function getQuickOfficeRangeButtonsMarkup() {
+            return QUICK_OFFICETIME_RANGES.map(([start, end]) =>
                 `<button type="button" class="quick-range-btn" onclick="applyPresetToRow(this, '${start}', '${end}')">${formatTime12Hour(start)}-${formatTime12Hour(end)}</button>`
             ).join('');
         }
@@ -3439,6 +3452,7 @@
                 <button type="button" class="btn btn-danger" onclick="removeOfficeTime(this)">Remove</button>
                 <div class="time-shortcuts">
                     <button type="button" class="quick-range-btn" onclick="applyRangeToSelectedDays(this, 'office', '${day}')">Apply To Selected Days</button>
+                    ${getQuickOfficeRangeButtonsMarkup()}
                 </div>
             `;
 
