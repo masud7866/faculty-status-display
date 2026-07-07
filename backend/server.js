@@ -31,7 +31,7 @@ app.use(cors({
   origin: ["https://faculty-status-display.vercel.app", "http://localhost:3000"],
   credentials: true
 }));
-app.use(express.json({ 
+app.use(express.json({
   limit: '50mb',
   verify: (req, res, buf, encoding) => {
     // Add request size logging
@@ -69,13 +69,13 @@ app.use(session(createSessionConfig()));
 function requireAuth(req, res, next) {
   // Check for token in Authorization header
   const authHeader = req.headers.authorization;
-  
+
   if (!authHeader || !authHeader.startsWith('Bearer ')) {
     return res.status(401).json({ error: "No token provided" });
   }
-  
+
   const token = authHeader.substring(7); // Remove 'Bearer ' prefix
-  
+
   try {
     const decoded = jwt.verify(token, JWT_SECRET);
     req.user = decoded; // Attach user info to request
@@ -303,7 +303,7 @@ app.use("/ads", express.static(path.join(__dirname, "public/ads")));
 
 async function syncFacultyFromJSON() {
   const jsonPath = path.join(__dirname, "faculty.json");
-  
+
   if (!fs.existsSync(jsonPath)) {
     console.log('No faculty.json found for sync');
     return;
@@ -312,16 +312,16 @@ async function syncFacultyFromJSON() {
   try {
     const db = await facultyDB.connect();
     const jsonData = JSON.parse(fs.readFileSync(jsonPath, 'utf8'));
-    
+
     console.log(`📄 Found ${jsonData.length} faculty records in JSON file`);
-    
+
     // Get existing faculty with their current overrides
     const existingFaculty = await db.collection('faculty').find({}).toArray();
     const existingNames = new Set(existingFaculty.map(f => f.name));
     const overrideMap = new Map();
-    
+
     console.log(`💾 Found ${existingFaculty.length} existing faculty records in database`);
-    
+
     // Preserve valid manual overrides
     existingFaculty.forEach(f => {
       if (f.manualOverride && f.overrideExpiry) {
@@ -334,41 +334,41 @@ async function syncFacultyFromJSON() {
         }
       }
     });
-    
+
     let insertedCount = 0;
     let updatedCount = 0;
     let skippedCount = 0;
-    
+
     for (const faculty of jsonData) {
       if (!faculty.name) {
         console.log('⚠️ Skipping faculty with no name');
         skippedCount++;
         continue;
       }
-      
+
       const facultyData = {
         ...faculty,
         updatedAt: new Date()
       };
-      
+
       // Preserve valid manual overrides if they exist
       if (overrideMap.has(faculty.name)) {
         const override = overrideMap.get(faculty.name);
         facultyData.manualOverride = override.manualOverride;
         facultyData.overrideExpiry = override.overrideExpiry;
       }
-      
+
       if (existingNames.has(faculty.name)) {
         // Update existing faculty (preserve creation date)
         const result = await db.collection('faculty').updateOne(
           { name: faculty.name },
-          { 
+          {
             $set: facultyData,
             $setOnInsert: { createdAt: new Date() }
           },
           { upsert: false }
         );
-        
+
         if (result.modifiedCount > 0) {
           updatedCount++;
           console.log(`✅ Updated existing faculty: ${faculty.name}`);
@@ -379,19 +379,19 @@ async function syncFacultyFromJSON() {
         // Insert new faculty
         facultyData.createdAt = new Date();
         facultyData.status = faculty.status || "off_duty";
-        
+
         await db.collection('faculty').insertOne(facultyData);
         insertedCount++;
         console.log(`➕ Inserted new faculty: ${faculty.name}`);
       }
     }
-    
+
     console.log(`✅ Sync completed: ${insertedCount} inserted, ${updatedCount} updated, ${skippedCount} skipped`);
-    
+
     // Final count check
     const finalCount = await db.collection('faculty').countDocuments();
     console.log(`📊 Total faculty in database: ${finalCount}`);
-    
+
   } catch (error) {
     console.error("❌ Error syncing from faculty.json:", error);
     throw error;
@@ -405,34 +405,34 @@ app.get("/api/faculty", async (req, res) => {
     const jsonPath = path.join(__dirname, "faculty.json");
     if (fs.existsSync(jsonPath)) {
       const jsonStat = fs.statSync(jsonPath);
-      
+
       // Check if we need to sync from file
       const lastSync = await facultyDB.getSetting('last_faculty_sync');
       const jsonModified = jsonStat.mtime.toISOString();
-      
+
       if (!lastSync || jsonModified > lastSync) {
         console.log("📄 faculty.json has been updated, syncing to database...");
         await syncFacultyFromJSON();
         await facultyDB.setSetting('last_faculty_sync', jsonModified);
       }
     }
-    
+
     // Get faculty data from database and sort consistently
     const faculty = await facultyDB.getAllFaculty();
-    
+
     // Sort by precedence (lower numbers first), then by name
     const sortedFaculty = faculty.sort((a, b) => {
       const precedenceA = a.precedence || 50;
       const precedenceB = b.precedence || 50;
-      
+
       if (precedenceA !== precedenceB) {
         return precedenceA - precedenceB;
       }
       return a.name.localeCompare(b.name);
     });
-    
+
     console.log('Returning sorted faculty:', sortedFaculty.map(f => `${f.name} (precedence: ${f.precedence || 50})`));
-    
+
     res.json(sortedFaculty);
   } catch (error) {
     console.error("❌ Error fetching faculty:", error);
@@ -713,8 +713,8 @@ app.get("/api/check-login", requireAuth, async (req, res) => {
     const user = await findUserByUsername(decoded.username);
     const sessionAge = decoded.loginTime ? Math.floor((Date.now() - new Date(decoded.loginTime)) / 1000 / 60) : null;
     const remainingMinutes = Math.floor((decoded.exp - Date.now() / 1000) / 60);
-    
-    res.json({ 
+
+    res.json({
       loggedIn: true,
       sessionAge: sessionAge,
       remainingMinutes: remainingMinutes,
@@ -759,14 +759,14 @@ app.get("/api/marquee", async (req, res) => {
         return res.send(fileMarquee);
       }
     }
-    
+
     // Fallback to database
     const dbMarquee = await facultyDB.getSetting('marquee_text');
     if (dbMarquee) {
       console.log("💾 Using marquee text from database");
       return res.send(dbMarquee);
     }
-    
+
     // Default fallback
     console.log("🔤 Using default marquee text");
     res.send('Welcome to Faculty Status Display');
@@ -807,7 +807,7 @@ app.post("/api/admin/faculty", requireAuth, requireRole("admin", "editor"), asyn
       manualOverride: null,
       overrideExpiry: null
     };
-    
+
     if (!newFaculty.name) {
       return res.status(400).json({ error: "Faculty name is required" });
     }
@@ -817,7 +817,7 @@ app.post("/api/admin/faculty", requireAuth, requireRole("admin", "editor"), asyn
     if (existing) {
       return res.status(400).json({ error: "Faculty with this name already exists" });
     }
-    
+
     await db.collection('faculty').insertOne(newFaculty);
     await upsertUserFromFaculty(newFaculty, { role: "user" });
     console.log(`✅ Added new faculty: ${newFaculty.name}`);
@@ -837,14 +837,14 @@ app.put("/api/admin/faculty/:name", requireAuth, async (req, res) => {
       ...req.body,
       updatedAt: new Date()
     };
-    
+
     // Don't modify these fields
     delete updateData.status;
     delete updateData.manualOverride;
     delete updateData.overrideExpiry;
     delete updateData.createdAt;
     delete updateData._id;
-    
+
     // Preserve precedence if not provided
     if (updateData.precedence === undefined) {
       const existing = await db.collection('faculty').findOne({ name: originalName });
@@ -852,9 +852,9 @@ app.put("/api/admin/faculty/:name", requireAuth, async (req, res) => {
         updateData.precedence = existing.precedence;
       }
     }
-    
+
     console.log(`Updating faculty ${originalName} with precedence:`, updateData.precedence);
-    
+
     // If name is being changed, check for duplicates
     if (updateData.name && updateData.name !== originalName) {
       const existing = await db.collection('faculty').findOne({ name: updateData.name });
@@ -875,12 +875,12 @@ app.put("/api/admin/faculty/:name", requireAuth, async (req, res) => {
         }
       });
     }
-    
+
     const result = await db.collection('faculty').updateOne(
       { name: originalName },
       { $set: updateData }
     );
-    
+
     if (result.matchedCount === 0) {
       return res.status(404).json({ error: "Faculty not found" });
     }
@@ -898,9 +898,9 @@ app.put("/api/admin/faculty/:name", requireAuth, async (req, res) => {
         }
       );
     }
-    
+
     console.log(`✅ Updated faculty: ${originalName} (precedence: ${updateData.precedence || 'default'})`);
-    
+
     res.json({ message: "Faculty updated successfully" });
   } catch (error) {
     console.error("Error updating faculty:", error);
@@ -913,11 +913,11 @@ app.delete("/api/admin/faculty/:name", requireAuth, requireRole("admin"), async 
   try {
     const db = await facultyDB.connect();
     const result = await db.collection('faculty').deleteOne({ name: req.params.name });
-    
+
     if (result.deletedCount === 0) {
       return res.status(404).json({ error: "Faculty not found" });
     }
-    
+
     console.log(`✅ Deleted faculty: ${req.params.name}`);
     const users = await getUsersCollection();
     await users.deleteMany({ linkedFacultyName: req.params.name });
@@ -931,7 +931,7 @@ app.delete("/api/admin/faculty/:name", requireAuth, requireRole("admin"), async 
 // Update marquee text (database version for admin panel)
 app.post("/api/admin/marquee", requireAuth, requireRole("admin", "editor"), async (req, res) => {
   const { text } = req.body;
-  
+
   try {
     // Try to update the file directly first (if GitHub token is available)
     if (process.env.GITHUB_TOKEN) {
@@ -952,7 +952,7 @@ app.post("/api/admin/marquee", requireAuth, requireRole("admin", "editor"), asyn
               }
             }
           );
-          
+
           if (existingFile.ok) {
             const fileData = await existingFile.json();
             sha = fileData.sha;
@@ -981,7 +981,7 @@ app.post("/api/admin/marquee", requireAuth, requireRole("admin", "editor"), asyn
 
         if (uploadResponse.ok) {
           console.log("✅ Updated marquee.txt file on GitHub");
-          
+
           // Also update local file if it exists
           const localMarqueePath = path.join(__dirname, "public/marquee.txt");
           try {
@@ -990,11 +990,11 @@ app.post("/api/admin/marquee", requireAuth, requireRole("admin", "editor"), asyn
           } catch (error) {
             console.log("⚠️ Could not update local file (that's okay):", error.message);
           }
-          
+
           // Update database as backup
           await facultyDB.setSetting('marquee_text', text);
-          
-          return res.json({ 
+
+          return res.json({
             message: "Marquee text updated successfully in file and database",
             method: "file_and_database"
           });
@@ -1006,7 +1006,7 @@ app.post("/api/admin/marquee", requireAuth, requireRole("admin", "editor"), asyn
         console.log("⚠️ GitHub file update failed, falling back to local/database:", githubError.message);
       }
     }
-    
+
     // Fallback: Try to update local file first
     const localMarqueePath = path.join(__dirname, "public/marquee.txt");
     try {
@@ -1015,24 +1015,24 @@ app.post("/api/admin/marquee", requireAuth, requireRole("admin", "editor"), asyn
       if (!fs.existsSync(dir)) {
         fs.mkdirSync(dir, { recursive: true });
       }
-      
+
       fs.writeFileSync(localMarqueePath, text, 'utf8');
       console.log("✅ Updated local marquee.txt file");
-      
+
       // Also update database as backup
       await facultyDB.setSetting('marquee_text', text);
-      
-      res.json({ 
+
+      res.json({
         message: "Marquee text updated successfully in local file and database",
         method: "local_file_and_database"
       });
     } catch (fileError) {
       console.log("⚠️ Local file update failed, updating database only:", fileError.message);
-      
+
       // Last resort: database only
       await facultyDB.setSetting('marquee_text', text);
       console.log("✅ Updated marquee text in database only");
-      res.json({ 
+      res.json({
         message: "Marquee text updated in database (file update failed)",
         method: "database_only",
         warning: "File could not be updated. Changes may be overwritten if marquee.txt file exists."
@@ -1045,21 +1045,28 @@ app.post("/api/admin/marquee", requireAuth, requireRole("admin", "editor"), asyn
 });
 
 // GitHub file upload route
-app.post("/api/upload", requireAuth, requireRole("admin", "editor"), async (req, res) => {
+app.post("/api/upload", requireAuth, requireRole("admin", "editor", "user"), async (req, res) => {
   const { filename, content, path } = req.body;
-    if (!process.env.GITHUB_TOKEN) {
+  if (req.user.role === "user") {
+    if (filename !== "faculty.json") {
+      return res.status(403).json({
+        error: "Users can only deploy faculty changes"
+      });
+    }
+  }
+  if (!process.env.GITHUB_TOKEN) {
     return res.status(500).json({ error: "GitHub token not configured. Upload manually to GitHub." });
   }
   // Log payload size
   const payloadSize = Buffer.byteLength(JSON.stringify(req.body), 'utf8');
   console.log(`Upload payload size: ${payloadSize} bytes`);
-  
+
   if (payloadSize > 45 * 1024 * 1024) { // 45MB safety margin
-    return res.status(413).json({ 
-      error: "File too large. Maximum size is 45MB after base64 encoding." 
+    return res.status(413).json({
+      error: "File too large. Maximum size is 45MB after base64 encoding."
     });
   }
-  
+
   try {
     const githubOwner = 'masud7866';
     const githubRepo = 'faculty-status-display';
@@ -1077,7 +1084,7 @@ app.post("/api/upload", requireAuth, requireRole("admin", "editor"), async (req,
           }
         }
       );
-      
+
       if (existingFile.ok) {
         const fileData = await existingFile.json();
         sha = fileData.sha;
@@ -1111,8 +1118,8 @@ app.post("/api/upload", requireAuth, requireRole("admin", "editor"), async (req,
 
     const result = await uploadResponse.json();
     console.log(`✅ Uploaded ${filename} to GitHub: ${filePath}`);
-    
-    res.json({ 
+
+    res.json({
       message: 'File uploaded successfully',
       path: filePath,
       url: result.content.download_url
@@ -1127,62 +1134,62 @@ app.post("/api/upload", requireAuth, requireRole("admin", "editor"), async (req,
 // Delete ad file (admin only)
 app.delete('/api/admin/ads/:filename', requireAuth, requireRole("admin", "editor"), async (req, res) => {
   try {
-      const filename = req.params.filename;
-      
-      if (!process.env.GITHUB_TOKEN) {
-          return res.status(500).json({ error: 'GitHub token not configured' });
+    const filename = req.params.filename;
+
+    if (!process.env.GITHUB_TOKEN) {
+      return res.status(500).json({ error: 'GitHub token not configured' });
+    }
+
+    // Delete from GitHub
+    const githubUrl = `https://api.github.com/repos/masud7866/faculty-status-display/contents/backend/public/ads/${filename}`;
+
+    // First, get the file to get its SHA
+    const getResponse = await fetch(githubUrl, {
+      headers: {
+        'Authorization': `token ${process.env.GITHUB_TOKEN}`,
+        'Accept': 'application/vnd.github.v3+json'
       }
+    });
 
-      // Delete from GitHub
-      const githubUrl = `https://api.github.com/repos/masud7866/faculty-status-display/contents/backend/public/ads/${filename}`;
-      
-      // First, get the file to get its SHA
-      const getResponse = await fetch(githubUrl, {
-          headers: {
-              'Authorization': `token ${process.env.GITHUB_TOKEN}`,
-              'Accept': 'application/vnd.github.v3+json'
-          }
-      });
-
-      if (!getResponse.ok) {
-          if (getResponse.status === 404) {
-              return res.status(404).json({ error: 'File not found' });
-          }
-          throw new Error(`GitHub API error: ${getResponse.status}`);
+    if (!getResponse.ok) {
+      if (getResponse.status === 404) {
+        return res.status(404).json({ error: 'File not found' });
       }
+      throw new Error(`GitHub API error: ${getResponse.status}`);
+    }
 
-      const fileData = await getResponse.json();
-      
-      // Delete the file
-      const deleteResponse = await fetch(githubUrl, {
-          method: 'DELETE',
-          headers: {
-              'Authorization': `token ${process.env.GITHUB_TOKEN}`,
-              'Accept': 'application/vnd.github.v3+json',
-              'Content-Type': 'application/json'
-          },
-          body: JSON.stringify({
-              message: `Delete ad file: ${filename}`,
-              sha: fileData.sha
-          })
-      });
+    const fileData = await getResponse.json();
 
-      if (!deleteResponse.ok) {
-          const error = await deleteResponse.json();
-          throw new Error(error.message || 'Failed to delete file from GitHub');
-      }
+    // Delete the file
+    const deleteResponse = await fetch(githubUrl, {
+      method: 'DELETE',
+      headers: {
+        'Authorization': `token ${process.env.GITHUB_TOKEN}`,
+        'Accept': 'application/vnd.github.v3+json',
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({
+        message: `Delete ad file: ${filename}`,
+        sha: fileData.sha
+      })
+    });
 
-      res.json({ 
-          success: true, 
-          message: `File ${filename} deleted successfully`,
-          filename: filename
-      });
+    if (!deleteResponse.ok) {
+      const error = await deleteResponse.json();
+      throw new Error(error.message || 'Failed to delete file from GitHub');
+    }
+
+    res.json({
+      success: true,
+      message: `File ${filename} deleted successfully`,
+      filename: filename
+    });
 
   } catch (error) {
-      console.error('Delete ad error:', error);
-      res.status(500).json({ 
-          error: error.message || 'Failed to delete advertisement file' 
-      });
+    console.error('Delete ad error:', error);
+    res.status(500).json({
+      error: error.message || 'Failed to delete advertisement file'
+    });
   }
 });
 
@@ -1275,12 +1282,12 @@ async function clearExpiredOverride(name) {
 async function updateStatuses() {
   try {
     const allFaculty = await facultyDB.getAllFaculty();
-    
+
     for (const faculty of allFaculty) {
       const statusObj = getCurrentStatus(faculty);
       await facultyDB.updateFacultyStatus(faculty.name, statusObj);
     }
-    
+
     console.log("✅ Auto status updated at", new Date().toISOString());
   } catch (error) {
     console.error("❌ Failed to auto-update statuses:", error);
@@ -1291,9 +1298,9 @@ async function updateStatuses() {
 async function startup() {
   try {
     console.log("🚀 Starting Faculty Status Backend...");
-    
+
     facultyDB = new FacultyDB();
-    
+
     // Check for initial migration or file sync
     try {
       const db = await facultyDB.connect();
@@ -1301,21 +1308,21 @@ async function startup() {
       await users.createIndex({ usernameLower: 1 }, { unique: true });
       await users.createIndex({ linkedFacultyName: 1 });
       const existingCount = await db.collection('faculty').countDocuments();
-      
+
       console.log(`💾 Current database has ${existingCount} faculty records`);
-      
+
       if (existingCount === 0) {
         console.log("📦 Database is empty, performing initial migration...");
         await facultyDB.migrateFromJSON();
       } else if (existingCount > 20) { // If we have way too many records
         console.log(`⚠️ Database has ${existingCount} records - this seems like duplicates`);
         console.log("🧹 Cleaning up duplicates...");
-        
+
         // Get all faculty and remove duplicates by name
         const allFaculty = await db.collection('faculty').find({}).toArray();
         const uniqueNames = new Set();
         const duplicateIds = [];
-        
+
         allFaculty.forEach(f => {
           if (uniqueNames.has(f.name)) {
             duplicateIds.push(f._id);
@@ -1323,14 +1330,14 @@ async function startup() {
             uniqueNames.add(f.name);
           }
         });
-        
+
         if (duplicateIds.length > 0) {
           const deleteResult = await db.collection('faculty').deleteMany({
             _id: { $in: duplicateIds }
           });
           console.log(`🗑️ Removed ${deleteResult.deletedCount} duplicate records`);
         }
-        
+
         const cleanCount = await db.collection('faculty').countDocuments();
         console.log(`✅ Database now has ${cleanCount} unique faculty records`);
       } else {
@@ -1351,11 +1358,11 @@ async function startup() {
     } catch (error) {
       console.log("⚠️ Migration/sync check failed:", error.message);
     }
-    
+
     // Start auto status updates
     updateStatuses();
     setInterval(updateStatuses, 3000);
-    
+
     // Upgrade to MongoDB session store (for persistence across restarts)
     try {
       sessionStore = MongoStore.create({
@@ -1369,7 +1376,7 @@ async function startup() {
           secret: process.env.SESSION_SECRET || 'secret123'
         }
       });
-      
+
       // Reconfigure session middleware to use MongoDB store
       app.use(session(createSessionConfig(sessionStore)));
 
@@ -1380,7 +1387,7 @@ async function startup() {
       console.log("⚠️ MongoDB session store setup failed, using memory store:", error.message);
       console.log("   Sessions will work but won't persist across server restarts");
     }
-    
+
     app.listen(PORT, () => {
       console.log(`✅ Server running on http://localhost:${PORT}`);
       console.log("💾 Database: MongoDB Atlas (with file sync)");
@@ -1397,13 +1404,13 @@ async function startup() {
 // Graceful shutdown
 process.on('SIGINT', async () => {
   console.log('🛑 Shutting down gracefully...');
-  
+
   // Close session store
   if (sessionStore) {
     await sessionStore.close();
     console.log('🔐 Session store closed');
   }
-  
+
   // Close database
   if (facultyDB) {
     await facultyDB.close();
