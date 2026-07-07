@@ -340,7 +340,9 @@
       ]
     },
     "status": {
-      "status": "at_dept"
+      "status": "in_class",
+      "room": "B2-404",
+      "batch": "1st-CSE-B"
     },
     "manualOverride": null,
     "overrideExpiry": null,
@@ -476,8 +478,8 @@
     },
     "status": {
       "status": "in_class",
-      "room": "B2-206",
-      "batch": "7th-CSE-A"
+      "room": "B2-303",
+      "batch": "7th-CSE-B"
     },
     "manualOverride": null,
     "overrideExpiry": null,
@@ -590,9 +592,7 @@
       ]
     },
     "status": {
-      "status": "in_class",
-      "room": "B2-305",
-      "batch": "7th-CSE-A"
+      "status": "off_duty"
     },
     "manualOverride": null,
     "overrideExpiry": null,
@@ -1164,7 +1164,7 @@
     "name": "Syed Mahfuzur Rahman",
     "designation": "Lecturer",
     "contact": "01751051683",
-    "email": "mahfuzrahman129@gmail.com",
+    "email": "smr.ugv@gmail.com",
     "image": "/images/syedmahfuzurrahman.jpg",
     "weekend": [
       "Thursday",
@@ -1279,7 +1279,7 @@
       ]
     },
     "status": {
-      "status": "at_dept"
+      "status": "off_duty"
     },
     "manualOverride": null,
     "overrideExpiry": null,
@@ -1679,7 +1679,7 @@
     "status": {
       "status": "in_class",
       "room": "B1-402",
-      "batch": "BBA-8th"
+      "batch": "CIVIL"
     },
     "manualOverride": null,
     "overrideExpiry": null,
