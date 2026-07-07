@@ -100,9 +100,7 @@
       ]
     },
     "status": {
-      "status": "in_class",
-      "room": "B2-404",
-      "batch": "4th-CSE-B"
+      "status": "at_dept"
     },
     "manualOverride": null,
     "overrideExpiry": null,
@@ -209,9 +207,7 @@
       ]
     },
     "status": {
-      "status": "in_class",
-      "room": "B2-305",
-      "batch": "6th-CSE-A"
+      "status": "at_dept"
     },
     "manualOverride": null,
     "overrideExpiry": null,
@@ -435,7 +431,7 @@
         {
           "start": "09:00",
           "end": "11:00",
-          "room": "B2-102",
+          "room": "B2-203",
           "batch": "2nd-EEE-A"
         },
         {
@@ -481,7 +477,7 @@
     "status": {
       "status": "in_class",
       "room": "B2-206",
-      "batch": "7th-CSE-C"
+      "batch": "7th-CSE-A"
     },
     "manualOverride": null,
     "overrideExpiry": null,
@@ -594,7 +590,9 @@
       ]
     },
     "status": {
-      "status": "at_dept"
+      "status": "in_class",
+      "room": "B2-305",
+      "batch": "7th-CSE-A"
     },
     "manualOverride": null,
     "overrideExpiry": null,
@@ -1156,7 +1154,7 @@
       ]
     },
     "status": {
-      "status": "off_duty"
+      "status": "at_dept"
     },
     "manualOverride": null,
     "overrideExpiry": null,
@@ -1433,9 +1431,7 @@
       ]
     },
     "status": {
-      "status": "in_class",
-      "room": "B2-204",
-      "batch": "2nd CSE A"
+      "status": "at_dept"
     },
     "manualOverride": null,
     "overrideExpiry": null,
@@ -1553,7 +1549,7 @@
     "status": {
       "status": "in_class",
       "room": "B2-003",
-      "batch": "CSE-7th"
+      "batch": "CSE-6th"
     },
     "manualOverride": null,
     "overrideExpiry": null,
@@ -1683,7 +1679,7 @@
     "status": {
       "status": "in_class",
       "room": "B1-402",
-      "batch": "English-8th"
+      "batch": "BBA-8th"
     },
     "manualOverride": null,
     "overrideExpiry": null,
@@ -1775,7 +1771,7 @@
     "status": {
       "status": "in_class",
       "room": "B2-204",
-      "batch": "CSE-8th"
+      "batch": "EEE-2nd"
     },
     "manualOverride": null,
     "overrideExpiry": null,
@@ -1895,7 +1891,9 @@
       ]
     },
     "status": {
-      "status": "at_dept"
+      "status": "in_class",
+      "room": "B2-205",
+      "batch": "5th-CSE"
     },
     "manualOverride": null,
     "overrideExpiry": null,
