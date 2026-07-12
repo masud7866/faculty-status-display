@@ -543,6 +543,44 @@
     #connectivityBadge.show {
       display: inline-flex;
     }
+
+    .maintenance-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      background: rgba(0, 0, 0, 0.85);
+      /* Dark transparent background */
+      z-index: 9999;
+      /* Ensures it stays on top of everything */
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      color: #ffffff;
+      font-family: Arial, sans-serif;
+    }
+
+    .maintenance-box {
+      text-align: center;
+      padding: 40px;
+      background: #222222;
+      /* Box background */
+      border-radius: 10px;
+      max-width: 500px;
+      width: 90%;
+    }
+
+    .maintenance-box h2 {
+      margin-top: 0;
+      color: #f39c12;
+      /* Accent color */
+    }
+
+    .maintenance-box p {
+      font-size: 18px;
+      line-height: 1.5;
+    }
   </style>
 </head>
 
@@ -555,6 +593,13 @@
     </div>
     <!-- <img src="images/cse_logo.png" alt="CSE Logo" class="logo"> -->
   </header>
+
+  <div class="maintenance-overlay">
+    <div class="maintenance-box">
+      <h2>🔒 Closed for Maintenance</h2>
+      <p>We are currently performing scheduled maintenance. Please check back soon!</p>
+    </div>
+  </div>
 
   <div id="connectivityBadge" role="status" aria-live="polite">Offline</div>
 
